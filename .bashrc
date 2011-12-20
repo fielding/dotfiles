@@ -3,9 +3,7 @@
 ## author:       fielding johnston - http://www.justfielding.com
 ##--------------------------------------------------------------
 
-
 ## Bash Options ------------------------------------------------
-#shopt -s autocd             # change to named directory
 shopt -s cdable_vars        # if cd arg is not valid, assumes its a var defining a dir
 shopt -s cdspell            # autocorrects cd misspellings
 shopt -s checkwinsize       # update the value of LINES and COLUMNS after each command if altered
@@ -21,8 +19,23 @@ shopt -s nocaseglob         # pathname expansion will be treated as case-insensi
 
 ## Environment Variables -------------------------------------
 
+# Default Editor set to vim
 export EDITOR="vim"
+
+# Set Grep highlighting color - 1;33 aka Bold Yellow
 export GREP_COLOR="1;33"
+
+# Add additional default paths
+export PATH="$PATH:$HOME/bin:/opt/bin:/usr/local/sbin"
+
+# Unicode support
+export LANG="en_US.UTF-8"
+
+# History Settings
+export HISTCONTROL=ignoredups
+export HISTSIZE=5000
+export HISTFILESIZE=1000
+export HISTIGNORE="&:ls:pwd:exit:clear"
 
 # Less Colors for Man Pages 
 export LESS_TERMCAP_mb=$'\E[01;31m'     # begin blinking
@@ -35,65 +48,52 @@ export LESS_TERMCAP_us=$'\E[01;32m'     # begin underline
 
 ## End Environment Variables --------------------------------
 
-## Default Paths --------------------------------------------
-
-PATH=$PATH:~/.bin
-PATH=$PATH:/opt/bin
-
-## End Default Paths ----------------------------------------
-
-## RVM defaults ---------------------------------------------
-
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source $HOME/.rvm/scripts/rvm
-
-
-## End RVM defaults -----------------------------------------
-
-## Prompt Style ---------------------------------------------
-
-export LANG="en_US.UTF-8"
-
-set_prompt_style () {
+## Includes ---------------------------------------------
 
 source ~/.includes/.prompt
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source $HOME/.rvm/scripts/rvm
 
-}
-
-set_prompt_style
-
-## End Prompt Style -----------------------------------------
+## End Includes -----------------------------------------
 
 ## Begin Aliases --------------------------------------------
 
 # Frequented directories
-alias h="cd ~"
-alias home="cd ~"
-alias mybin="cd ~/.bin"
-alias wd="cd ~/works/.scratch/dev.thenomm/"
-
+alias home="cd $HOME"
+alias mybin="cd $HOME/.bin"
 
 # Improved Command Options
-
-alias ls="ls -hFG"         # add colors for filetype recognition
-alias grep='grep --color=auto'
-
+alias grep="grep --color=auto -n" # always grep with color and line number
 
 # Shortcuts
-alias t="todo"
-alias tl="todo list"
 alias sv="sudo vim"
 alias irc="rm -f ~/.irssi/saved_colors & irssi"
 alias reboot="sudo shutdown -r now"
 alias shutdown="sudo shutdown -h now"
 
-# Wiki via DNS leetsauce
-wiki() { dig +short txt $1.wp.dg.cx; }
-
-
 ## End Aliases ----------------------------------------------
+
+## Platform Specific Aliases
+
+case $(uname -s) in
+		Darwin|FreeBSD)
+			alias ls="ls -hFG"
+		;;
+		Linux)
+			alias ls="ls --color=always -hF"
+		;;
+		NetBSD|OpenBSD)
+			alias ls="ls -hf"
+		;;
+esac
+
+## End Platform Specific Aliases
 
 ## Begin Functions ------------------------------------------
 
+# Wiki via DNS leetsauce
+wiki () { dig +short txt $1.wp.dg.cx; }
+
+# All encompassing extract function
 extract () { # Command to use based on file extension
   if [ -f $1 ] ; then
       case $1 in
@@ -119,6 +119,3 @@ extract () { # Command to use based on file extension
 }
 
 ## End Functions --------------------------------------------
-
-
-
