@@ -84,7 +84,7 @@ On_IWhite='\e[0;107m'   # White
 
 if [ `id -u` = "0" ]; then
 
-PS1="${White}┌─${BWhite}[${Red}\u$${BWhite}]${White}──${BWhite}[${Blue}${HOSTNAME%%.*}${BWhite}:${Green} \w${BWhite}]\n${White}└──${BPurple}>>${Color_Off}"
+PS1="${White}┌─${BWhite}[${Red}\u$${BWhite}]${White}──${BWhite}[${Blue}${HOSTNAME}${BWhite}:${Green} \w${BWhite}]\n${White}└──${BPurple}>>${Color_Off}"
 
 return
 fi
