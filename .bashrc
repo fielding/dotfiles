@@ -81,6 +81,7 @@ case $(uname -s) in
 			alias ls="gls --color=always -hF"
 		;;
 		Linux)
+			eval $(dircolors -b ~/.colors/.dir_colors)
 			alias ls="ls --color=always -hF"
 		;;
 		NetBSD|OpenBSD)
