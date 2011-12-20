@@ -90,6 +90,7 @@ EIGHTBIT 1
  .mpeg          01;35
  .avi           01;35
  .mov           01;35
+ .m4v						01;35
  .fli           01;35
  .flc           01;35
  .flv           01;35
