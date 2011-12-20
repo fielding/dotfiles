@@ -96,4 +96,3 @@ fi
 PS1="${White}┌─${BWhite}[${Purple}\u${BWhite}]${White}──${BWhite}[${Blue}${HOSTNAME%%.*}${BWhite}:${Green} \w${BWhite}]\n${White}└──${BPurple}>>${Color_Off}"
 
 ## End default prompt ----------------------------------------
-
