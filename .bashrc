@@ -51,6 +51,7 @@ export LESS_TERMCAP_us=$'\E[01;32m'     # begin underline
 ## Includes ---------------------------------------------
 
 source ~/.includes/.prompt
+
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source $HOME/.rvm/scripts/rvm
 
 ## End Includes -----------------------------------------
@@ -72,11 +73,12 @@ alias shutdown="sudo shutdown -h now"
 
 ## End Aliases ----------------------------------------------
 
-## Platform Specific Aliases
+## Platform Specific
 
 case $(uname -s) in
 		Darwin|FreeBSD)
-			alias ls="ls -hFG"
+			eval $(gdircolors -b ~/.colors/.dir_colors)
+			alias ls="gls --color=always -hF"
 		;;
 		Linux)
 			alias ls="ls --color=always -hF"
