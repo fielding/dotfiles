@@ -34,8 +34,8 @@ export LANG="en_US.UTF-8"
 # History Settings
 export HISTCONTROL=ignoreboth:erasedups
 export HISTSIZE=10000
-unset HISTFILESIZE
 export HISTIGNORE="&:ls:pwd:exit:clear"
+unset HISTFILESIZE
 
 # Less Colors for Man Pages 
 export LESS_TERMCAP_mb=$'\E[01;31m'     # begin blinking
