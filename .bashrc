@@ -96,6 +96,9 @@ esac
 # Wiki via DNS leetsauce
 wiki () { dig +short txt $1.wp.dg.cx; }
 
+# search man page
+sman () { man $1 | less -p $2 ; }
+
 # All encompassing extract function
 extract () { # Command to use based on file extension
   if [ -f $1 ] ; then
