@@ -51,7 +51,6 @@ export LESS_TERMCAP_us=$'\E[01;32m'     # begin underline
 ## Includes ---------------------------------------------
 
 source ~/.includes/.prompt
-
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source $HOME/.rvm/scripts/rvm
 
 ## End Includes -----------------------------------------
