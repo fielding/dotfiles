@@ -32,9 +32,9 @@ export PATH="$PATH:$HOME/bin:/opt/bin:/usr/local/sbin"
 export LANG="en_US.UTF-8"
 
 # History Settings
-export HISTCONTROL=ignoredups
-export HISTSIZE=5000
-export HISTFILESIZE=1000
+export HISTCONTROL=ignoreboth:erasedups
+export HISTSIZE=10000
+unset HISTFILESIZE
 export HISTIGNORE="&:ls:pwd:exit:clear"
 
 # Less Colors for Man Pages 
@@ -63,7 +63,7 @@ alias home="cd $HOME"
 alias mybin="cd $HOME/.bin"
 
 # Improved Command Options
-alias grep="grep --color=auto -n" # always grep with color and line number
+alias grep="grep --color=auto" # always grep with color
 
 # Shortcuts
 alias sv="sudo vim"
