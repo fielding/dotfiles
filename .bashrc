@@ -84,14 +84,14 @@ case $(uname -s) in
 			eval $(gdircolors -b ~/.colors/.dir_colors)
 			alias ls="gls --color=always -hF"
 		;;
-		Linux)
-            # start keychain at boot
-            eval $(keychain --eval --agents ssh -Q --quiet id_rsa)
-			
+        Linux)
+            # Keychain alias (autostarting it causes SLIM to hang)
+            alias keychain_start='eval `keychain --eval --agents ssh id_rsa`'
+
             # use dircolors for pretty ls output
             eval $(dircolors -b ~/.colors/.dir_colors)
-			alias ls="ls --color=always -hF"
-		;;
+            alias ls="ls --color=always -hF"
+        ;;
 		NetBSD|OpenBSD)
 			alias ls="ls -hf"
 		;;
