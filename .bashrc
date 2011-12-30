@@ -26,7 +26,7 @@ export EDITOR="vim"
 export GREP_COLOR="1;33"
 
 # Add additional default paths
-export PATH="$PATH:$HOME/bin:/opt/bin:/usr/local/sbin"
+export PATH="$PATH:$HOME/bin:/opt/bin:/usr/local/sbin:$HOME/.cabal/bin"
 
 # Unicode support
 export LANG="en_US.UTF-8"
