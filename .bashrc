@@ -26,7 +26,7 @@ export EDITOR="vim"
 export GREP_COLOR="1;33"
 
 # Add additional default paths
-export PATH="$PATH:$HOME/bin:/opt/bin:/usr/local/sbin:$HOME/.cabal/bin"
+export PATH="$PATH:$HOME/bin:/opt/bin:/usr/local/sbin:$HOME/.cabal/bin:$HOME/.rbenv/bin"
 
 # Unicode support
 export LANG="en_US.UTF-8"
@@ -51,7 +51,6 @@ export LESS_TERMCAP_us=$'\E[01;33m'     # begin underline
 ## Includes ---------------------------------------------
 
 source ~/.includes/.prompt
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source $HOME/.rvm/scripts/rvm
 
 ## End Includes -----------------------------------------
 
@@ -59,7 +58,7 @@ source ~/.includes/.prompt
 
 # Frequented directories
 alias home="cd $HOME"
-alias mybin="cd $HOME/.bin"
+alias mybin="cd $HOME/bin"
 
 # Improved Command Options
 alias grep="grep --color=auto" # always grep with color
