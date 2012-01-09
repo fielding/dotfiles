@@ -39,11 +39,11 @@ set cmdheight=1                                                         " set 1 
 set autoindent                                                          " turns autoidenting on for new lines
 set smartindent                                                         " does the right thing (mostly)
 set cindent                                                             " stricter rules for C programs
-set shiftwidth=4                                                        " 4 cols for autoindenting
+set shiftwidth=2                                                        " 2 cols for autoindenting
 
 " tabs
 set expandtab                                                           " use spaces instead of true tabs
-set tabstop=4                                                           " 4 column tabs
+set tabstop=2                                                           " 2 column tabs
 
 let g:html_indent_tags = 'li\|p'                                        "
 
