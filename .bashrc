@@ -54,6 +54,8 @@ source ~/.includes/.prompt
 
 ## End Includes -----------------------------------------
 
+eval "$(rbenv init -)"
+
 ## Begin Aliases --------------------------------------------
 
 # Frequented directories
