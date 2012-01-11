@@ -48,9 +48,11 @@ set tabstop=2                                                           " 2 colu
 let g:html_indent_tags = 'li\|p'                                        "
 
 " maps!
-map Q gq                                                                " Q does formatting qith gq. Vim 5.0 style
-map ; :                                                                 " Shift or not to shift! that is the question
+" Q does formatting qith gq. Vim 5.0 style
+map Q gq
 
+" Shift or not to shift! that is the question
+map ; :
 
 inoremap <C-U> <C-G>u<C-U>                                              " enables CTRL-U after inserting a line break.
 :noremap <silent> <Space> :silent noh<Bar>echo<CR>                      " spacebar unhighlights search text
