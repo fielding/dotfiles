@@ -103,3 +103,6 @@ endif " has("autocmd")
 if &term !=# "linux"
     set list listchars=tab:\»\ ,trail:·,nbsp:-
 endif
+
+" pathogen
+call pathogen#infect()
