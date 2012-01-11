@@ -49,7 +49,7 @@ let g:html_indent_tags = 'li\|p'                                        "
 
 " maps!
 map Q gq                                                                " Q does formatting qith gq. Vim 5.0 style
-map ; : " 
+map ; :                                                                 " Shift or not to shift! that is the question
 
 
 inoremap <C-U> <C-G>u<C-U>                                              " enables CTRL-U after inserting a line break.
