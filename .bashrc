@@ -59,10 +59,10 @@ eval "$(rbenv init -)"
 ## Begin Aliases --------------------------------------------
 
 # Frequented directories
-alias home="cd $HOME"
 alias mybin="cd $HOME/bin"
 
 # Improved Command Options
+alias la="ls -al" # high frequency in history, so I made an alias
 alias grep="grep --color=auto" # always grep with color
 
 # Shortcuts
