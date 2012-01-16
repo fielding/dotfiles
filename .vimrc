@@ -54,10 +54,11 @@ map Q gq
 " Shift or not to shift! that is the question
 map ; :
 
+" Force writing to a file with sudo
+cmap wsu w !sudo tee % >/dev/null
+
 inoremap <C-U> <C-G>u<C-U>                                              " enables CTRL-U after inserting a line break.
 :noremap <silent> <Space> :silent noh<Bar>echo<CR>                      " spacebar unhighlights search text
-cmap w!! w !sudo tee % >/dev/null                                       " force writing of files that need root privs
-
 
 " In many terminal emulators the mouse works just fine, thus enable it.
 if has('mouse')
