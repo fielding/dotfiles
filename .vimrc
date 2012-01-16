@@ -20,7 +20,6 @@ set nowrap                                                              " don't 
 set textwidth=0                                                         " stops linewrapping at invisible margins
 set lbr                                                                 " wrap text
 set number                                                              " show line numbers
-set paste                                                               " set paste mode
 set backup                                                              " turn on auto backups
 set backupdir=~/.vim/.backup//                                          " where to put backup files
 set directory=~/.vim/.tmp//                                             " where to put tmp files
@@ -55,7 +54,7 @@ map Q gq
 map ; :
 
 " Force writing to a file with sudo
-cmap wsu w !sudo tee % >/dev/null
+cmap w!! w !sudo tee % >/dev/null
 
 inoremap <C-U> <C-G>u<C-U>                                              " enables CTRL-U after inserting a line break.
 :noremap <silent> <Space> :silent noh<Bar>echo<CR>                      " spacebar unhighlights search text
