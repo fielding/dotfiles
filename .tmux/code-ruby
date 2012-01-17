@@ -1,0 +1,13 @@
+##--------------------------------------------------------------
+## file:         ~/.tmux/code-ruby
+## author:       fielding johnston - http://www.justfielding.com
+##--------------------------------------------------------------
+
+# ruby-code tmux session initialization
+new -s code -n ruby                   # create new session named 'code' and name the initial window 'ruby'
+splitw -h -l 112                         # split initial pane horizontally, creating new pane that is 112 cells wide
+splitw -v -l 20                          # split second pane vertically, creating new pane that is 20 lines tall
+splitw -v -l 10                          # split third pane vertically, creating new pane that is 10 lines tall
+selectp -t 0                             # select initial pane
+splitw -v -l 20                          # split initial pane vertically, creating new pane that is 20 lines tall
+

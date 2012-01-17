@@ -56,8 +56,12 @@ map ; :
 " Force writing to a file with sudo
 cmap w!! w !sudo tee % >/dev/null
 
-inoremap <C-U> <C-G>u<C-U>                                              " enables CTRL-U after inserting a line break.
-:noremap <silent> <Space> :silent noh<Bar>echo<CR>                      " spacebar unhighlights search text
+" enables CTRL-U after inserting a line break
+inoremap <C-U> <C-G>u<C-U>
+" spacebar unhighlights search text
+:noremap <silent> <Space> :silent noh<Bar>echo<CR
+" Toggle VimCommander
+noremap <silent> <C-O> :cal VimCommanderToggle()<CR>
 
 " In many terminal emulators the mouse works just fine, thus enable it.
 if has('mouse')
