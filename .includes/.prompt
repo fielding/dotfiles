@@ -93,6 +93,6 @@ fi
 
 ## Export default prompt -------------------------------------
 
-PS1="${White}┌─${BWhite}[${Purple}\u${BWhite}]${RS}${White}──${BWhite}[${Blue}${HOSTNAME}${BWhite}:${Green} \w${BWhite}]\n${White}└──${BPurple}>>${RS}"
+PS1="${White}┌─${BWhite}[${Purple}\u${BWhite}]${RS}${White}──${BWhite}[${Blue}${HOSTNAME}${BWhite}:${Yellow} \w${BWhite}]\n${White}└──${BPurple}>>${RS}"
 
 ## End default prompt ----------------------------------------
