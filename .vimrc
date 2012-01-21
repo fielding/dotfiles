@@ -59,7 +59,7 @@ cmap w!! w !sudo tee % >/dev/null
 " enables CTRL-U after inserting a line break
 inoremap <C-U> <C-G>u<C-U>
 " spacebar unhighlights search text
-:noremap <silent> <Space> :silent noh<Bar>echo<CR
+:noremap <silent> <Space> :silent noh<Bar>echo<CR>
 " Toggle VimCommander
 noremap <silent> <C-O> :cal VimCommanderToggle()<CR>
 

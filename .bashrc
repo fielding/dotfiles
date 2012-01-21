@@ -135,7 +135,7 @@ logc () {
   msg=$*
   path=$(pwd)
   ~/bin/logtodayone.rb "@${path##*/} $msg"
-  git commit -am "$msg"
+  git commit -m "$msg"
 }
 
 ## End Functions --------------------------------------------
