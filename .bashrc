@@ -35,7 +35,6 @@ export LANG="en_US.UTF-8"
 export HISTCONTROL=ignoreboth:erasedups
 export HISTSIZE=10000
 export HISTIGNORE="&:ls:pwd:exit:clear"
-unset HISTFILESIZE
 
 # Less Colors for Man Pages 
 export LESS_TERMCAP_mb=$'\E[01;31m'     # begin blinking
@@ -70,6 +69,9 @@ alias sv="sudo vim"
 alias irc="rm -f ~/.irssi/saved_colors & irssi"
 alias reboot="sudo shutdown -r now"
 alias shutdown="sudo shutdown -h now"
+
+# Shortcuts to scripts
+alias log="$HOME/bin/logtodayone.rb"
 
 ## End Aliases ----------------------------------------------
 
@@ -127,6 +129,13 @@ extract () { # Command to use based on file extension
   else
       echo "\`$1' is not a valid file"
   fi
+}
+
+logc () {
+  msg=$*
+  path=$(pwd)
+  ~/bin/logtodayone.rb "@${path##*/} $msg"
+  git commit -am "$msg"
 }
 
 ## End Functions --------------------------------------------
