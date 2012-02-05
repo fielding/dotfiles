@@ -26,7 +26,7 @@ export EDITOR="vim"
 export GREP_COLOR="1;33"
 
 # Add additional default paths
-export PATH="/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:$HOME/bin:/opt/bin:/usr/local/sbin:$HOME/.cabal/bin:$HOME/.rbenv/bin:$HOME/.rbenv/shims"
+export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:$HOME/bin:/opt/bin:/usr/local/sbin:$HOME/.cabal/bin"
 
 # Unicode support
 export LANG="en_US.UTF-8"
@@ -72,6 +72,8 @@ alias shutdown="sudo shutdown -h now"
 
 # Shortcuts to scripts
 alias log="$HOME/bin/logtodayone.rb"
+alias note-se="$HOME/bin/vw/vw-update.pl /Users/fielding/notes"
+alias fm="$HOME/bin/fieldMatter.rb"
 
 ## End Aliases ----------------------------------------------
 
@@ -82,6 +84,7 @@ case $(uname -s) in
             # use gdircolors and gls from homebrew's coreutilities for pretty ls output
 			eval $(gdircolors -b ~/.colors/.dir_colors)
 			alias ls="gls --color=always -hF"
+      source /usr/local/git/contrib/completion/git-completion.bash
 		;;
         Linux)
             # Keychain alias (autostarting it causes SLIM to hang)
