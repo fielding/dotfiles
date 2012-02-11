@@ -28,13 +28,14 @@ export GREP_COLOR="1;33"
 # Add additional default paths
 export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:$HOME/bin:/opt/bin:/usr/local/sbin:$HOME/.cabal/bin"
 
-# Unicode support
-export LANG="en_US.UTF-8"
+# Prefer English and use Unicode
+export LC_ALL="en_US.UTF-8"
+export LANG="en_US"
 
 # History Settings
-export HISTCONTROL=ignoreboth:erasedups
+export HISTCONTROL=ignoredups
 export HISTSIZE=10000
-export HISTIGNORE="&:ls:pwd:exit:clear"
+export HISTIGNORE="ls:ls *:cd:cd -:pwd;exit:date:* --help"
 
 # Less Colors for Man Pages 
 export LESS_TERMCAP_mb=$'\E[01;31m'     # begin blinking
@@ -69,6 +70,10 @@ alias sv="sudo vim"
 alias irc="rm -f ~/.irssi/saved_colors & irssi"
 alias reboot="sudo shutdown -r now"
 alias shutdown="sudo shutdown -h now"
+alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
+## Show/hide hidden files in Finder
+alias show="defaults write com.apple.Finder AppleShowAllFiles -bool true && killall Finder"
+alias hide="defaults write com.apple.Finder AppleShowAllFiles -bool false && killall Finder"
 
 # Shortcuts to scripts
 alias log="$HOME/bin/logtodayone.rb"
