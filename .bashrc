@@ -90,6 +90,7 @@ case $(uname -s) in
 			eval $(gdircolors -b ~/.colors/.dir_colors)
 			alias ls="gls --color=always -hF"
       source /usr/local/git/contrib/completion/git-completion.bash
+      source /usr/local/lib/node_modules/npm/lib/utils/completion.sh
 		;;
         Linux)
             # Keychain alias (autostarting it causes SLIM to hang)
