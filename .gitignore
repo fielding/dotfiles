@@ -18,6 +18,7 @@
 !.gitignore
 !.includes/
 !.includes/.prompt
+!.osx
 !.tmux/
 !.tmux/code-ruby
 !.vim/
