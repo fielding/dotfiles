@@ -19,6 +19,7 @@
 !.includes/
 !.includes/.prompt
 !.osx
+!.roco.coffee
 !.tmux/
 !.tmux/code-ruby
 !.vim/
