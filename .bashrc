@@ -74,6 +74,8 @@ alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
 ## Show/hide hidden files in Finder
 alias show="defaults write com.apple.Finder AppleShowAllFiles -bool true && killall Finder"
 alias hide="defaults write com.apple.Finder AppleShowAllFiles -bool false && killall Finder"
+## btmm shortcuts
+alias rmt-sage="ssh sage.1002170465.members.btmm.icloud.com"
 
 # Shortcuts to scripts
 alias log="$HOME/bin/logtodayone.rb"
