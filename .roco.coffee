@@ -2,15 +2,15 @@
 # I use Forever to monitor my node processes.
 
 namespace 'deploy', ->
-    task 'start', (done) -> run "cd #{roco.currentPath}; forever start #{roco.nodeEntry}"
-    task 'stop', (done) -> run "cd #{roco.currentPath}; forever stop #{roco.nodeEntry}"
+    task 'start', (done) -> run "cd #{roco.currentPath}; sudo -u node forever start #{roco.nodeEntry}"
+    task 'stop', (done) -> run "cd #{roco.currentPath}; sudo -u forever stop #{roco.nodeEntry}"
 
-    task 'restart', (done) -> run "cd #{roco.currentPath}; forever restart #{roco.nodeEntry} ||  forever start #{roco.nodeEntry}"
+    task 'restart', (done) -> run "cd #{roco.currentPath}; sudo -u node forever restart #{roco.nodeEntry} ||  sudo -u node forever start #{roco.nodeEntry}"
 
 # Tasks for monitoring the status of Forever processes
 namespace 'status', ->
     # Global status tasks
-    task 'list', (done) -> run "forever list" 
+    task 'list', (done) -> run "sudo -u node forever list" 
 
     # App specific status tasks
     task 'log', ->
