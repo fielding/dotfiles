@@ -76,6 +76,8 @@ alias show="defaults write com.apple.Finder AppleShowAllFiles -bool true && kill
 alias hide="defaults write com.apple.Finder AppleShowAllFiles -bool false && killall Finder"
 ## btmm shortcuts
 alias rmt-sage="ssh sage.1002170465.members.btmm.icloud.com"
+## Program shortcuts
+alias marked="open -a 'Marked'"
 
 # Shortcuts to scripts
 alias log="$HOME/bin/logtodayone.rb"
