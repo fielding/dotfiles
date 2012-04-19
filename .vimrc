@@ -60,6 +60,8 @@ cmap w!! w !sudo tee % >/dev/null
 inoremap <C-U> <C-G>u<C-U>
 " spacebar unhighlights search text
 :noremap <silent> <Space> :silent noh<Bar>echo<CR>
+" Marked.app preview for markdown files
+:nnoremap <leader>m :silent !open -a Marked.app '%:p'<cr>
 " Toggle VimCommander
 noremap <silent> <C-O> :cal VimCommanderToggle()<CR>
 

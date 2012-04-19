@@ -18,6 +18,9 @@
 !.gitignore
 !.includes/
 !.includes/.prompt
+!.osx
+!.roco.coffee
+!.tmux.conf
 !.tmux/
 !.tmux/code-ruby
 !.vim/
