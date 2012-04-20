@@ -93,7 +93,7 @@ case $(uname -s) in
             # use gdircolors and gls from homebrew's coreutilities for pretty ls output
 			eval $(gdircolors -b ~/.colors/.dir_colors)
 			alias ls="gls --color=always -hF"
-      source /usr/local/git/contrib/completion/git-completion.bash
+      source /usr/local/etc/bash_completion.d/git-completion.bash
       source /usr/local/lib/node_modules/npm/lib/utils/completion.sh
 		;;
         Linux)
