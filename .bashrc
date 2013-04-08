@@ -89,24 +89,28 @@ alias fm="$HOME/bin/fieldMatter.rb"
 ## Platform Specific
 
 case $(uname -s) in
-		Darwin|FreeBSD)
-            # use gdircolors and gls from homebrew's coreutilities for pretty ls output
-			eval $(gdircolors -b ~/.colors/.dir_colors)
-			alias ls="gls --color=always -hF"
-      source /usr/local/etc/bash_completion.d/git-completion.bash
-      source /usr/local/lib/node_modules/npm/lib/utils/completion.sh
-		;;
-        Linux)
-            # Keychain alias (autostarting it causes SLIM to hang)
-            alias keychain_start='eval `keychain --eval --agents ssh id_rsa`'
-
-            # use dircolors for pretty ls output
-            eval $(dircolors -b ~/.colors/.dir_colors)
-            alias ls="ls --color=always -hF"
-        ;;
-		NetBSD|OpenBSD)
-			alias ls="ls -hf"
-		;;
+  Darwin|FreeBSD)
+    # use gdircolors and gls from homebrew's coreutilities for pretty ls output
+    eval $(gdircolors -b ~/.colors/.dir_colors)
+    alias ls="gls --color=always -hF"
+  
+    if [ -f $(brew --prefix)/etc/bash_completion ]; then
+      . $(brew --prefix)/etc/bash_completion
+    fi
+    source /usr/local/git/contrib/completion/git-completion.bash
+    source /usr/local/lib/node_modules/npm/lib/utils/completion.sh
+  ;;
+  Linux)
+    # Keychain alias (autostarting it causes SLIM to hang)
+    alias keychain_start='eval `keychain --eval --agents ssh id_rsa`'
+  
+    # use dircolors for pretty ls output
+    eval $(dircolors -b ~/.colors/.dir_colors)
+    alias ls="ls --color=always -hF"
+    ;;
+  NetBSD|OpenBSD)
+    alias ls="ls -hf"
+  ;;
 esac
 
 ## End Platform Specific Aliases
@@ -149,6 +153,14 @@ logc () {
   path=$(pwd)
   ~/bin/logtodayone.rb "@${path##*/} $msg"
   git commit -m "$msg"
+}
+
+timecap () {
+  filenumber=${1:-1}
+  delay=${2:-5}
+  scdir=${3:-./}
+
+  i=$filenumber; while [ 1 ];do screencapture -t jpg -x $scdir$i.jpg; echo "Capturing to $filenumber.jpg";let i++;sleep $delay; done
 }
 
 ## End Functions --------------------------------------------
