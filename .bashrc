@@ -163,4 +163,8 @@ timecap () {
   i=$filenumber; while [ 1 ];do screencapture -t jpg -x $scdir$i.jpg; echo "Capturing to $filenumber.jpg";let i++;sleep $delay; done
 }
 
+toggledesktopicons () {
+  defaults write com.apple.finder CreateDesktop `echo "($(defaults read com.apple.finder CreateDesktop)-1)*-1"|bc` && killall "Finder"
+}
+
 ## End Functions --------------------------------------------
