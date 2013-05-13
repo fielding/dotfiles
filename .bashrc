@@ -26,7 +26,8 @@ export EDITOR="vim"
 export GREP_COLOR="1;33"
 
 # Add additional default paths
-export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:$HOME/bin:/opt/bin:/usr/local/sbin:$HOME/.cabal/bin"
+export PATH="/usr/local/share/python:$HOME/.rbenv/bin:$HOME/.rbenv/shims:/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:$HOME/bin:/opt/bin:/usr/local/sbin:$HOME/.cabal/bin"
+export PYTHONPATH=$(brew --prefix)/lib/python2.7/site-packages:$PYTHONPATH
 
 # Prefer English and use Unicode
 export LC_ALL="en_US.UTF-8"
@@ -160,7 +161,7 @@ timecap () {
   delay=${2:-5}
   scdir=${3:-./}
 
-  i=$filenumber; while [ 1 ];do screencapture -t jpg -x $scdir$i.jpg; echo "Capturing to $filenumber.jpg";let i++;sleep $delay; done
+  i=$filenumber; while [ 1 ];do screencapture -t jpg -x $scdir$i.jpg; echo "Capturing to $i.jpg";let i++;sleep $delay; done
 }
 
 toggledesktopicons () {
