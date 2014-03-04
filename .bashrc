@@ -26,7 +26,7 @@ export EDITOR="vim"
 export GREP_COLOR="1;33"
 
 # Add additional default paths
-export PATH="/usr/local/share/python:$HOME/.rbenv/bin:$HOME/.rbenv/shims:/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:$HOME/bin:/opt/bin:/usr/local/sbin:$HOME/.cabal/bin"
+export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:$HOME/bin:/opt/bin:/usr/local/sbin:$HOME/.cabal/bin:/usr/local/share/python"
 export PYTHONPATH=$(brew --prefix)/lib/python2.7/site-packages:$PYTHONPATH
 
 # Prefer English and use Unicode
@@ -51,7 +51,12 @@ export LESS_TERMCAP_us=$'\E[01;33m'     # begin underline
 
 ## Includes ---------------------------------------------
 
-source ~/.includes/.prompt
+# If this machine has powerline then use it, otherwise default to old prompt
+if [[ -n $POWERLINE_COMMAND ]] ; then
+  source /usr/local/lib/python2.7/site-packages/powerline/bindings/bash/powerline.sh
+else
+  source ~/.includes/.prompt 
+fi
 
 ## End Includes -----------------------------------------
 
@@ -98,8 +103,8 @@ case $(uname -s) in
     if [ -f $(brew --prefix)/etc/bash_completion ]; then
       . $(brew --prefix)/etc/bash_completion
     fi
-    source /usr/local/git/contrib/completion/git-completion.bash
-    source /usr/local/lib/node_modules/npm/lib/utils/completion.sh
+    #source /usr/local/git/contrib/completion/git-completion.bash
+    #source /usr/local/lib/node_modules/npm/lib/utils/completion.sh
   ;;
   Linux)
     # Keychain alias (autostarting it causes SLIM to hang)
