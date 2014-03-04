@@ -30,9 +30,10 @@ set suffixesadd=.rb                                                     " comma 
 set includeexpr+=substitute(v:fname,'s$','','g')                        " expression substitution
 
 " status bar info and appearance
-set statusline=\ \%f%m%r%h%w\ ::\ %y\ [%{&ff}]\%=\ [%p%%:\ %l/%L]\      " content for statusline
+" set statusline=\ \%f%m%r%h%w\ ::\ %y\ [%{&ff}]\%=\ [%p%%:\ %l/%L]\    " content for statusline 
 set laststatus=2                                                        " lastwindow always has status line
 set cmdheight=1                                                         " set 1 line limit for 'messages'
+set noshowmode                                                          " Hide the default mode text
 
 " indenting
 set autoindent                                                          " turns autoidenting on for new lines
@@ -112,3 +113,8 @@ endif
 
 " pathogen
 call pathogen#infect()
+
+" powerline
+python from powerline.vim import setup as powerline_setup
+python powerline_setup()
+python del powerline_setup

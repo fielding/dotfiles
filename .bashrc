@@ -52,7 +52,8 @@ export LESS_TERMCAP_us=$'\E[01;33m'     # begin underline
 ## Includes ---------------------------------------------
 
 # If this machine has powerline then use it, otherwise default to old prompt
-if [[ -n $POWERLINE_COMMAND ]] ; then
+
+if [ "$(which powerline)" ] ; then
   source /usr/local/lib/python2.7/site-packages/powerline/bindings/bash/powerline.sh
 else
   source ~/.includes/.prompt 
