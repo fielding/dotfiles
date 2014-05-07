@@ -38,7 +38,7 @@ export HISTCONTROL=ignoredups
 export HISTSIZE=10000
 export HISTIGNORE="ls:ls *:cd:cd -:pwd;exit:date:* --help"
 
-# Less Colors for Man Pages 
+# Less Colors for Man Pages
 export LESS_TERMCAP_mb=$'\E[01;31m'     # begin blinking
 export LESS_TERMCAP_md=$'\E[00;35m'     # begin bold
 export LESS_TERMCAP_me=$'\E[0m'         # end mode
@@ -53,10 +53,10 @@ export LESS_TERMCAP_us=$'\E[01;33m'     # begin underline
 
 # If this machine has powerline then use it, otherwise default to old prompt
 
-if [ "$(which powerline)" ] ; then
+if [ "$(which powerline)" -a !$SSH_TTY ] ; then
   source /usr/local/lib/python2.7/site-packages/powerline/bindings/bash/powerline.sh
 else
-  source ~/.includes/.prompt 
+  source ~/.includes/.prompt
 fi
 
 ## End Includes -----------------------------------------
@@ -100,7 +100,7 @@ case $(uname -s) in
     # use gdircolors and gls from homebrew's coreutilities for pretty ls output
     eval $(gdircolors -b ~/.colors/.dir_colors)
     alias ls="gls --color=always -hF"
-  
+
     if [ -f $(brew --prefix)/etc/bash_completion ]; then
       . $(brew --prefix)/etc/bash_completion
     fi
@@ -110,7 +110,7 @@ case $(uname -s) in
   Linux)
     # Keychain alias (autostarting it causes SLIM to hang)
     alias keychain_start='eval `keychain --eval --agents ssh id_rsa`'
-  
+
     # use dircolors for pretty ls output
     eval $(dircolors -b ~/.colors/.dir_colors)
     alias ls="ls --color=always -hF"
