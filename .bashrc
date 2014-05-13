@@ -174,4 +174,16 @@ toggledesktopicons () {
   defaults write com.apple.finder CreateDesktop `echo "($(defaults read com.apple.finder CreateDesktop)-1)*-1"|bc` && killall "Finder"
 }
 
+whereisthis() {
+  lat=$(mdls -raw -name kMDItemLatitude "$1")
+  if [ "$lat" != "(null)" ]; then
+    long=$(mdls -raw -name kMDItemLongitude "$1")
+    echo -n $lat,$long | pbcopy
+    echo $lat,$long copied
+    open https://www.google.com/maps?q=$lat,$long
+  else
+    echo "No Geo-Data Available"
+  fi
+}
+
 ## End Functions --------------------------------------------
