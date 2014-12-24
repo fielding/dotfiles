@@ -98,6 +98,10 @@ hi diffAdded        ctermfg=4
 hi diffRemoved      ctermfg=1
 hi diffChanged      ctermfg=6
 
+" Specific for vim-indent-guides
+hi IndentGuidesOdd  ctermbg=236
+hi IndentGuidesEven ctermbg=237
+
 " Spell checking  ---
 if version >= 700
   hi clear SpellBad

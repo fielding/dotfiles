@@ -2,11 +2,10 @@
 " file:         ~/.vimrc
 " author:       fielding johnston - http://www.justfielding.com
 "--------------------------------------------------------------i
-source ~/.vim/bundles.vim                                               " include vundle's bundle config! 
+
 
 syntax on
 colorscheme fielding
-filetype plugin indent on
 
 set nocompatible                                                        " allows me to keep my sanity
 set backspace=2                                                         " full backspacing compat
@@ -32,7 +31,6 @@ set includeexpr+=substitute(v:fname,'s$','','g')                        " expres
 set modeline                                                            " respect modeline
 set modelines=4
 
-
 " status bar info and appearance
 " set statusline=\ \%f%m%r%h%w\ ::\ %y\ [%{&ff}]\%=\ [%p%%:\ %l/%L]\    " content for statusline 
 set laststatus=2                                                        " lastwindow always has status line
@@ -49,7 +47,20 @@ set shiftwidth=2                                                        " 2 cols
 set expandtab                                                           " use spaces instead of true tabs
 set tabstop=2                                                           " 2 column tabs
 
-let g:html_indent_tags = 'li\|p'                                        "
+" Don't add newlines at the end of files
+set binary
+set noeol
+
+source ~/.vim/bundles.vim                                               " include vundle's bundle config! 
+
+filetype plugin indent on
+
+" TODO: actually implement indent_guides worth a flip
+let mapleader=","
+let g:html_indent_tags = 'li\|p'
+let g:indent_guides_auto_colors = 0
+let g:indent_guides_color_change_percent = 10
+let g:indent_guides_guide_size = 1
 
 " maps!
 " Q does formatting qith gq. Vim 5.0 style

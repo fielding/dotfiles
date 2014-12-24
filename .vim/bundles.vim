@@ -1,5 +1,3 @@
-
-set nocompatible                                                        " allows me to keep my sanity
 filetype off
 set rtp+=~/.vim/bundle/vundle
 call vundle#rc()
@@ -24,4 +22,4 @@ Bundle 'tpope/vim-markdown'
 
 
 
-filetype plugin indent on                                               " required! 
+filetype plugin indent on                                               " required!
