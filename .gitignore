@@ -27,6 +27,7 @@
 !.tmux/code-ruby
 !.vim/
 !.vim/.backup/
+!.vim/bundles.vim
 !.vim/colors/
 !.vim/colors/fielding.vim
 !.vim/.tmp/

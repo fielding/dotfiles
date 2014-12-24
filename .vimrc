@@ -2,10 +2,11 @@
 " file:         ~/.vimrc
 " author:       fielding johnston - http://www.justfielding.com
 "--------------------------------------------------------------i
+source ~/.vim/bundles.vim                                               " include vundle's bundle config! 
 
 syntax on
 colorscheme fielding
-filetype plugin on
+filetype plugin indent on
 
 set nocompatible                                                        " allows me to keep my sanity
 set backspace=2                                                         " full backspacing compat
@@ -113,9 +114,6 @@ endif " has("autocmd")
 if &term !=# "linux"
     set list listchars=tab:\»\ ,trail:·,nbsp:-
 endif
-
-" pathogen
-call pathogen#infect()
 
 " powerline
 python from powerline.vim import setup as powerline_setup
