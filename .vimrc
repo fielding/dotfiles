@@ -67,8 +67,6 @@ inoremap <C-U> <C-G>u<C-U>
 :noremap <silent> <Space> :silent noh<Bar>echo<CR>
 " Marked.app preview for markdown files
 :nnoremap <leader>m :silent !open -a Marked.app '%:p'<cr>
-" Toggle VimCommander
-noremap <silent> <C-O> :cal VimCommanderToggle()<CR>
 
 " In many terminal emulators the mouse works just fine, thus enable it.
 if has('mouse')
