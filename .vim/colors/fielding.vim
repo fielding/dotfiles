@@ -1,11 +1,19 @@
-set background=dark
+" Vim color file
+"
+
+" Colorscheme initialization
+
 hi clear
+
 if exists("syntax on")
     syntax reset
 endif
 
-let g:color_name="fielding"
-" Normal colors  --- 
+let g:colors_name="fielding"
+
+
+" Normal colors
+
 hi Normal           ctermfg=15
 hi Ignore           ctermfg=8
 hi Comment          ctermfg=7
@@ -79,7 +87,7 @@ hi htmlTag          ctermfg=6
 hi htmlEndTag       ctermfg=6
 hi htmlTagName      ctermfg=11
 
-" Specific for Perl  --- 
+" Specific for Perl  ---
 hi perlSharpBang    ctermfg=10      term=standout
 hi perlStatement    ctermfg=13
 hi perlStatementStorage             ctermfg=1

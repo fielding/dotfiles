@@ -2,9 +2,7 @@
 " file:         ~/.vimrc
 " author:       fielding johnston - http://www.justfielding.com
 "--------------------------------------------------------------i
-
-
-syntax on
+set background=dark
 colorscheme fielding
 
 set nocompatible                                                        " allows me to keep my sanity
@@ -30,6 +28,8 @@ set suffixesadd=.rb                                                     " comma 
 set includeexpr+=substitute(v:fname,'s$','','g')                        " expression substitution
 set modeline                                                            " respect modeline
 set modelines=4
+
+syntax on
 
 " status bar info and appearance
 " set statusline=\ \%f%m%r%h%w\ ::\ %y\ [%{&ff}]\%=\ [%p%%:\ %l/%L]\    " content for statusline 
