@@ -1,0 +1,24 @@
+set editing-mode vi
+set blink-matching-paren on
+set completion-ignore-case on
+set expand-tilde off
+
+# Use Unicode & do NOT use the "8bit hack" to input/output non-ASCII characters
+# See http://code.google.com/p/iterm2/wiki/Keybindings
+set input-meta on
+set output-meta on
+set convert-meta off
+
+$if mode=vi
+
+  set keymap vi-command
+  # these are for vi-command mode
+  "\e[A": history-search-backward
+  "\e[B": history-search-forward
+
+  set keymap vi-insert
+  # these are for vi-insert mode
+  "\e[A": history-search-backward
+  "\e[B": history-search-forward
+
+$endif

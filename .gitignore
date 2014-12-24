@@ -16,8 +16,10 @@
 !.colors/.dir_colors
 !.colors/fielding
 !.gitignore
+!.hushlogin
 !.includes/
 !.includes/.prompt
+!.inputrc
 !.osx
 !.roco.coffee
 !.tmux.conf
