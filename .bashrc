@@ -19,6 +19,8 @@ shopt -s nocaseglob         # pathname expansion will be treated as case-insensi
 
 ## Environment Variables -------------------------------------
 
+set -o vi
+
 # Default Editor set to vim
 export EDITOR="vim"
 
@@ -26,12 +28,13 @@ export EDITOR="vim"
 export GREP_COLOR="1;33"
 
 # Add additional default paths
-export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:$HOME/bin:/opt/bin:/usr/local/sbin:$HOME/.cabal/bin:/usr/local/share/python"
+export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:$HOME/bin:/opt/bin:$HOME/.cabal/bin:$HOME/.rbenv/bin"
 export PYTHONPATH=$(brew --prefix)/lib/python2.7/site-packages:$PYTHONPATH
+eval "$(rbenv init -)"
 
 # Prefer English and use Unicode
 export LC_ALL="en_US.UTF-8"
-export LANG="en_US"
+export LANG="en_US.UTF-8"
 
 # History Settings
 export HISTCONTROL=ignoredups
@@ -59,9 +62,15 @@ else
   source ~/.includes/.prompt
 fi
 
-## End Includes -----------------------------------------
+# If this machine has grc then use it
 
-eval "$(rbenv init -)"
+if which grc &> /dev/null && which brew &> /dev/null;then
+    source $(brew --prefix)/etc/grc.bashrc
+fi
+
+
+
+## End Includes -----------------------------------------
 
 ## Begin Aliases --------------------------------------------
 
@@ -91,6 +100,8 @@ alias log="$HOME/bin/logtodayone.rb"
 alias note-se="$HOME/bin/vw/vw-update.pl /Users/fielding/notes"
 alias fm="$HOME/bin/fieldMatter.rb"
 
+alias git="hub"
+
 ## End Aliases ----------------------------------------------
 
 ## Platform Specific
@@ -101,11 +112,6 @@ case $(uname -s) in
     eval $(gdircolors -b ~/.colors/.dir_colors)
     alias ls="gls --color=always -hF"
 
-    if [ -f $(brew --prefix)/etc/bash_completion ]; then
-      . $(brew --prefix)/etc/bash_completion
-    fi
-    #source /usr/local/git/contrib/completion/git-completion.bash
-    #source /usr/local/lib/node_modules/npm/lib/utils/completion.sh
   ;;
   Linux)
     # Keychain alias (autostarting it causes SLIM to hang)
@@ -183,6 +189,15 @@ whereisthis() {
     open https://www.google.com/maps?q=$lat,$long
   else
     echo "No Geo-Data Available"
+  fi
+}
+
+getdef(){
+  if [[ $# -ge 2 ]]; then
+    echo "getdef: too many arguments" >&2
+    return 1
+  else
+    curl "dict://dict.org/d:$1"
   fi
 }
 
