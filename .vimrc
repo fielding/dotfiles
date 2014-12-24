@@ -24,10 +24,13 @@ set backup                                                              " turn o
 set backupdir=~/.vim/.backup//                                          " where to put backup files
 set directory=~/.vim/.tmp//                                             " where to put tmp files
 set pastetoggle=<f5>                                                    " toggle paste mode
-set clipboard+=unnamed                                                  " yank and copy to xclipboard
+set clipboard=unnamed                                                   " Use the OS clipboard by default 
 set wildmenu                                                            " enhanced tab-completion
 set suffixesadd=.rb                                                     " comma seperated list of file suffixes 
 set includeexpr+=substitute(v:fname,'s$','','g')                        " expression substitution
+set modeline                                                            " respect modeline
+set modelines=4
+
 
 " status bar info and appearance
 " set statusline=\ \%f%m%r%h%w\ ::\ %y\ [%{&ff}]\%=\ [%p%%:\ %l/%L]\    " content for statusline 
