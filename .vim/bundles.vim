@@ -23,6 +23,7 @@ Bundle 'tpope/vim-haml'
 Bundle 'tpope/vim-markdown'
 Bundle 'lambdatoast/elm.vim'
 Bundle 'leshill/vim-json'
+Bundle 'kchmck/vim-coffee-script'
 
 " Color correction
 
