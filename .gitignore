@@ -32,4 +32,7 @@
 !.vim/colors/fielding.vim
 !.vim/.tmp/
 !.vimrc
+!bin/
+!bin/models.txt
+!bin/osxey
 
