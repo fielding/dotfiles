@@ -17,6 +17,7 @@
 !.colors/fielding
 !.colors/hybrid-fielding.itermcolors
 !.gitignore
+!.gitignore.global
 !.hushlogin
 !.includes/
 !.includes/.prompt
