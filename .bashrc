@@ -94,6 +94,7 @@ alias hide="defaults write com.apple.Finder AppleShowAllFiles -bool false && kil
 alias rmt-sage="ssh sage.1002170465.members.btmm.icloud.com"
 ## Program shortcuts
 alias marked="open -a 'Marked'"
+alias vlc='/Applications/VLC.app/Contents/MacOS/VLC'
 
 # Shortcuts to scripts
 alias log="$HOME/bin/logtodayone.rb"
