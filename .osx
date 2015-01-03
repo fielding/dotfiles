@@ -1,8 +1,8 @@
-##---------------------------------------------------------------
+##----------------------------------------------------------------------------
 ## file:          ~/.osx
 ## author:        fielding johnston - http://www.justfielding.com
 ## credit:        inspired by Mathias Bynens and his .osx file
-##---------------------------------------------------------------
+##----------------------------------------------------------------------------
 
 # Make ~/Library permanently visible
 
@@ -18,3 +18,6 @@ defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 
 # Use current directory as default search scope in Finder
 defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
+
+# Show the ~/Library folder
+chflags nohidden ~/Library

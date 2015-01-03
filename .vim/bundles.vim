@@ -13,13 +13,30 @@ Plugin 'gmarik/vundle'
 Bundle 'bronson/vim-trailing-whitespace'
 Bundle 'nathanaelkane/vim-indent-guides'
 Bundle 'tpope/vim-afterimage'
-
+Bundle 'scrooloose/syntastic'
+Bundle 'spf13/vim-autoclose'
+Bundle 'terryma/vim-multiple-cursors'
 
 " Syntax/Indent for specific languages
 
 Bundle 'tpope/vim-haml'
 Bundle 'tpope/vim-markdown'
+Bundle 'lambdatoast/elm.vim'
+Bundle 'leshill/vim-json'
+
+" Color correction
+
+Bundle 'godlygeek/csapprox'
+
+" Color Schemes
+
+Bundle 'morhetz/gruvbox'
+Bundle 'tomasr/molokai'
+Bundle 'adlawson/vim-sorcerer'
+Bundle 'sickill/vim-monokai'
+Bundle 'chriskempson/vim-tomorrow-theme'
+Bundle 'w0ng/vim-hybrid'
+Bundle 'Junza/Spink'
 
 
-
-filetype plugin indent on                                               " required!
+filetype plugin indent on                                               				" required!
