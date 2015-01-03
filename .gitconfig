@@ -1,3 +1,5 @@
+[apply]
+  whitespace = fix
 [branch]
   autosetupmerge = true
 [color]
