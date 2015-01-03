@@ -1,0 +1,33 @@
+[branch]
+  autosetupmerge = true
+[color]
+  ui = auto
+[color "branch"]
+  current = yellow reverse
+  local = yellow
+  remote = green
+[color "diff"]
+  meta = yellow bold
+  frag = magenta bold
+  old = red bold
+  new = green bold
+[color "status"]
+  added = yellow
+  changed = green
+  untracked = cyan
+[core]
+  excludesfile = ~/.gitignore.global
+  whitespace = space-before-tab,-indent-with-non-tab,trailing-space
+[credential]
+  helper = osxkeychain
+[filter "media"]
+	clean = git media clean %f
+	smudge = git media smudge %f
+  required = true
+[github]
+  user = justfielding
+[push]
+	default = simple
+[user]
+	name = Fielding Johnston
+  email = fielding@justfielding.com

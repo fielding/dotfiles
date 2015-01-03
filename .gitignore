@@ -16,6 +16,7 @@
 !.colors/.dir_colors
 !.colors/fielding
 !.colors/hybrid-fielding.itermcolors
+!.gitconfig
 !.gitignore
 !.gitignore.global
 !.hushlogin
