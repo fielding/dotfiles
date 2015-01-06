@@ -14,7 +14,7 @@ Bundle 'bronson/vim-trailing-whitespace'
 Bundle 'nathanaelkane/vim-indent-guides'
 Bundle 'tpope/vim-afterimage'
 Bundle 'scrooloose/syntastic'
-Bundle 'spf13/vim-autoclose'
+"Bundle 'spf13/vim-autoclose'
 Bundle 'terryma/vim-multiple-cursors'
 
 " Syntax/Indent for specific languages
