@@ -62,13 +62,14 @@ else
   source ~/.includes/.prompt
 fi
 
-# If this machine has grc then use it
+# Generic Colourizer
 
-if which grc &> /dev/null && which brew &> /dev/null;then
-    source $(brew --prefix)/etc/grc.bashrc
+grc_resource="$(brew --prefix)/etc/grc.bashrc"
+[[ -f $grc_resource ]] && source "$grc_resource"
+
+if [[ $(command -v grc) ]]; then
+	alias ps='grc ps'
 fi
-
-
 
 ## End Includes -----------------------------------------
 
