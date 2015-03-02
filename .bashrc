@@ -62,15 +62,6 @@ else
   source ~/.includes/.prompt
 fi
 
-# Generic Colourizer
-
-grc_resource="$(brew --prefix)/etc/grc.bashrc"
-[[ -f $grc_resource ]] && source "$grc_resource"
-
-if [[ $(command -v grc) ]]; then
-	alias ps='grc ps'
-fi
-
 ## End Includes -----------------------------------------
 
 ## Begin Aliases --------------------------------------------
@@ -113,6 +104,21 @@ case $(uname -s) in
     # use gdircolors and gls from homebrew's coreutilities for pretty ls output
     eval $(gdircolors -b ~/.colors/.dir_colors)
     alias ls="gls --color=always -hF"
+
+    # TODO: Figure out a way to incorporate the following alias/command/ifunction
+		# colourify `alias ls |awk -F "'" '{print $2}'` -al ~
+
+		# Generic Colourizer
+		grc_resource="$(brew --prefix)/etc/grc.bashrc"
+		[[ -f $grc_resource ]] && source "$grc_resource"
+
+		if [[ $(command -v colourify) ]]; then
+			alias ps='colourify ps'
+			alias dig='colourify dig'
+			alias mount='colourify mount'
+			alias df='colourify df'
+			alias cal='colourify cal'
+		fi
 
   ;;
   Linux)

@@ -1,0 +1,13 @@
+# GRC config for cal
+# month/week
+regexp=[^\s\d][^\s\d]+
+colours=bold blue
+=======
+# month/week
+regexp=\d\d?
+colours=yellow
+=======
+# year
+regexp=\d\d\d\d
+colours=bold green
+
