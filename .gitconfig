@@ -23,9 +23,9 @@
 [credential]
   helper = osxkeychain
 [filter "media"]
+  required = true
 	clean = git media clean %f
 	smudge = git media smudge %f
-  required = true
 [github]
   user = justfielding
 [push]

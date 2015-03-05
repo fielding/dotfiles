@@ -19,6 +19,11 @@
 !.gitconfig
 !.gitignore
 !.gitignore.global
+!.grc/
+!.grc/conf.cal
+!.grc/conf.cowsay
+!.grc/conf.ps
+!.grc/grc.conf
 !.hushlogin
 !.includes/
 !.includes/.prompt
