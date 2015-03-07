@@ -22,6 +22,8 @@
 !.grc/
 !.grc/conf.cal
 !.grc/conf.cowsay
+!.grc/conf.curl
+!.grc/ping.curl
 !.grc/conf.ps
 !.grc/grc.conf
 !.hushlogin
