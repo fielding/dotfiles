@@ -80,6 +80,7 @@ alias reboot="sudo shutdown -r now"
 alias shutdown="sudo shutdown -h now"
 alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
 alias copyLastCmd='fc -ln -1 | awk '\''{$1=$1}1'\'' ORS='\'''\'' | pbcopy'
+alias prettyJSON='python -m json.tool'
 
 ## Show/hide hidden files in Finder
 alias show="defaults write com.apple.Finder AppleShowAllFiles -bool true && killall Finder"
@@ -120,6 +121,8 @@ case $(uname -s) in
 			alias mount='colourify mount'
 			alias df='colourify df'
 			alias cal='colourify cal'
+			alias curl='colourify curl'
+			alias colorJSON='colourify python -m json.tool'
 		fi
 
   ;;
