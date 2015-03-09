@@ -28,7 +28,7 @@ export EDITOR="vim"
 export GREP_COLOR="1;33"
 
 # Add additional default paths
-export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:$HOME/bin:/opt/bin:$HOME/.cabal/bin:$HOME/.rbenv/bin"
+export PATH="$HOME/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:/opt/bin:$HOME/.cabal/bin:$HOME/.rbenv/bin"
 export PYTHONPATH=$(brew --prefix)/lib/python2.7/site-packages:$PYTHONPATH
 eval "$(rbenv init -)"
 
@@ -105,8 +105,8 @@ alias git="hub"
 case $(uname -s) in
   Darwin|FreeBSD)
     # use gdircolors and gls from homebrew's coreutilities for pretty ls output
-    eval $(gdircolors -b ~/.colors/.dir_colors)
-    alias ls="gls --color=always -hF"
+    eval $(dircolors -b ~/.colors/.dir_colors)
+    alias ls="ls --color=always -hF"
 
     # TODO: Figure out a way to incorporate the following alias/command/ifunction
 		# colourify `alias ls |awk -F "'" '{print $2}'` -al ~
