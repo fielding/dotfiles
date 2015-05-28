@@ -30,6 +30,8 @@ export GREP_COLOR="1;33"
 # Add additional default paths
 export PATH="$HOME/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:/opt/bin:$HOME/.cabal/bin:$HOME/.rbenv/bin"
 export PYTHONPATH=$(brew --prefix)/lib/python2.7/site-packages:$PYTHONPATH
+export ANDROID_HOME=/usr/local/opt/android-sdk
+
 eval "$(rbenv init -)"
 
 # Prefer English and use Unicode
