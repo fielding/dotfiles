@@ -28,8 +28,8 @@ export EDITOR="vim"
 export GREP_COLOR="1;33"
 
 # Add additional default paths
-export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:/opt/bin:$HOME/.cabal/bin:$HOME/.rbenv/bin"
-
+export PATH="$HOME/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:/opt/bin:$HOME/.cabal/bin:$HOME/.rbenv/bin"
+export PYTHONPATH=$(brew --prefix)/lib/python2.7/site-packages:$PYTHONPATH
 export ANDROID_HOME=/usr/local/opt/android-sdk
 
 eval "$(rbenv init -)"
@@ -58,13 +58,8 @@ export LESS_TERMCAP_us=$'\E[01;33m'     # begin underline
 
 # If this machine has powerline then use it, otherwise default to old prompt
 
-# TODO: Find a better way to do the prompt/powerline mess
 if [ "$(which powerline)" ]; then
-  if [ -f /usr/local/lib/python2.7/site-packages/powerline/bindings/bash/powerline.sh ]; then
-    source /usr/local/lib/python2.7/site-packages/powerline/bindings/bash/powerline.sh
-  elif [ -f $HOME/.local/lib/python3.4/site-packages/powerline/bindings/bash/powerline.sh ]; then
-    source $HOME/.local/lib/python3.4/site-packages/powerline/bindings/bash/powerline.sh
-  fi
+  source /usr/local/lib/python2.7/site-packages/powerline/bindings/bash/powerline.sh
 else
   source ~/.includes/.prompt
 fi
@@ -111,11 +106,7 @@ alias git="hub"
 
 case $(uname -s) in
   Darwin|FreeBSD)
-    # Determine if this is best way to handle PYTHONPATH
-    export PYTHONPATH=$(brew --prefix)/lib/python2.7/site-packages:$PYTHONPATH
-    # TODO: determine where PROMPT_COMMAND goes
-    export PROMPT_COMMAND='echo -ne "\033]0;${PWD/#$HOME/~}\007"'
-		# use gdircolors and gls from homebrew's coreutilities for pretty ls output
+    # use gdircolors and gls from homebrew's coreutilities for pretty ls output
     eval $(dircolors -b ~/.colors/.dir_colors)
     alias ls="ls --color=always -hF"
 
@@ -138,11 +129,8 @@ case $(uname -s) in
 
   ;;
   Linux)
-    # TODO: PYTHONPATH questions
-    export PYTHONPATH=$HOME/.local/lib/python3.4/site-packages:$PYTHONPATH
-    # TODO: still using keychain?
-		# Keychain alias (autostarting it causes SLIM to hang)
-    # alias keychain_start='eval `keychain --eval --agents ssh id_rsa`'
+    # Keychain alias (autostarting it causes SLIM to hang)
+    alias keychain_start='eval `keychain --eval --agents ssh id_rsa`'
 
     # use dircolors for pretty ls output
     eval $(dircolors -b ~/.colors/.dir_colors)
