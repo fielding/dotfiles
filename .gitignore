@@ -9,7 +9,7 @@
 *
 
 # white list
-!README
+!README*
 !.bash_profile
 !.bashrc
 !.colors/
