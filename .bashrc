@@ -56,20 +56,11 @@ export LESS_TERMCAP_us=$'\E[01;33m'     # begin underline
 
 ## Includes ---------------------------------------------
 
-# If this machine has powerline then use it, otherwise default to old prompt
-
-# TODO: Find a better way to do the prompt/powerline mess
-if [ "$(which powerline)" ]; then
-  if [ -f /usr/local/lib/python2.7/site-packages/powerline/bindings/bash/powerline.sh ]; then
-    source /usr/local/lib/python2.7/site-packages/powerline/bindings/bash/powerline.sh
-  elif [ -f $HOME/.local/lib/python3.4/site-packages/powerline/bindings/bash/powerline.sh ]; then
-    source $HOME/.local/lib/python3.4/site-packages/powerline/bindings/bash/powerline.sh
-  fi
-else
-  source ~/.includes/.prompt
-fi
 
 ## End Includes -----------------------------------------
+
+# TODO: figure out if shit goes here lol (guessing I am basically 
+#   restructuring it all
 
 ## Begin Aliases --------------------------------------------
 
@@ -104,6 +95,7 @@ alias note-se="$HOME/bin/vw/vw-update.pl /Users/fielding/notes"
 alias fm="$HOME/bin/fieldMatter.rb"
 
 alias git="hub"
+alias vim="reattach-to-user-namespace vim"
 
 ## End Aliases ----------------------------------------------
 
@@ -111,37 +103,38 @@ alias git="hub"
 
 case $(uname -s) in
   Darwin|FreeBSD)
-    # Determine if this is best way to handle PYTHONPATH
+    # TODO: PYTHONPATH, is this the best way to deal with this?
     export PYTHONPATH=$(brew --prefix)/lib/python2.7/site-packages:$PYTHONPATH
-    # TODO: determine where PROMPT_COMMAND goes
+    # TODO: PROMPT_COMMAND placement and further explore what all this does
+    #   other than allow for iterm2 to show the correct window title
     export PROMPT_COMMAND='echo -ne "\033]0;${PWD/#$HOME/~}\007"'
-		# use gdircolors and gls from homebrew's coreutilities for pretty ls output
+    # use gdircolors and gls from homebrew's coreutilities for pretty ls output
     eval $(dircolors -b ~/.colors/.dir_colors)
     alias ls="ls --color=always -hF"
 
     # TODO: Figure out a way to incorporate the following alias/command/ifunction
-		# colourify `alias ls |awk -F "'" '{print $2}'` -al ~
+    # colourify `alias ls |awk -F "'" '{print $2}'` -al ~
 
-		# Generic Colourizer
-		grc_resource="$(brew --prefix)/etc/grc.bashrc"
-		[[ -f $grc_resource ]] && source "$grc_resource"
+    # Generic Colourizer
+    grc_resource="$(brew --prefix)/etc/grc.bashrc"
+    [[ -f $grc_resource ]] && source "$grc_resource"
 
-		if [[ $(command -v colourify) ]]; then
-			alias ps='colourify ps'
-			alias dig='colourify dig'
-			alias mount='colourify mount'
-			alias df='colourify df'
-			alias cal='colourify cal'
-			alias curl='colourify curl'
-			alias colorJSON='colourify python -m json.tool'
-		fi
-
+    if [[ $(command -v colourify) ]]; then
+      alias ps='colourify ps'
+      alias dig='colourify dig'
+      alias mount='colourify mount'
+      alias df='colourify df'
+      alias cal='colourify cal'
+      alias curl='colourify curl'
+      alias colorJSON='colourify python -m json.tool'
+    fi
   ;;
   Linux)
-    # TODO: PYTHONPATH questions
+    # TODO: PYTHONPATH questions, same as on Darwin machines
     export PYTHONPATH=$HOME/.local/lib/python3.4/site-packages:$PYTHONPATH
+    # TODO: Do I need to worry about PROMPT_COMMAND on linux machines?
     # TODO: still using keychain?
-		# Keychain alias (autostarting it causes SLIM to hang)
+    # Keychain alias (autostarting it causes SLIM to hang)
     # alias keychain_start='eval `keychain --eval --agents ssh id_rsa`'
 
     # use dircolors for pretty ls output
@@ -154,6 +147,20 @@ case $(uname -s) in
 esac
 
 ## End Platform Specific Aliases
+
+## Prompt setup
+
+# TODO: Find a better way to do the prompt/powerline mess
+if [ -f /usr/local/lib/python2.7/site-packages/powerline/bindings/bash/powerline.sh ]; then
+  source /usr/local/lib/python2.7/site-packages/powerline/bindings/bash/powerline.sh
+elif [ -f $HOME/.local/lib/python3.4/site-packages/powerline/bindings/bash/powerline.sh ]; then
+  source $HOME/.local/lib/python3.4/site-packages/powerline/bindings/bash/powerline.sh
+else
+  # TODO: Restructure/deal with multiple files for my bashrc (this is way old)
+  source ~/.includes/.prompt
+fi
+
+## End Prompt Setup
 
 ## Begin Functions ------------------------------------------
 
