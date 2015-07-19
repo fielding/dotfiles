@@ -14,25 +14,16 @@ Bundle 'bronson/vim-trailing-whitespace'
 Bundle 'nathanaelkane/vim-indent-guides'
 Bundle 'tpope/vim-afterimage'
 Bundle 'scrooloose/syntastic'
-Bundle 'scrooloose/nerdtree'
+"Bundle 'spf13/vim-autoclose'
 Bundle 'terryma/vim-multiple-cursors'
-Bundle 'kien/ctrlp.vim'
-Bundle 'ryanss/vim-hackernews'
-Bundle 'fs111/pydoc.vim'
-Bundle 'christoomey/vim-tmux-navigator'
-Bundle 'sjl/vitality.vim'
 
 " Syntax/Indent for specific languages
 
-Bundle 'davidhalter/jedi-vim'
 Bundle 'tpope/vim-haml'
 Bundle 'tpope/vim-markdown'
 Bundle 'lambdatoast/elm.vim'
 Bundle 'leshill/vim-json'
 Bundle 'kchmck/vim-coffee-script'
-Bundle 'ajford/vimkivy'
-Bundle 'tshirtman/vim-cython'
-Bundle 'airblade/vim-gitgutter.git'
 
 " Color correction
 
