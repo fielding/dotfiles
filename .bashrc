@@ -56,8 +56,6 @@ export LESS_TERMCAP_us=$'\E[01;33m'     # begin underline
 
 ## Includes ---------------------------------------------
 
-<<<<<<< HEAD
-=======
 # If this machine has powerline then use it, otherwise default to old prompt
 
 if [ "$(which powerline)" ]; then
@@ -65,7 +63,7 @@ if [ "$(which powerline)" ]; then
 else
   source ~/.includes/.prompt
 fi
->>>>>>> c7a5c108064ea9a894019bb0fcb14b64d6dd57a8
+
 
 ## End Includes -----------------------------------------
 
@@ -113,14 +111,13 @@ alias vim="reattach-to-user-namespace vim"
 
 case $(uname -s) in
   Darwin|FreeBSD)
-<<<<<<< HEAD
+
     # TODO: PYTHONPATH, is this the best way to deal with this?
     export PYTHONPATH=$(brew --prefix)/lib/python2.7/site-packages:$PYTHONPATH
     # TODO: PROMPT_COMMAND placement and further explore what all this does
     #   other than allow for iterm2 to show the correct window title
     export PROMPT_COMMAND='echo -ne "\033]0;${PWD/#$HOME/~}\007"'
-=======
->>>>>>> c7a5c108064ea9a894019bb0fcb14b64d6dd57a8
+
     # use gdircolors and gls from homebrew's coreutilities for pretty ls output
     eval $(dircolors -b ~/.colors/.dir_colors)
     alias ls="ls --color=always -hF"
@@ -143,17 +140,16 @@ case $(uname -s) in
     fi
   ;;
   Linux)
-<<<<<<< HEAD
+
     # TODO: PYTHONPATH questions, same as on Darwin machines
     export PYTHONPATH=$HOME/.local/lib/python3.4/site-packages:$PYTHONPATH
     # TODO: Do I need to worry about PROMPT_COMMAND on linux machines?
     # TODO: still using keychain?
     # Keychain alias (autostarting it causes SLIM to hang)
     # alias keychain_start='eval `keychain --eval --agents ssh id_rsa`'
-=======
+
     # Keychain alias (autostarting it causes SLIM to hang)
     alias keychain_start='eval `keychain --eval --agents ssh id_rsa`'
->>>>>>> c7a5c108064ea9a894019bb0fcb14b64d6dd57a8
 
     # use dircolors for pretty ls output
     eval $(dircolors -b ~/.colors/.dir_colors)

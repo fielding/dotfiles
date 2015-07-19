@@ -32,6 +32,13 @@
 !.inputrc
 !.osx
 !.roco.coffee
+!.terminfo/
+!.terminfo/73
+!.terminfo/73/screen-256color-italic
+!.terminfo/73/screen-256color-italic.terminfo
+!.terminfo/78
+!.terminfo/78/xterm-256color-italic
+!.terminfo/78/xterm-256color-italic.terminfo
 !.tmux.conf
 !.tmux/
 !.tmux/code-ruby

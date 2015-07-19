@@ -6,5 +6,6 @@ if [ -f $(brew --prefix)/share/bash-completion/bash_completion ]; then
   . $(brew --prefix)/share/bash-completion/bash_completion
 fi
 
-
-source /Users/fielding/.iterm2_shell_integration.bash
+if [ -f /Users/fielding/.iterm2_shell_integration.bash ]; then
+	source /Users/fielding/.iterm2_shell_integration.bash
+fi
