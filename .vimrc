@@ -150,6 +150,9 @@ if has("autocmd")
   autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 
   autocmd FileType python setlocal sw=4 sts=4 et
+
+  " Enabled auto sourcing when saving my vimrc
+  autocmd BufWritePost .vimrc source $MYVIMRC
 endif " has("autocmd")
 
 
@@ -161,7 +164,7 @@ set t_Sf=[3%dm
 set t_Sb=[4%dm
 
 let g:hybrid_use_Xresources=1
-
+set background=dark
 colorscheme hybrid
 highlight Normal ctermbg=NONE
 highlight CursorLine ctermbg=0

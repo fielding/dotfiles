@@ -1,6 +1,6 @@
 filetype off
 set rtp+=~/.vim/bundle/vundle
-call vundle#rc()
+call vundle#begin()
 
 " This is the Vundle package, which can be found on GitHub.
 " For GitHub repos, you specify plugins using the
@@ -48,5 +48,5 @@ Bundle 'chriskempson/vim-tomorrow-theme'
 Bundle 'w0ng/vim-hybrid'
 Bundle 'Junza/Spink'
 
-
+call vundle#end()
 filetype plugin indent on                                               				" required!
