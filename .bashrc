@@ -67,7 +67,7 @@ fi
 
 ## End Includes -----------------------------------------
 
-# TODO: figure out if shit goes here lol (guessing I am basically 
+# TODO: figure out if shit goes here lol (guessing I am basically
 #   restructuring it all
 
 ## Begin Aliases --------------------------------------------
@@ -85,6 +85,9 @@ alias irc="rm -f ~/.irssi/saved_colors & irssi"
 alias reboot="sudo shutdown -r now"
 alias shutdown="sudo shutdown -h now"
 alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
+
+# TODO: Fix copyLastCmd implementation; "Aliases can't use positional
+#   parameters. Use a function. [SC2142]"
 alias copyLastCmd='fc -ln -1 | awk '\''{$1=$1}1'\'' ORS='\'''\'' | pbcopy'
 alias prettyJSON='python -m json.tool'
 
@@ -263,5 +266,6 @@ explain () {
     echo "explain 'cmd -o | ...'   one quoted command to explain it."
   fi
 }
+
 
 ## End Functions --------------------------------------------
