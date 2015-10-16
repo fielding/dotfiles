@@ -21,12 +21,13 @@ Bundle 'ryanss/vim-hackernews'
 Bundle 'fs111/pydoc.vim'
 Bundle 'christoomey/vim-tmux-navigator'
 Bundle 'sjl/vitality.vim'
+Bundle 'junegunn/goyo.vim'
 
 " Syntax/Indent for specific languages
 
 Bundle 'davidhalter/jedi-vim'
 Bundle 'tpope/vim-haml'
-Bundle 'tpope/vim-markdown'
+Bundle 'plasticboy/vim-markdown'
 Bundle 'lambdatoast/elm.vim'
 Bundle 'leshill/vim-json'
 Bundle 'kchmck/vim-coffee-script'
