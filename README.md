@@ -20,10 +20,9 @@ plugins, in to my workflow, and then remove any "unfitting" or not needed.
   - [ ] msmtp
   - [ ] POSSIBLY offlineimap
   - [ ] contacts (brew install contacts)
+
 ### Someday/Maybe
-
 - [ ] Hotline Miami Color Scheme
-
 
 ## VIM
 
@@ -43,12 +42,13 @@ plugins, in to my workflow, and then remove any "unfitting" or not needed.
 
 [christoomey/vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator)  
 [sjl/vitality.vim](https://github.com/sjl/vitality.vim)  
+[junegunn/goyo.vim](https://github.com/junegunn/goyo.vim)  
 
 #### Syntax Highlighting, Linting and Language Specific Plugins
 
 [davidhalter/jedi-vim](https://github.com/davidhalter/jedi-vim)  
 [tpope/vim-haml](https://github.com/tpope/vim-haml)  
-[tpope/vim-markdown](https://github.com/tpope/vim-markdown)  
+[plasticboy/vim-markdown](https://github.com/plasticboy/vim-markdown)  
 [lambdatoast/elm.vim](https://github.com/lambdatoast/elm.vim)  
 [leshill/vim-json](https://github.com/leshill/vim-json)  
 [kchmck/vim-coffee-script](https://github.com/kchmck/vim-coffee-script)  
@@ -79,5 +79,5 @@ vim search and replace to convert bundles.vim to markdown hyperlinks for plugin
 section.
 
 ```
-  %s/Plugin '\(.*\)'/[\1](https:\/\/github.com\/\1)/
+  %s/Bundle '\(.*\)'/[\1](https:\/\/github.com\/\1)  /
 ```
