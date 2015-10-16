@@ -7,11 +7,19 @@ at the top.
 
 - [ ] Rework implementation/installation at new workstation; current .gitignore
 with the git repo existing in ~ is pretty bogus
+- [ ] binds/tune up text/code folding within vim
+- [ ] check in to vim-hackernews and adding additional color highlighting to
+- comments pages. A small dab of color could go a long way
 - [ ] Revise Vim plugins; Try and incorporate desired, but currently unused
 plugins, in to my workflow, and then remove any "unfitting" or not needed.
 - [ ] Tmux configuration (basically a default config currently)
-
-
+- [ ] Clipboard "functionality" and sanity with vim/tmux and os x
+- AN OPTIMISTIC ADVENTURE DOWN POSTAL LANE: MUTT the ultimate setup.
+  - [ ] MUTT
+  - [ ] notmuch
+  - [ ] msmtp
+  - [ ] POSSIBLY offlineimap
+  - [ ] contacts (brew install contacts)
 ### Someday/Maybe
 
 - [ ] Hotline Miami Color Scheme
@@ -20,8 +28,6 @@ plugins, in to my workflow, and then remove any "unfitting" or not needed.
 ## VIM
 
 ### Plugins
-
-
 
 #### Feature Plugins
 
@@ -34,6 +40,7 @@ plugins, in to my workflow, and then remove any "unfitting" or not needed.
 [kien/ctrlp.vim](https://github.com/kien/ctrlp.vim)  
 [ryanss/vim-hackernews](https://github.com/ryanss/vim-hackernews)  
 [fs111/pydoc.vim](https://github.com/fs111/pydoc.vim)  
+
 [christoomey/vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator)  
 [sjl/vitality.vim](https://github.com/sjl/vitality.vim)  
 
