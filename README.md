@@ -14,7 +14,7 @@ with the git repo existing in ~ is pretty bogus
 plugins, in to my workflow, and then remove any "unfitting" or not needed.
 - [ ] Tmux configuration (basically a default config currently)
 - [ ] Clipboard "functionality" and sanity with vim/tmux and os x
-- AN OPTIMISTIC ADVENTURE DOWN POSTAL LANE: MUTT the ultimate setup.
+- [ ] AN OPTIMISTIC ADVENTURE DOWN POSTAL LANE: MUTT the ultimate setup.
   - [ ] MUTT
   - [ ] notmuch
   - [ ] msmtp
