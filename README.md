@@ -7,7 +7,8 @@ at the top.
 
 - [ ] Rework implementation/installation at new workstation; current .gitignore
 with the git repo existing in ~ is pretty bogus
-- [ ] binds/tune up text/code folding within vim
+- [x] binds/tune up text/code folding within vim (temp marking as done, I think
+I am content with za, zo, zc, and their bigcase counterparts)
 - [ ] check in to vim-hackernews and adding additional color highlighting to
 - comments pages. A small dab of color could go a long way
 - [ ] Revise Vim plugins; Try and incorporate desired, but currently unused
