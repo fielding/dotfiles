@@ -22,6 +22,7 @@ Bundle 'fs111/pydoc.vim'
 Bundle 'christoomey/vim-tmux-navigator'
 Bundle 'sjl/vitality.vim'
 Bundle 'junegunn/goyo.vim'
+Bundle 'moll/vim-bbye'
 
 " Syntax/Indent for specific languages
 
