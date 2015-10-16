@@ -7,7 +7,10 @@ at the top.
 
 - [ ] Rework implementation/installation at new workstation; current .gitignore
 with the git repo existing in ~ is pretty bogus
+- [ ] Revise Vim plugins; Try and incorporate desired, but currently unused
+plugins, in to my workflow, and then remove any "unfitting" or not needed.
 - [ ] Tmux configuration (basically a default config currently)
+
 
 ### Someday/Maybe
 
