@@ -23,6 +23,7 @@ Bundle 'christoomey/vim-tmux-navigator'
 Bundle 'sjl/vitality.vim'
 Bundle 'junegunn/goyo.vim'
 Bundle 'moll/vim-bbye'
+Bundle 'tomtom/tcomment_vim'
 
 " Syntax/Indent for specific languages
 
