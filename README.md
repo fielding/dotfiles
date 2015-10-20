@@ -26,7 +26,19 @@ plugins, in to my workflow, and then remove any "unfitting" or not needed.
 ### Someday/Maybe
 - [ ] Hotline Miami Color Scheme
 
+## Installation
+
+
+## Directory Hierarchy(what to call this?)
+
+
+## Bash
+
+
+
 ## VIM
+
+![VIM Screenshot](https://goo.gl/photos/3fA2ec3DhKK4fDFW9)
 
 ### Plugins
 
@@ -78,6 +90,8 @@ plugins, in to my workflow, and then remove any "unfitting" or not needed.
 [chriskempson/vim-tomorrow-theme](https://github.com/chriskempson/vim-tomorrow-theme)  
 [Junza/Spink](https://github.com/Junza/Spink)  
 
+## Tmux
+
 ## README Maintenance
 
 vim search and replace to convert bundles.vim to markdown hyperlinks for plugin
@@ -86,3 +100,7 @@ section.
 ```
   %s/[\(.*\)](https://github.com/\(.*\))  /[\1](https:\/\/github.com\/\1)  /
 ```
+
+## Inspiration
+
+## License
