@@ -5,7 +5,6 @@
 currently this readme is at it's infancy, so I am parking the todo list right
 at the top.
 
-### Recently Done
 - [x] binds/tune up text/code folding within vim (temp marking as done, I think
 I am content with za, zo, zc, and their bigcase counterparts)
 
@@ -25,6 +24,8 @@ plugins, in to my workflow, and then remove any "unfitting" or not needed.
   - [ ] msmtp
   - [ ] POSSIBLY offlineimap
   - [ ] contacts (brew install contacts)
+- [ ] License/consider if needed
+- Colors between powerline/tmux/vim seem to be off a tad bit
 
 ### Someday/Maybe
 - [ ] Hotline Miami Color Scheme
@@ -105,6 +106,10 @@ section.
   %s/[\(.*\)](https://github.com/\(.*\))  /[\1](https:\/\/github.com\/\1)  /
 ```
 
-## Inspiration
+## Inspiration / Special Thanks to...
 
-## License
+* [Jeffrey Carpenter](https://github.com/i8degrees), 
+his [dotfiles repository](https://github.com/i8degrees/dotfiles), and for
+having somebody to "talk nerdy" to!
+* [Mathias Bynens](https://mathiasbynens.be/) and his
+ [dotfile repository](https://github.com/mathiasbynens/dotfiles)
