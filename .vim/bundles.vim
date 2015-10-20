@@ -21,6 +21,8 @@ Bundle 'ryanss/vim-hackernews'
 Bundle 'fs111/pydoc.vim'
 Bundle 'christoomey/vim-tmux-navigator'
 Bundle 'sjl/vitality.vim'
+Bundle 'shime/vim-livedown'
+Bundle 'mrtazz/simplenote.vim'
 
 " Syntax/Indent for specific languages
 
