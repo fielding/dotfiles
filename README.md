@@ -38,7 +38,7 @@ plugins, in to my workflow, and then remove any "unfitting" or not needed.
 
 ## VIM
 
-![VIM Screenshot](https://goo.gl/photos/3fA2ec3DhKK4fDFW9)
+![VIM Screenshot](http://justfielding.com/dotfiles/img/vim.png)
 
 ### Plugins
 
@@ -56,9 +56,10 @@ plugins, in to my workflow, and then remove any "unfitting" or not needed.
 
 [christoomey/vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator)  
 [sjl/vitality.vim](https://github.com/sjl/vitality.vim)  
+[shime/vim-livedown](https://github.com/shime/vim-livedown)  
+[mrtazz/simplenote.vim](https://github.com/mrtazz/simplenote.vim)  
 [junegunn/goyo.vim](https://github.com/junegunn/goyo.vim)  
 [moll/vim-bbye](https://github.com/moll/vim-bbye)  
-
 [tomtom/tcomment_vim](https://github.com/tomtom/tcomment_vim)  
 
 #### Syntax Highlighting, Linting and Language Specific Plugins
