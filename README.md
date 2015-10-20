@@ -5,13 +5,16 @@
 currently this readme is at it's infancy, so I am parking the todo list right
 at the top.
 
-- [ ] Rework implementation/installation at new workstation; current .gitignore
-with the git repo existing in ~ is pretty bogus
+### Recently Done
 - [x] binds/tune up text/code folding within vim (temp marking as done, I think
 I am content with za, zo, zc, and their bigcase counterparts)
+
+- [ ] Rework implementation/installation at new workstation; current .gitignore
+with the git repo existing in ~ is pretty bogus
 - [ ] find a suitable vim binding for Goyo and Goyo!
 - [ ] check in to vim-hackernews and adding additional color highlighting to
-- comments pages. A small dab of color could go a long way
+ comments pages. A small dab of color could go a long way
+- [ ] can I get Github Flavored Markdown for livedown/vim-livedown?
 - [ ] Revise Vim plugins; Try and incorporate desired, but currently unused
 plugins, in to my workflow, and then remove any "unfitting" or not needed.
 - [ ] Tmux configuration (basically a default config currently)
