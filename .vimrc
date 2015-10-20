@@ -2,21 +2,19 @@
 " file:         ~/.vimrc
 " author:       fielding johnston - http://justfielding.com
 " -----------------------------------------------------------------------------
-" grouped ]
 
 
-"
 " compatability {{{
 " -----------------------------------------------------------------------------
 "
-set nocompatible                                                        				" allows me to keep my sanity
-set encoding=utf-8                                                      				" sets encoding to utf-8
+set nocompatible                                                                " allows me to keep my sanity
+set encoding=utf-8                                                              " sets encoding to utf-8
 
 "}}}
 
 
-if filereadable(expand("~/.vim/bundles.vim"))																		" if bundles.vim exists then...
-	source ~/.vim/bundles.vim                                               			" include vundle's bundle config!
+if filereadable(expand("~/.vim/bundles.vim"))                                   " if bundles.vim exists then...
+	source ~/.vim/bundles.vim                                                     " include vundle's bundle config!
 endif
 
 " Settings {{{
