@@ -25,7 +25,8 @@ plugins, in to my workflow, and then remove any "unfitting" or not needed.
   - [ ] POSSIBLY offlineimap
   - [ ] contacts (brew install contacts)
 - [ ] License/consider if needed
-- Colors between powerline/tmux/vim seem to be off a tad bit
+- [ ] Colors between powerline/tmux/vim seem to be off a tad bit
+- [ ] .vimrc restructuring using folding and better sections
 
 ### Someday/Maybe
 - [ ] Hotline Miami Color Scheme
