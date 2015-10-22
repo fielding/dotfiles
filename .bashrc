@@ -27,9 +27,7 @@ export EDITOR="vim"
 # Set Grep highlighting color - 1;33 aka Bold Yellow
 export GREP_COLOR="1;33"
 
-# Add additional default paths
-export PATH="$HOME/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:/opt/bin:$HOME/.cabal/bin:$HOME/.rbenv/bin"
-export PYTHONPATH=$(brew --prefix)/lib/python2.7/site-packages:$PYTHONPATH
+# set android_home directory for android development
 export ANDROID_HOME=/usr/local/opt/android-sdk
 
 eval "$(rbenv init -)"
@@ -58,11 +56,11 @@ export LESS_TERMCAP_us=$'\E[01;33m'     # begin underline
 
 # If this machine has powerline then use it, otherwise default to old prompt
 
-if [ "$(which powerline)" ]; then
-  source /usr/local/lib/python2.7/site-packages/powerline/bindings/bash/powerline.sh
-else
-  source ~/.includes/.prompt
-fi
+#if [ "$(which powerline)" ]; then
+#  source /usr/local/lib/python2.7/site-packages/powerline/bindings/bash/powerline.sh
+#else
+#  source ~/.includes/.prompt
+#fi
 
 
 ## End Includes -----------------------------------------
@@ -277,3 +275,4 @@ explain () {
 
 
 ## End Functions --------------------------------------------
+
