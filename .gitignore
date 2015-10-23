@@ -10,12 +10,16 @@
 
 # white list
 !README*
+!.aliases
 !.bash_profile
+!.bash_prompt
 !.bashrc
 !.colors/
 !.colors/.dir_colors
 !.colors/fielding
 !.colors/hybrid-fielding.itermcolors
+!.exports
+!.functions
 !.gitconfig
 !.gitignore
 !.gitignore.global

@@ -1,8 +1,3 @@
-### ----------------------------------------------------------- 
-# file:         ~/.includes/.prompt
-# author:       fielding johnston - http://www.justfielding.com
-### -----------------------------------------------------------
-
 ## Define Colors ----------------------------------------------
 
 # Reset
@@ -78,27 +73,7 @@ On_IPurple='\e[10;95m'  # Purple
 On_ICyan='\e[0;106m'    # Cyan
 On_IWhite='\e[0;107m'   # White
 
-## End Define Colors -----------------------------------------
-
-## If root then export root prompt ---------------------------
-
-if [ `id -u` = "0" ]; then
-
-PS1="${White}┌─${BWhite}[${Red}\u$${BWhite}]${White}──${BWhite}[${Blue}${HOSTNAME}${BWhite}:${Green} \w${BWhite}]\n${White}└──${Purple}>>${RS}"
-
-return
-fi
-
-## End Root Prompt --------------------------------------------
-
-## Export default prompt -------------------------------------
-
-PS1="${White}┌─${BWhite}[${Purple}\u${BWhite}]${RS}${White}──${BWhite}[${Blue}${HOSTNAME}${BWhite}:${Yellow} \w${BWhite}]\$([[ -n \$(git branch 2> /dev/null) ]] && echo \"${White}──${BWhite}[${Red}\")\$(parse_git_branch)${BWhite}\$([[ -n \$(git branch 2> /dev/null) ]] && echo \"${BWhite}]\")\n${White}└──${Purple}>>${RS}"
-
-## End default prompt ----------------------------------------
-
 ## Git Functions
-
 function parse_git_dirty() {
   [[ $(git status 2> /dev/null | tail -n1) != "nothing to commit (working directory clean)" ]] && echo "*"
 }
@@ -106,3 +81,12 @@ function parse_git_dirty() {
 function parse_git_branch() {
   git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/\1$(parse_git_dirty)/"
 }
+
+if [ `id -u` = "0" ]; then
+  PS1="${White}┌─${BWhite}[${Red}\u$${BWhite}]${White}──${BWhite}[${Blue}${HOSTNAME}${BWhite}:${Green} \w${BWhite}]\n${White}└──${Purple}>>${RS}"
+  export PS1;
+  return
+fi
+
+PS1="${White}┌─${BWhite}[${Purple}\u${BWhite}]${RS}${White}──${BWhite}[${Blue}${HOSTNAME}${BWhite}:${Yellow} \w${BWhite}]\$([[ -n \$(git branch 2> /dev/null) ]] && echo \"${White}──${BWhite}[${Red}\")\$(parse_git_branch)${BWhite}\$([[ -n \$(git branch 2> /dev/null) ]] && echo \"${BWhite}]\")\n${White}└──${Purple}>>${RS}"
+export PS1;
