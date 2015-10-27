@@ -17,7 +17,7 @@ if filereadable(expand("~/.vim/bundles.vim"))                                   
 	source ~/.vim/bundles.vim                                                     " include vundle's bundle config!
 endif
 
-" Settings {{{
+" SeRRRRRR {{{
 " ----------------------------------------------------------------------------
 
 "}}}
@@ -36,8 +36,8 @@ set textwidth=0                                                                 
 set colorcolumn=80                                                              " column indicator
 set lbr                                                                         " wrap text
 set number                                                                      " show line numbers
-set backup                                                                      " turn on auto backups
-set backupdir=~/.vim/.backup//                                                  " where to put backup files
+" set backup                                                                      " turn on auto backups
+" set backupdir=~/.vim/.backup//                                                  " where to put backup files
 set directory=~/.vim/.tmp//                                                     " where to put tmp files
 set pastetoggle=<f5>                                                            " toggle paste mode
 set clipboard=unnamed                                                           " Use the OS clipboard by default
@@ -47,6 +47,9 @@ set includeexpr+=substitute(v:fname,'s$','','g')                                
 set showtabline=2
 set modeline                                                                    " respect modeline
 set modelines=4
+set undofile
+set undodir=~/.vim/undo
+set noswapfile
 
                                                                                 " TODO: Come up with what I want to use for listchars
 set lcs=tab:▸\ ,trail:·,eol:¬,nbsp:_
@@ -197,6 +200,6 @@ let g:syntastic_enable_signs=1
 
 " extra {{{
 " -----------------------------------------------------------------------------
-source ~/.vim/.simplenoterc
+"source ~/.vim/.simplenoterc
 
 " }}}

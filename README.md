@@ -10,6 +10,9 @@ I am content with za, zo, zc, and their bigcase counterparts)
 
 - [ ] Rework implementation/installation at new workstation; current .gitignore
 with the git repo existing in ~ is pretty bogus
+- [ ] where the hell should I put .colors/fielding? XResources?
+- [ ] check in to submodules for tmux/vim/whatev plugins
+- [ ] write up on using GNU Stow and what each stow package is for, etc
 - [ ] find a suitable vim binding for Goyo and Goyo!
 - [ ] check in to vim-hackernews and adding additional color highlighting to
  comments pages. A small dab of color could go a long way
@@ -27,6 +30,7 @@ plugins, in to my workflow, and then remove any "unfitting" or not needed.
 - [ ] License/consider if needed
 - [ ] Colors between powerline/tmux/vim seem to be off a tad bit
 - [ ] .vimrc restructuring using folding and better sections
+- [ ] add my weechat configuration
 
 ### Someday/Maybe
 - [ ] Hotline Miami Color Scheme

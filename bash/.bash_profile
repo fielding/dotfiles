@@ -7,9 +7,14 @@
 export PATH="$HOME/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:/opt/bin:$HOME/.cabal/bin:$HOME/.rbenv/bin"
 
 ### Load the bash profile configurations
-for file in ~/.{exports,aliases,functions,extra}; do
-  [ -r "$file" ] && [ -f "$file" ] && source "$file";
-done;
+# for file in ~/.{exports,aliases,functions,extra}; do
+#   [ -r "$file" ] && [ -f "$file" ] && source "$file";
+# done;
+
+for file in `ls $HOME/.bash_profile.d/*.sh`; do
+    source "$file"
+done
+
 unset file;
 
 shopt -s cdable_vars        # if cd arg is not valid, assumes its a var defining a dir
@@ -50,7 +55,7 @@ case $(uname -s) in
     export PROMPT_COMMAND='echo -ne "\033]0;${PWD/#$HOME/~}\007"'
 
     # use gdircolors and gls from homebrew's coreutilities for pretty ls output
-    eval $(dircolors -b ~/.colors/.dir_colors)
+    eval $(dircolors -b ~/.dir_colors)
     alias ls="ls --color=always -hF"
 
     # TODO: Figure out a way to incorporate the following alias/command/ifunction
@@ -83,7 +88,7 @@ case $(uname -s) in
     alias keychain_start='eval `keychain --eval --agents ssh id_rsa`'
 
     # use dircolors for pretty ls output
-    eval $(dircolors -b ~/.colors/.dir_colors)
+    eval $(dircolors -b ~/.dir_colors)
     alias ls="ls --color=always -hF"
     ;;
   NetBSD|OpenBSD)
