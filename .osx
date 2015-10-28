@@ -21,3 +21,6 @@ defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
 
 # Show the ~/Library folder
 chflags nohidden ~/Library
+
+# iterm2 - scroll less output
+defaults write com.googlecode.iterm2 AlternateMouseScroll -bool true

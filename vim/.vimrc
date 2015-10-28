@@ -111,6 +111,7 @@ inoremap <C-U> <C-G>u<C-U>
 " In many terminal emulators the mouse works just fine, thus enable it.
 if has('mouse')
   set mouse=a
+  set ttymouse=xterm
 endif
 
 " Only do this part when compiled with support for autocommands.
