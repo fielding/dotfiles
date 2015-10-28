@@ -8,10 +8,10 @@ at the top.
 - [x] binds/tune up text/code folding within vim (temp marking as done, I think
 I am content with za, zo, zc, and their bigcase counterparts)
 
-- [ ] Rework implementation/installation at new workstation; current .gitignore
+- [x] Rework implementation/installation at new workstation; current .gitignore
 with the git repo existing in ~ is pretty bogus
+- [x] check in to submodules for tmux/vim/whatev plugins
 - [ ] where the hell should I put .colors/fielding? XResources?
-- [ ] check in to submodules for tmux/vim/whatev plugins
 - [ ] write up on using GNU Stow and what each stow package is for, etc
 - [ ] find a suitable vim binding for Goyo and Goyo!
 - [ ] check in to vim-hackernews and adding additional color highlighting to
@@ -118,3 +118,4 @@ his [dotfiles repository](https://github.com/i8degrees/dotfiles), and for
 having somebody to "talk nerdy" to!
 * [Mathias Bynens](https://mathiasbynens.be/) and his
  [dotfile repository](https://github.com/mathiasbynens/dotfiles)
+
