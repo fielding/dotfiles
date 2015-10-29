@@ -1,3 +1,4 @@
+bash/.bash_profile.d/extra.sh
 terminfo/.terminfo/69/iterm.app
 terminfo/.terminfo/69/iterm
 terminfo/.terminfo/74/tmux
