@@ -11,15 +11,16 @@ I am content with za, zo, zc, and their bigcase counterparts)
 - [x] Rework implementation/installation at new workstation; current .gitignore
 with the git repo existing in ~ is pretty bogus
 - [x] check in to submodules for tmux/vim/whatev plugins
+- [x] Tmux configuration (basically a default config currently)
 - [ ] where the hell should I put .colors/fielding? XResources?
 - [ ] write up on using GNU Stow and what each stow package is for, etc
 - [ ] find a suitable vim binding for Goyo and Goyo!
 - [ ] check in to vim-hackernews and adding additional color highlighting to
  comments pages. A small dab of color could go a long way
 - [ ] can I get Github Flavored Markdown for livedown/vim-livedown?
-- [ ] Revise Vim plugins; Try and incorporate desired, but currently unused
+- [ ] Revise Vim plugins; Try and incorporate desired, but currently unsed
 plugins, in to my workflow, and then remove any "unfitting" or not needed.
-- [ ] Tmux configuration (basically a default config currently)
+- [ ] Tmux scrolling with less
 - [ ] Clipboard "functionality" and sanity with vim/tmux and os x
 - [ ] AN OPTIMISTIC ADVENTURE DOWN POSTAL LANE: MUTT the ultimate setup.
   - [ ] MUTT
