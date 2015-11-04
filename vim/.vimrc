@@ -187,6 +187,21 @@ python from powerline.vim import setup as powerline_setup
 python powerline_setup()
 python del powerline_setup
 
+" Common code for encodings
+function! SetFileEncodings(encodings)
+let b:myfileencodingsbak=&fileencodings
+let &fileencodings=a:encodings
+endfunction
+
+function! RestoreFileEncodings()
+let &fileencodings=b:myfileencodingsbak
+unlet b:myfileencodingsbak
+endfunction
+
+" .NFO specific
+au BufReadPre *.nfo call SetFileEncodings('cp437')|set ambiwidth=single
+au BufReadPost *.nfo call RestoreFileEncodings()
+
 
 let g:Powerline_symbols='fancy'
 let g:syntastic_check_on_open=1
