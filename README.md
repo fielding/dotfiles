@@ -3,7 +3,7 @@
 ## Table of Contents
 - overview
 - installation
-- 
+- extended info abotu each package (what to call this?)
 - todo
 - inspiration and special thanks
 
@@ -111,9 +111,6 @@ section.
 ```
 
 ## TODO
-
-currently this readme is at it's infancy, so I am parking the todo list right
-at the top.
 
 - [x] binds/tune up text/code folding within vim (temp marking as done, I think I am content with za, zo, zc, and their bigcase counterparts)
 - [x] Rework implementation/installation at new workstation; current .gitignore with the git repo existing in ~ is pretty bogus
