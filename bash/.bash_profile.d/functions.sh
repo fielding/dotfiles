@@ -89,3 +89,5 @@ function duckduckgo {
     query=`php -r 'echo urlencode($argv[1]);' "$1"`
     open -g 'https://duckduckgo.com/?q='$query
 }
+
+function gi { curl -L -s https://www.gitignore.io/api/$@ ;}
