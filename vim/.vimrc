@@ -187,7 +187,7 @@ python from powerline.vim import setup as powerline_setup
 python powerline_setup()
 python del powerline_setup
 
-" Common code for encodings
+" Functions used for .nfo, eventually could be used for others
 function! SetFileEncodings(encodings)
 let b:myfileencodingsbak=&fileencodings
 let &fileencodings=a:encodings
@@ -199,7 +199,7 @@ unlet b:myfileencodingsbak
 endfunction
 
 " .NFO specific
-au BufReadPre *.nfo call SetFileEncodings('cp437')|set ambiwidth=single
+au BufReadPre *.nfo call SetFileEncodings('cp437')
 au BufReadPost *.nfo call RestoreFileEncodings()
 
 
