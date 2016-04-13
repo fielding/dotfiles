@@ -33,6 +33,7 @@
 [user]
 	name = Fielding Johnston
   email = fielding@justfielding.com
+	signingkey = 4F3FB9DB
 [filter "lfs"]
 	clean = git-lfs clean %f
 	smudge = git-lfs smudge %f
@@ -42,3 +43,5 @@
 [pager]
 	diff = diff-so-fancy | less --tabs=4 -RFX
 	show = diff-so-fancy | less --tabs=4 -RFX
+[commit]
+	gpgsign = true
