@@ -11,7 +11,7 @@ alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
 
 # TODO: Fix copyLastCmd implementation; "Aliases can't use positional
 #   parameters. Use a function. [SC2142]"
-# alias copyLastCmd='fc -ln -1 | awk '\''{$1=$1}1'\'' ORS='\'''\'' | pbcopy'
+alias lccopy='fc -ln -1 | awk '\''{$1=$1}1'\'' ORS='\'''\'' | pbcopy'
 alias prettyJSON='python -m json.tool'
 
 ## Show/hide hidden files in Finder
