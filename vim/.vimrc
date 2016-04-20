@@ -118,6 +118,11 @@ if has('mouse')
   set ttymouse=xterm
 endif
 
+" vim 7.4+ support SGR protocol which avoids issues with mouse reporting in 'big' terminals
+if has('mouse_sgr')
+    set ttymouse=sgr
+endif
+
 " Only do this part when compiled with support for autocommands.
 if has("autocmd")
 
