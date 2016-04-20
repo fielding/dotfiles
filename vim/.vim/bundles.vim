@@ -26,6 +26,8 @@ Bundle 'mrtazz/simplenote.vim'
 Bundle 'junegunn/goyo.vim'
 Bundle 'moll/vim-bbye'
 Bundle 'tomtom/tcomment_vim'
+Bundle 'mhinz/vim-startify'
+Bundle 'airblade/vim-gitgutter.git'
 
 " Syntax/Indent for specific languages
 
@@ -37,7 +39,6 @@ Bundle 'leshill/vim-json'
 Bundle 'kchmck/vim-coffee-script'
 Bundle 'ajford/vimkivy'
 Bundle 'tshirtman/vim-cython'
-Bundle 'airblade/vim-gitgutter.git'
 
 " Color correction
 
