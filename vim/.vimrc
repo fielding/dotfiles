@@ -17,8 +17,11 @@ if filereadable(expand("~/.vim/bundles.vim"))                                   
 	source ~/.vim/bundles.vim                                                     " include vundle's bundle config!
 endif
 
-" SeRRRRRR {{{
+" general {{{
 " ----------------------------------------------------------------------------
+
+set autoread                                                                    " Re-read file if changed outside
+set autowrite                                                                   " Auto save before commands like :next
 
 "}}}
 
@@ -36,8 +39,6 @@ set textwidth=0                                                                 
 set colorcolumn=80                                                              " column indicator
 set lbr                                                                         " wrap text
 set number                                                                      " show line numbers
-" set backup                                                                      " turn on auto backups
-" set backupdir=~/.vim/.backup//                                                  " where to put backup files
 set directory=~/.vim/.tmp//                                                     " where to put tmp files
 set pastetoggle=<f5>                                                            " toggle paste mode
 set clipboard=unnamed                                                           " Use the OS clipboard by default
