@@ -4,7 +4,9 @@
 ##----------------------------------------------------------------------------
 
 # Set PATH
-export PATH="$HOME/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:/opt/bin:$HOME/.cabal/bin:$HOME/.rbenv/bin"
+# TODO: Fgure out why the hell I have to add $HOME/perl5/bin here, which causes
+#   double listing in $PATH in everything except tmux, for functionality in tmux
+export PATH="$HOME/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:/opt/bin:$HOME/.cabal/bin:$HOME/.rbenv/bin:$HOME/perl5/bin"
 
 ### Load the bash profile configurations
 # for file in ~/.{exports,aliases,functions,extra}; do
@@ -36,6 +38,9 @@ set -o vi                   # set vi-style command line editing
 if [ -f /Users/fielding/.iterm2_shell_integration.bash ]; then
 	source /Users/fielding/.iterm2_shell_integration.bash;
 fi
+
+# local:lib for perl modules
+eval $(perl -I${HOME}/perl5/lib/perl5 -Mlocal::lib)
 
 ### Completions
 
