@@ -46,7 +46,7 @@ vim +BundleInstall +BundleClean +q
 
 ## VIM
 
-![VIM Screenshot](http://justfielding.com/dotfiles/img/vim.png)
+![VIM Screenshot](previews/vim.png)
 
 ### Plugins
 
