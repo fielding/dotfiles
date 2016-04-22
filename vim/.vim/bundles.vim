@@ -32,13 +32,13 @@ Bundle 'airblade/vim-gitgutter.git'
 " Syntax/Indent for specific languages
 
 Bundle 'davidhalter/jedi-vim'
-Bundle 'tpope/vim-haml'
 Bundle 'plasticboy/vim-markdown'
-Bundle 'lambdatoast/elm.vim'
 Bundle 'leshill/vim-json'
 Bundle 'kchmck/vim-coffee-script'
 Bundle 'ajford/vimkivy'
 Bundle 'tshirtman/vim-cython'
+" Bundle 'lambdatoast/elm.vim'
+" Bundle 'tpope/vim-haml'
 
 " Color correction
 
@@ -46,13 +46,13 @@ Bundle 'godlygeek/csapprox'
 
 " Color Schemes
 
-Bundle 'morhetz/gruvbox'
-Bundle 'tomasr/molokai'
-Bundle 'adlawson/vim-sorcerer'
-Bundle 'sickill/vim-monokai'
-Bundle 'chriskempson/vim-tomorrow-theme'
 Bundle 'w0ng/vim-hybrid'
-Bundle 'Junza/Spink'
+" Bundle 'morhetz/gruvbox'
+" Bundle 'tomasr/molokai'
+" Bundle 'adlawson/vim-sorcerer'
+" Bundle 'sickill/vim-monokai'
+" Bundle 'chriskempson/vim-tomorrow-theme'
+" Bundle 'Junza/Spink'
 
 call vundle#end()
 filetype plugin indent on                                               				" required!
