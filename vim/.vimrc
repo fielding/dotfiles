@@ -52,12 +52,21 @@ set modelines=4
 set undofile
 set undodir=~/.vim/undo
 set noswapfile
-set nowritebackup                                                               " changes vim default write behavior and makes vim write buffer of original file
+
+" evaluate after flickering fix
+" and with/without keybase fs on slow connection
+" set nowritebackup                                                             " changes vim default write behavior and makes vim write buffer of original file
 set nobackup                                                                    " avoid automatic creation of backup files
 
                                                                                 " TODO: Come up with what I want to use for listchars
 set lcs=tab:▸\ ,trail:·,eol:¬,nbsp:_
 set list
+
+" disable audio/visual bells
+" evaluate after flickering fix
+set noerrorbells
+set novisualbell
+set t_vb=
 
 " folding
 set foldignore=                                                                 " don't ignore anything when folding
