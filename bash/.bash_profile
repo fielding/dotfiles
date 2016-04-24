@@ -13,7 +13,7 @@ export PATH="$HOME/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/u
 #   [ -r "$file" ] && [ -f "$file" ] && source "$file";
 # done;
 
-for file in `ls $HOME/.bash_profile.d/*.sh`; do
+for file in `ls $HOME/.bash_profile.d/*.bash`; do
     source "$file"
 done
 
