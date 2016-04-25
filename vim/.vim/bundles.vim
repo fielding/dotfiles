@@ -7,7 +7,6 @@ call vundle#begin()
 " 'user/repository' format
 Plugin 'gmarik/vundle'
 
-
 " Features
 
 Bundle 'bronson/vim-trailing-whitespace'
@@ -27,32 +26,17 @@ Bundle 'junegunn/goyo.vim'
 Bundle 'moll/vim-bbye'
 Bundle 'tomtom/tcomment_vim'
 Bundle 'mhinz/vim-startify'
-Bundle 'airblade/vim-gitgutter.git'
+Bundle 'godlygeek/csapprox'
+Bundle 'godlygeek/tabular'
 
-" Syntax/Indent for specific languages
+" Specific language support/features
 
-Bundle 'davidhalter/jedi-vim'
 Bundle 'plasticboy/vim-markdown'
 Bundle 'leshill/vim-json'
-Bundle 'kchmck/vim-coffee-script'
-Bundle 'ajford/vimkivy'
-Bundle 'tshirtman/vim-cython'
-" Bundle 'lambdatoast/elm.vim'
-" Bundle 'tpope/vim-haml'
 
-" Color correction
-
-Bundle 'godlygeek/csapprox'
-
-" Color Schemes
+" Current color scheme
 
 Bundle 'w0ng/vim-hybrid'
-" Bundle 'morhetz/gruvbox'
-" Bundle 'tomasr/molokai'
-" Bundle 'adlawson/vim-sorcerer'
-" Bundle 'sickill/vim-monokai'
-" Bundle 'chriskempson/vim-tomorrow-theme'
-" Bundle 'Junza/Spink'
 
 call vundle#end()
-filetype plugin indent on                                               				" required!
+filetype plugin indent on
