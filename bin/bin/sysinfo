@@ -17,6 +17,10 @@
 # ░░░░░░░░░░
 #
 
+#█▓▒░ constants
+
+readonly LOWER_CASE_DISTRO="true"
+
 #█▓▒░ functions
 
 get_os() {
@@ -131,7 +135,6 @@ get_distro() {
 		elif [ "${distro}" = "Arch" ]; then
 			distro="Arch Linux"
 		fi
-
 	elif [ "${os}" = "FreeBSD" ]; then
 		if [ -f /etc/platform -a -f /etc/version ]; then
 			distro="pfSense"
@@ -173,6 +176,11 @@ get_distro() {
 	else
 		distro=
 	fi
+
+  if [ "${LOWER_CASE_DISTRO}" = "true" ]; then
+    distro=$(echo "$distro" | tr [:upper:] [:lower:])
+  fi
+
 	export distro
 	return 0
 }
