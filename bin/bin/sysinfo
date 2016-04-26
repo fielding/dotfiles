@@ -199,7 +199,8 @@ name=$USER
 host=$(hostname)
 battery=/sys/class/power_supply/BAT1
 kernel=$(uname -r)
-pkgs=$(pacman -Qqs | wc -l)
+# pkgs=$(pacman -Qqs | wc -l)
+brews=$(brew list -l | tail -n +2 | wc -l | tr -d ' ')
 colors='sourcerer'
 font='gohufont 11'
 wm='herbstluftwm'
@@ -246,7 +247,8 @@ printf " \e[0m\n"
 #█▓▒░ environment
 printf " \e[1;33m      distro \e[0m$distro\n"
 printf " \e[1;33m      kernel \e[0m$kernel\n"
-printf " \e[1;33m    packages \e[0m$pkgs\n"
+printf " \e[1;33m       brews \e[0m$brews\n"
+# printf " \e[1;33m    packages \e[0m$pkgs\n"
 printf " \e[1;33m          wm \e[0m$wm\n"
 printf " \e[1;33m        font \e[0m$font\n"
 printf " \e[1;33m      colors \e[0m$colors\n"
