@@ -1,13 +1,13 @@
 #!/bin/sh
-#                           ██            ████                
-#                          ░░            ░██░                 
-#   ██████  ██   ██  ██████ ██ ███████  ██████  ██████ 
+#                           ██            ████
+#                          ░░            ░██░
+#   ██████  ██   ██  ██████ ██ ███████  ██████  ██████
 #  ██░░░░  ░░██ ██  ██░░░░ ░██░░██░░░██░░░██░  ██░░░░██
 # ░░█████   ░░███  ░░█████ ░██ ░██  ░██  ░██  ░██   ░██
 #  ░░░░░██   ░██    ░░░░░██░██ ░██  ░██  ░██  ░██   ░██
-#  ██████    ██     ██████ ░██ ███  ░██  ░██  ░░██████ 
-# ░░░░░░   ██      ░░░░░░  ░░ ░░░   ░░   ░░    ░░░░░░  
-#        ░░      
+#  ██████    ██     ██████ ░██ ███  ░██  ░██  ░░██████
+# ░░░░░░   ██      ░░░░░░  ░░ ░░░   ░░   ░░    ░░░░░░
+#        ░░
 #
 #  ▓▓▓▓▓▓▓▓▓▓
 # ░▓ author ▓ xero <x@xero.nu>
@@ -16,6 +16,168 @@
 # ░▓▓▓▓▓▓▓▓▓▓
 # ░░░░░░░░░░
 #
+
+#█▓▒░ functions
+
+get_os() {
+  os=$(uname -s)
+	if [ "${os}" = "SunOS" ]; then
+		os="Solaris"
+	elif [ "${os}" = "DragonFly" ]; then
+		os="DragonFlyBSD"
+	fi
+	export os
+	return 0
+}
+
+get_distro() {
+	if [ "${os}" = "Linux" ]; then
+		if [ -f /etc/os-release ]; then
+			. /etc/os-release
+      distro=$(echo ${NAME} | awk '{print $1}')
+		elif [ -x /usr/bin/lsb_release ]; then
+      distro=$(/usr/bin/lsb_release -si 2>/dev/null)
+		elif [ -f /etc/redhat-release ]; then
+      distro=$(cat /etc/redhat-release | awk '{print $1}')
+		elif [ -f /etc/fedora-release ]; then
+			distro="Fedora"
+		elif [ -f /etc/debian_version ]; then
+			if [ -f /etc/mailcleaner/etc/mailcleaner/version.def -o -f /usr/mailcleaner/etc/mailcleaner/version.def ]; then
+				distro="MailCleaner"
+			else
+				distro="Debian"
+			fi
+		elif [ -f /etc/arch-release ]; then
+			distro="Arch Linux"
+		elif [ -f /etc/gentoo-release ]; then
+			distro="Gentoo"
+		elif [ -f /etc/SuSE-release -o -f /etc/novell-release -o -f /etc/sles-release ]; then
+			distro="SuSE"
+		  if [ -f /etc/os-release ]; then
+			  . /etc/os-release
+				if [ "${NAME}" = "openSUSE" ]; then
+					distro="openSUSE"
+				fi
+			fi
+		elif [ -f /etc/mandriva-release ]; then
+			distro="Mandriva"
+		elif [ -f /etc/mandrake-release -o -f /etc/mandakelinux-release ]; then
+			distro="Mandrake"
+		elif [ -f /etc/UnitedLinux-release ]; then
+			distro="UnitedLinux"
+		elif [ -f /etc/openwrt_version ]; then
+			distro="OpenWRT"
+		elif [ -f /etc/slackware-version -o -f /etc/slackware-release ]; then
+			distro="Slackware"
+		elif [ -f /etc/annvix-release ]; then
+			distro="Annvix"
+		elif [ -f /etc/arklinux-release ]; then
+			distro="Arklinux"
+		elif [ -f /etc/aurox-release ]; then
+			distro="Aurox Linux"
+		elif [ -f /etc/blackcat-release ]; then
+			distro="BlackCat"
+		elif [ -f /etc/cobalt-release ]; then
+			distro="Cobalt"
+		elif [ -f /etc/conectiva-release ]; then
+			distro="Conectiva"
+		elif [ -f /etc/eos-version ]; then
+			distro="FreeEOS"
+		elif [ -f /etc/hlfs-release -o -f /etc/hlfs_version ]; then
+			distro="HLFS"
+		elif [ -f /etc/immunix-release ]; then
+			distro="Immunix"
+		elif [ -f /knoppix_version ]; then
+			distro="Knoppix"
+		elif [ -f /etc/lfs-release -o -f /etc/lfs_version ]; then
+			distro="Linux-From-Scratch"
+		elif [ -f /etc/linuxppc-release ]; then
+			distro="Linux-PPC"
+		elif [ -f /etc/mageia-release ]; then
+			distro="Mageia"
+		elif [ -f /etc/mklinux-release ]; then
+			distro="MkLinux"
+		elif [ -f /etc/nld-release ]; then
+			distro="Novell Linux Desktop"
+		elif [ -f /etc/pld-release ]; then
+			distro="PLD"
+		elif [ -f /etc/rubix-version ]; then
+			distro="Rubix"
+		elif [ -f /etc/e-smith-release ]; then
+			distro="SME Server"
+		elif [ -f /etc/synoinfo.conf ]; then
+			distro="Synology"
+		elif [ -f /etc/tinysofa-release ]; then
+			distro="Tiny Sofa"
+		elif [ -f /etc/trustix-release -o -f /etc/trustix-version ]; then
+			distro="Trustix"
+		elif [ -f /etc/turbolinux-release ]; then
+			distro="TurboLinux"
+		elif [ -f /etc/ultrapenguin-release ]; then
+			distro="UltraPenguin"
+		elif [ -f /etc/va-release ]; then
+			distro="VA-Linux"
+		elif [ -f /etc/yellowdog-release ]; then
+			distro="Yellow Dog"
+		else
+			distro=
+		fi
+
+    # Fixing some Distro names
+		if [ "${distro}" = "Debian GNU/Linux" ]; then
+			distro="Debian"
+		elif [ "${distro}" = "Red" -o "${distro}" = "RedHatEnterpriseServer" ]; then
+			distro="RedHat"
+		elif [ "${distro}" = "Arch" ]; then
+			distro="Arch Linux"
+		fi
+
+	elif [ "${os}" = "FreeBSD" ]; then
+		if [ -f /etc/platform -a -f /etc/version ]; then
+			distro="pfSense"
+		elif [ -f /etc/platform -a -f /etc/prd.name ]; then
+      distro=$(cat /etc/prd.name)
+		elif [ -f /usr/local/bin/pbreg ]; then
+			distro="PC-BSD"
+		elif [ -f /tmp/freenas_config.md5 ]; then
+			distro="FreeNAS"
+		else
+			distro=
+		fi
+  elif [ "${os}" = "DragonFlyBSD" ]; then
+    os="FreeBSD"
+    distro="DragonFlyBSD"
+	elif [ "${os}" = "Solaris" ]; then
+    distro=$(head -n 1 /etc/release | awk '{print $1}')
+		if [ "${distro}" = "Solaris" -o "${distro}" = "Oracle" ]; then
+			distro=
+		fi
+	elif [ "${os}" = "Darwin" ]; then
+    case $(uname -m) in
+			AppleTV*)
+				distro="AppleTV"
+			;;
+			iPad*)
+				distro="iPad"
+				;;
+			iPhone*)
+				distro="iPhone"
+				;;
+			iPod*)
+				distro="iPod"
+				;;
+			*)
+				distro="OS X"
+				;;
+		esac
+	else
+		distro=
+	fi
+	export distro
+	return 0
+}
+
+
 #█▓▒░ vars
 #FULL=▓
 #EMPTY=░
@@ -28,12 +190,14 @@ EMPTY=━
 name=$USER
 host=`hostname`
 battery=/sys/class/power_supply/BAT1
-distro="arch linux"
 kernel=`uname -r`
 pkgs=`pacman -Qqs | wc -l`
 colors='sourcerer'
 font='gohufont 11'
 wm='herbstluftwm'
+
+get_os
+get_distro
 
 #█▓▒░ progress bar 
 draw()
