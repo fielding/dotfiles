@@ -260,7 +260,8 @@ c_lvl=$(printf "%.0f" "$cpu")
 printf "   \e[0;36m%-4s \e[1;36m%-5s %-25s \n" " cpu" "$c_lvl%" `draw $c_lvl 15` 
 
 #█▓▒░ ram
-ram=$(free | awk '/Mem:/ {print int($3/$2 * 100.0)}')
+#ram=$(free | awk '/Mem:/ {print int($3/$2 * 100.0)}')
+ram=$(top -l 1 | grep PhysMem: | awk '{print int($2/($2 + $6) * 100.0)}')
 printf "   \e[0;36m%-4s \e[1;36m%-5s %-25s \n" " ram" "$ram%" `draw $ram 15` 
 
 #█▓▒░ battery 
