@@ -199,7 +199,7 @@ name=$USER
 host=$(hostname)
 battery=/sys/class/power_supply/BAT1
 kernel=$(uname -r)
-# pkgs=$(pacman -Qqs | wc -l)
+#pkgs=$(pacman -Qqs | wc -l)
 brews=$(brew list -l | tail -n +2 | wc -l | tr -d ' ')
 colors='sourcerer'
 font='gohufont 11'
@@ -267,11 +267,12 @@ ram=$(top -l 1 | grep PhysMem: | awk '{print int($2/($2 + $6) * 100.0)}')
 printf "   \e[0;36m%-4s \e[1;36m%-5s %-25s \n" " ram" "$ram%" `draw $ram 15` 
 
 #█▓▒░ battery 
-b_full=$battery/charge_full
-b_now=$battery/charge_now
-bf=$(cat $b_full)
-bn=$(cat $b_now)
-charge=$(printf $(( 100 * $bn / $bf )))
+# b_full=$battery/charge_full
+# b_now=$battery/charge_now
+# bf=$(cat $b_full)
+# bn=$(cat $b_now)
+# charge=$(printf $(( 100 * $bn / $bf )))
+charge=$(pmset -g batt | awk 'NR==2 { gsub(/%;/,""); print $2 }')
 
 case 1 in
   $(($charge <= 15)))
