@@ -5,6 +5,7 @@ alias grep="grep --color=auto" # always grep with color
 # Shortcuts
 alias sv="sudo vim"
 # alias irc="rm -f ~/.irssi/saved_colors & irssi"
+alias irc="weechat"
 alias reboot="sudo shutdown -r now"
 alias shutdown="sudo shutdown -h now"
 alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
