@@ -7,11 +7,6 @@ export GREP_COLOR="1;33"
 # set android_home directory for android development
 export ANDROID_HOME=/usr/local/opt/android-sdk
 
-# rbenv setup
-if [[ "$(type -P rbenv)" && ! "$(type -t _rbenv)" ]]; then
-  eval "$(rbenv init -)"
-fi
-
 # Prefer English and use Unicode
 export LC_ALL="en_US.UTF-8"
 export LANG="en_US.UTF-8"
