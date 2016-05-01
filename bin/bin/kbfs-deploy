@@ -1,0 +1,38 @@
+#!/bin/sh
+#
+#                      █████      █████        ██████
+#                     ▒▒███      ▒▒███        ███▒▒███
+#                      ▒███ █████ ▒███████   ▒███ ▒▒▒   █████
+#                      ▒███▒▒███  ▒███▒▒███ ███████    ███▒▒
+#                      ▒██████▒   ▒███ ▒███▒▒▒███▒    ▒▒█████
+#                      ▒███▒▒███  ▒███ ▒███  ▒███      ▒▒▒▒███
+#                      ████ █████ ████████   █████     ██████
+#                     ▒▒▒▒ ▒▒▒▒▒ ▒▒▒▒▒▒▒▒   ▒▒▒▒▒     ▒▒▒▒▒▒
+#                  █████                    ████
+#                  ▒▒███                    ▒▒███
+#                ███████   ██████  ████████  ▒███   ██████  █████ ████
+#               ███▒▒███  ███▒▒███▒▒███▒▒███ ▒███  ███▒▒███▒▒███ ▒███
+#              ▒███ ▒███ ▒███████  ▒███ ▒███ ▒███ ▒███ ▒███ ▒███ ▒███
+#              ▒███ ▒███ ▒███▒▒▒   ▒███ ▒███ ▒███ ▒███ ▒███ ▒███ ▒███
+#              ▒▒████████▒▒██████  ▒███████  █████▒▒██████  ▒▒███████
+#               ▒▒▒▒▒▒▒▒  ▒▒▒▒▒▒   ▒███▒▒▒  ▒▒▒▒▒  ▒▒▒▒▒▒    ▒▒▒▒▒███
+#                                  ▒███                      ███ ▒███
+#                                  █████                    ▒▒██████
+#                                 ▒▒▒▒▒                      ▒▒▒▒▒▒
+#
+#                     deploy git repo to publicly served
+#                   kbfs directory (/keybase/public/$USER)
+#
+#█▓▒░ config - take note of trailing slashes
+readonly TMP_STAGING_DIR=/tmp/kbfs-staging/
+readonly PROJECT_GIT_DIR=/Users/fielding/src/hack/fielding.keybase.pub/.git
+readonly RSYNC_EXCLUDE_FILE=/Users/fielding/src/hack/fielding.keybase.pub/.kbignore
+readonly KBFS_PUBLIC_DIR=/keybase/public/fielding/
+
+echo '█▓▒░ keybase.pub public directory deployment triggered ░▒▓█'
+rm -rf $TMP_STAGING_DIR
+mkdir -p $TMP_STAGING_DIR
+export GIT_WORK_TREE=$TMP_STAGING_DIR
+export GIT_DIR=$PROJECT_GIT_DIR
+git checkout -qf master
+rsync -vcru --delete --exclude-from=$RSYNC_EXCLUDE_FILE $TMP_STAGING_DIR $KBFS_PUBLIC_DIR
