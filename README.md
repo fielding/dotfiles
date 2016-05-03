@@ -30,19 +30,19 @@ vim         > .vimrc, colorscheme and plugins
 ## Installation
 
 ```sh
-brew install stow
+$ brew install stow
 
-stow bash bin discolors git grc iterm2 deadline terminfo tmux vim
+$ stow bash bin dircolors git grc iterm2 deadline terminfo tmux vim
 
-git submodule update --init --recursive
+$ git submodule update --init --recursive
 
-tic ~/.termino/69/iterm.terminfo
-tic ~/.terminfo/74/tmux.terminfo
-tic ~/.terminfo/74/tmux-256color.terminfo
+$ tic ~/.terminfo/69/iterm.terminfo
+$ tic ~/.terminfo/74/tmux.terminfo
+$ tic ~/.terminfo/74/tmux-256color.terminfo
 
-vim +BundleInstall +BundleClean +q
+$ vim +PluginInstall +PluginClean +q
 
-~/.tmux/plugins/tpm/bin/install_plugins
+$ ~/.tmux/plugins/tpm/bin/install_plugins
 ```
 
 ---
@@ -100,7 +100,8 @@ vim +BundleInstall +BundleClean +q
 ---
 ## README Maintenance
 
-vim search and replace to convert bundles.vim to markdown hyperlinks for plugin section.
+vim search and replace to convert bundles.vim to markdown hyperlinks for plugin
+section.
 
 ```
   %s/[\(.*\)](https://github.com/\(.*\))  /[\1](https:\/\/github.com\/\1)  /
@@ -109,47 +110,65 @@ vim search and replace to convert bundles.vim to markdown hyperlinks for plugin 
 ---
 ## TODO
 
-- [x] binds/tune up text/code folding within vim (temp marking as done, I think I am content with za, zo, zc, and their bigcase counterparts)
-- [x] Rework implementation/installation at new workstation; current .gitignore with the git repo existing in ~ is pretty bogus
+- [x] binds/tune up text/code folding within vim (temp marking as done, I think
+  I am content with za, zo, zc, and their bigcase counterparts)
+- [x] Rework implementation/installation at new workstation; current .gitignore
+  with the git repo existing in ~ is pretty bogus
 - [x] check in to submodules for tmux/vim/whatev plugins
 - [x] Tmux configuration (basically a default config currently)
 - [ ] write up on using GNU Stow and what each stow package is for, etc
-  - [ ] update "overview" section to include a brief overview of what my settings/additions include
+  - [ ] update "overview" section to include a brief overview of what my
+    settings/additions include
 - [ ] where the hell should I put .colors/fielding? XResources?
 - [ ] find a suitable vim binding for Goyo and Goyo!
 - [ ] check in to vim-hackernews and adding additional color highlighting to
- comments pages. A small dab of color could go a long way
+  comments pages. A small dab of color could go a long way
 - [ ] can I get Github Flavored Markdown for livedown/vim-livedown?
 - [ ] Revise Vim plugins; Try and incorporate desired, but currently unsed
-plugins, in to my workflow, and then remove any "unfitting" or not needed.
+  plugins, in to my workflow, and then remove any "unfitting" or not needed.
 - [ ] Tmux scrolling with less
 - [ ] Reevaluate clipboard "functionality" and sanity with vim/tmux and os x
+- [ ] License/consider if needed
+- [ ] Colors between powerline/tmux/vim seem to be off a tad bit
+- [ ] .vimrc restructuring using folding and better sections
+- [ ] add my weechat configuration
+- [ ] submodule upkeep? (git submodule foreach git pull or git submodule for
+  each git pull origin master)
+- [ ] actually configure and include custom powerline configuration for latest
+  version
+- [ ] include and test pip-upgrade-all with update alias
+- [ ] seinfeild/git commit daily indicator on tmux status line
+- [ ] reevaluate tmux status line and add/remove accordingly
+- [ ] vim PluginUpdate fails on gmarik/vundle, just need to make sure this is
+  correct behavior
+- [ ] revisit grc
+- [ ] utilize grc.bashrc (as an include in the bash_profile.d include
+  directory))
+- [ ] include in installation section the installing of any packages used in
+  my core setup via their respective package managers(brew, npm, pip, gems,
+  etc)
+  - [ ] livedown via npm
+- [ ] evaluate kbfs-deploy and changing current branch despite different
+  working directories
+
+### Someday/Maybe
+- [ ] Hotline Miami Color Scheme
 - [ ] AN OPTIMISTIC ADVENTURE DOWN POSTAL LANE: MUTT the ultimate setup.
   - [ ] MUTT
   - [ ] notmuch
   - [ ] msmtp
   - [ ] POSSIBLY offlineimap
   - [ ] contacts (brew install contacts)
-- [ ] License/consider if needed
-- [ ] Colors between powerline/tmux/vim seem to be off a tad bit
-- [ ] .vimrc restructuring using folding and better sections
-- [ ] add my weechat configuration
-- [ ] submodule upkeep? (git submodule foreach git pull or git submodule foreach git pull origin master)
-- [ ] actually configure and include custom powerline configuration for latest version
-- [ ] include and test pip-upgrade-all with update alias
-- [ ] seinfeild/git commit daily indicator on tmux status line
-- [ ] reevaluate tmux status line and add/remove accordingly
-- [ ] vim PluginUpdate fails on gmarik/vundle, just need to make sure this is correct behavior
-- [ ] revisit grc
-- [ ] utilize grc.bashrc (as an include in the bash_profile.d include directory)
-
-### Someday/Maybe
-- [ ] Hotline Miami Color Scheme
 
 ---
 ## Inspiration / Special Thanks to...
 
-* [Jeffrey Carpenter](https://github.com/i8degrees), his [dotfiles repository](https://github.com/i8degrees/dotfiles), and for having somebody to "talk nerdy" to!
-* [Mathias Bynens](https://mathiasbynens.be/) and his [dotfile repository](https://github.com/mathiasbynens/dotfiles)
-* [Xero Harrison](http://xero.nu) and his [dotfile repository](https://github.com/xero/dotfiles)
-
+* [Jeffrey Carpenter](https://github.com/i8degrees),
+  his [dotfiles repository](https://github.com/i8degrees/dotfiles),
+  and for having somebody to "talk nerdy" to!
+* [Mathias Bynens](https://mathiasbynens.be/)
+  and his [dotfile repository](https://github.com/mathiasbynens/dotfiles)
+* [Xero Harrison](http://xero.nu)
+  and his [dotfile repository](https://github.com/xero/dotfiles)
+* [Jason Ryan](http://jasonwryan.com) and his 
+  [dotfile repositories](https://bitbucket.org/jasonwryan/)
