@@ -42,6 +42,11 @@ fi
 # local:lib for perl modules
 eval $(perl -I${HOME}/perl5/lib/perl5 -Mlocal::lib)
 
+# rbenv setup
+if [[ "$(type -P rbenv)" && ! "$(type -t _rbenv)" ]]; then
+  eval "$(rbenv init -)"
+fi
+
 ### Completions
 
 if [ -f $(brew --prefix)/share/bash-completion/bash_completion ]; then

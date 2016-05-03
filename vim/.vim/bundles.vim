@@ -26,6 +26,7 @@ Bundle 'junegunn/goyo.vim'
 Bundle 'moll/vim-bbye'
 Bundle 'tomtom/tcomment_vim'
 Bundle 'mhinz/vim-startify'
+Bundle 'airblade/vim-gitgutter'
 Bundle 'godlygeek/csapprox'
 Bundle 'godlygeek/tabular'
 

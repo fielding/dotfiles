@@ -2,7 +2,7 @@
 ## file:         ~/.colors/.dir_colors
 ## author:       fielding johnston - http://www.justfielding.com
 ##--------------------------------------------------------------
-
+# TODO: revisit dircolors scheme; remobe ugly green back highlight
 # Based heavily on work by jason wryan and trapd00r
 
 # COLOR needs one of these arguments: 'tty' colorizes output to ttys, but not
@@ -224,6 +224,7 @@ EIGHTBIT 1
  TERM eterm-color
  TERM gnome
  TERM gnome-256color
+ TERM iterm
  TERM jfbterm
  TERM konsole
  TERM kterm
@@ -247,10 +248,11 @@ EIGHTBIT 1
  TERM screen.rxvt
  TERM screen.linux
  TERM terminator
+ TERM tmux-256color
  TERM vt100
  TERM xterm
  TERM xterm-16color
  TERM xterm-256color
  TERM xterm-88color
  TERM xterm-color
- TERM xterm-debian 
+ TERM xterm-debian

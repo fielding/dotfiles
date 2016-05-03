@@ -1,0 +1,48 @@
+#!/bin/sh
+#
+#                   █████      █████        ██████
+#                  ▒▒███      ▒▒███        ███▒▒███
+#                   ▒███ █████ ▒███████   ▒███ ▒▒▒  █████
+#                   ▒███▒▒███  ▒███▒▒███ ███████   ███▒▒
+#                   ▒██████▒   ▒███ ▒███▒▒▒███▒   ▒▒█████
+#                   ▒███▒▒███  ▒███ ▒███  ▒███     ▒▒▒▒███
+#                   ████ █████ ████████   █████    ██████
+#                  ▒▒▒▒ ▒▒▒▒▒ ▒▒▒▒▒▒▒▒   ▒▒▒▒▒    ▒▒▒▒▒▒
+#               █████                    ████
+#               ▒▒███                    ▒▒███
+#             ███████   ██████  ████████  ▒███   ██████  █████ ████
+#            ███▒▒███  ███▒▒███▒▒███▒▒███ ▒███  ███▒▒███▒▒███ ▒███
+#           ▒███ ▒███ ▒███████  ▒███ ▒███ ▒███ ▒███ ▒███ ▒███ ▒███
+#           ▒███ ▒███ ▒███▒▒▒   ▒███ ▒███ ▒███ ▒███ ▒███ ▒███ ▒███
+#           ▒▒████████▒▒██████  ▒███████  █████▒▒██████  ▒▒███████
+#            ▒▒▒▒▒▒▒▒  ▒▒▒▒▒▒   ▒███▒▒▒  ▒▒▒▒▒  ▒▒▒▒▒▒    ▒▒▒▒▒███
+#                               ▒███                      ███ ▒███
+#                               █████                    ▒▒██████
+#                              ▒▒▒▒▒                      ▒▒▒▒▒▒
+#
+#                     deploy git repo to publicly served
+#                   kbfs directory (/keybase/public/$USER
+#
+# Note: the reason for not doing a git checkout on top of /keybase/public/$USER 
+# itself stems from having random directories and files that I will share via
+# keybase.pub, but that are not apart of the project's git repository. On the
+# flip side of that, there are some files in the git repository I do not wish
+# to litter /keybase/public with. By checking out to a temporary directory and
+# then using rsync with an EXCLUDE list to only copy over changes, aditions and
+# delete extranous files not listed in said list, I can live on happily with
+# my randomly shared tidbits co-existing with my keybase.pub landing page.
+#
+# I'm also not entirely sure how keybase would handle the checkout method. I
+# THINK, still learning of course, that this method minimizes the file changes
+#
+#█▓▒░ config - take note of trailing slashes
+readonly TMP_STAGING_DIR=/tmp/kbfs-staging/
+readonly PROJECT_GIT_DIR=/Users/fielding/src/hack/fielding.keybase.pub/.git
+readonly RSYNC_EXCLUDE_FILE=/Users/fielding/src/hack/fielding.keybase.pub/.kbignore
+readonly KBFS_PUBLIC_DIR=/keybase/public/fielding/
+
+echo '█▓▒░ keybase.pub public directory deployment triggered ░▒▓█'
+rm -rf $TMP_STAGING_DIR
+mkdir -p $TMP_STAGING_DIR
+git --work-tree=$TMP_STAGING_DIR --git-dir=$PROJECT_GIT_DIR checkout -qf master
+rsync -vcru --delete --exclude-from=$RSYNC_EXCLUDE_FILE $TMP_STAGING_DIR $KBFS_PUBLIC_DIR

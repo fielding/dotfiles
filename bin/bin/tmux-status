@@ -52,7 +52,7 @@ bat()
 }
 cpu()
 {
-  iostat -w 1 -c 2 -n 1 | tail -1 | awk '{usage=int100-$6} END {printf("%d",usage)}';
+  iostat -w 1 -c 2 -n 1 | tail -1 | awk '{usage=100-$6} END {printf("%d",usage)}';
 }
 ram()
 {

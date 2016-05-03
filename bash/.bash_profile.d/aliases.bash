@@ -5,6 +5,7 @@ alias grep="grep --color=auto" # always grep with color
 # Shortcuts
 alias sv="sudo vim"
 # alias irc="rm -f ~/.irssi/saved_colors & irssi"
+alias irc="weechat"
 alias reboot="sudo shutdown -r now"
 alias shutdown="sudo shutdown -h now"
 alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
@@ -41,7 +42,7 @@ alias emptytrash="sudo rm -rfv /Volumes/*/.Trashes; sudo rm -rfv ~/.Trash; sudo 
 alias toiletlist='for i in ${TOILET_FONT_PATH:=/usr/local/Cellar/figlet/2.2.5/share/figlet/fonts}/*.{t,f}lf; do j=${i##*/}; echo ""; echo "╓───── "$j; echo "╙────────────────────────────────────── ─ ─ "; echo ""; toilet -t -d "${i%/*}" -f "$j" "${j%.*}"; done'
 
 # Get OS X Software Updates, and update installed Ruby gems, Homebrew, npm, and their installed packages
-alias update="sudo softwareupdate -i -a; brew update; brew upgrade --all; brew cleanup; npm install npm -g; npm update -g; sudo gem update --system; sudo gem update"
+alias update="sudo softwareupdate -i -a; brew update; brew upgrade --all; brew cleanup; npm install npm -g; npm update -g; sudo gem update --system; sudo gem update; pip-upgrade-all"
 
 # rot13: or caesar cipher or substitution cipher shifting 13 characters
 alias rot13="tr a-zA-Z n-za-mN-ZA-M"
