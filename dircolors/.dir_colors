@@ -2,7 +2,7 @@
 ## file:         ~/.colors/.dir_colors
 ## author:       fielding johnston - http://www.justfielding.com
 ##--------------------------------------------------------------
-
+# TODO: revisit dircolors scheme; remobe ugly green back highlight
 # Based heavily on work by jason wryan and trapd00r
 
 # COLOR needs one of these arguments: 'tty' colorizes output to ttys, but not
