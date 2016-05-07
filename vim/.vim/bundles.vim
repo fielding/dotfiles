@@ -34,6 +34,8 @@ Bundle 'godlygeek/tabular'
 
 Bundle 'plasticboy/vim-markdown'
 Bundle 'leshill/vim-json'
+Bundle 'davidoc/taskpaper.vim'
+
 
 " Current color scheme
 
