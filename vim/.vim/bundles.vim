@@ -7,8 +7,10 @@ call vundle#begin()
 " 'user/repository' format
 Plugin 'gmarik/vundle'
 
-" Features
+" Current color scheme
+Bundle 'w0ng/vim-hybrid'
 
+" Features
 Bundle 'bronson/vim-trailing-whitespace'
 Bundle 'nathanaelkane/vim-indent-guides'
 Bundle 'tpope/vim-afterimage'
@@ -31,15 +33,9 @@ Bundle 'godlygeek/csapprox'
 Bundle 'godlygeek/tabular'
 
 " Specific language support/features
-
 Bundle 'plasticboy/vim-markdown'
-Bundle 'leshill/vim-json'
 Bundle 'davidoc/taskpaper.vim'
-
-
-" Current color scheme
-
-Bundle 'w0ng/vim-hybrid'
+Bundle 'sheerun/vim-polyglot'
 
 call vundle#end()
 filetype plugin indent on
