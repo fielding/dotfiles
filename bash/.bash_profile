@@ -6,7 +6,7 @@
 # Set PATH
 # TODO: Fgure out why the hell I have to add $HOME/perl5/bin here, which causes
 #   double listing in $PATH in everything except tmux, for functionality in tmux
-export PATH="$HOME/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:/opt/bin:$HOME/.cabal/bin:$HOME/.rbenv/bin:$HOME/perl5/bin"
+export PATH="$HOME/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:/opt/bin:$HOME/.cabal/bin:$HOME/.rbenv/bin:$HOME/perl5/bin:/Library/TeX/texbin"
 
 ### Load the bash profile configurations
 # for file in ~/.{exports,aliases,functions,extra}; do
