@@ -63,8 +63,8 @@ set novisualbell
 set t_vb=
 
 " folding
+" TODO: look in to foldignore
 set foldignore=                                                                 " don't ignore anything when folding
-set foldlevelstart=0                                                            " no folds closed on open
 set foldmethod=marker                                                           " collapse code using indent levels
 set foldnestmax=20                                                              " limit max folds for indent and syntax methods
 
