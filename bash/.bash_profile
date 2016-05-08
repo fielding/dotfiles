@@ -106,6 +106,7 @@ case $(uname -s) in
   ;;
 esac
 
+eval "$(thefuck --alias fuck)"
 
 # Setup the prompt
 # TODO: Why does this have to be last in this current setup
