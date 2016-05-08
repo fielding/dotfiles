@@ -4,30 +4,23 @@
 " -----------------------------------------------------------------------------
 
 
-" compatability {{{
+" plugins {{{1
 " -----------------------------------------------------------------------------
-"
-set nocompatible                                                                " allows me to keep my sanity
-set encoding=utf-8                                                              " sets encoding to utf-8
-
-"}}}
-
-
 if filereadable(expand("~/.vim/bundles.vim"))                                   " if bundles.vim exists then...
 	source ~/.vim/bundles.vim                                                     " include vundle's bundle config!
 endif
 
-" general {{{
-" ----------------------------------------------------------------------------
-
-set autoread                                                                    " Re-read file if changed outside
-set autowrite                                                                   " Auto save before commands like :next
-
-"}}}
-
+" init {{{1
+" -----------------------------------------------------------------------------
 filetype plugin indent on
 syntax on
 
+" set {{{1
+" ----------------------------------------------------------------------------
+set nocompatible                                                                " vim sets this automatically upon findin a vimrc file, keeping because it's my homie
+set encoding=utf-8                                                              " sets encoding to utf-8
+set autoread                                                                    " Re-read file if changed outside
+set autowrite                                                                   " Auto save before commands like :next
 set backspace=2                                                                 " full backspacing compat
 set history=50                                                                  " keep 50 lines of command line history
 set ruler                                                                       " show the cursor position all the time
@@ -229,15 +222,20 @@ let g:syntastic_check_on_open=1
 let g:syntastic_enable_signs=1
 let g:polyglot_disabled = ['markdown']
 
-
-" functions {{{
+" mapping {{{1
 " -----------------------------------------------------------------------------
 
-"}}}
-
-
-" extra {{{
+" autocmd {{{1
 " -----------------------------------------------------------------------------
-"source ~/.vim/.simplenoterc
 
-" }}}
+" commands {{{1
+" -----------------------------------------------------------------------------
+
+" colors {{{1
+" -----------------------------------------------------------------------------
+
+" statusline {{{1
+" -----------------------------------------------------------------------------
+
+" options {{{1
+" -----------------------------------------------------------------------------
