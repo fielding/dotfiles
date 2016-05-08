@@ -40,6 +40,7 @@ set includeexpr+=substitute(v:fname,'s$','','g')                                
 set showtabline=2
 set modeline                                                                    " respect modeline
 set modelines=4
+set lazyredraw
 
 " working file settings and location
 set directory=~/.vim/files/swap//
