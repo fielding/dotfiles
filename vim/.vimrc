@@ -32,7 +32,6 @@ set textwidth=0                                                                 
 set colorcolumn=80                                                              " column indicator
 set lbr                                                                         " wrap text
 set number                                                                      " show line numbers
-set directory=~/.vim/.tmp//                                                     " where to put tmp files
 set pastetoggle=<f5>                                                            " toggle paste mode
 set clipboard=unnamed                                                           " Use the OS clipboard by default
 set wildmenu                                                                    " enhanced tab-completion
@@ -42,14 +41,16 @@ set showtabline=2
 set modeline                                                                    " respect modeline
 set modelines=4
 
+" working file settings and location
+set directory=~/.vim/files/swap//
+set updatecount=100
 set undofile
-set undodir=~/.vim/undo
-set noswapfile
-
-" evaluate after flickering fix
-" and with/without keybase fs on slow connection
-" set nowritebackup                                                             " changes vim default write behavior and makes vim write buffer of original file
-set nobackup                                                                    " avoid automatic creation of backup files
+set undodir=~/.vim/files/undo/
+set backup
+set backupdir=~/.vim/files/backup/
+set backupext=-vimbackup
+set backupskip=
+set viminfo='100,n~/.vim/files/viminfo
 
                                                                                 " TODO: Come up with what I want to use for listchars
 set lcs=tab:▸\ ,trail:·,eol:¬,nbsp:_
