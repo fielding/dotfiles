@@ -1,5 +1,5 @@
 function parse_git_dirty() {
-  [[ $(git status 2> /dev/null | tail -n1) != "nothing to commit, working directory clean" ]] && echo "*"
+  [[ $(git status 2> /dev/null | tail -n1) != "nothing to commit, working directory clean" ]] && echo "+"
 }
 
 function parse_git_branch() {
@@ -16,7 +16,3 @@ function git_status() {
 export PS1="\[$(tput setaf 3)\]┌─╼ \[$(tput bold)$(tput setaf 7)\][\[$(tput sgr0)\]\[$(tput setaf 7)\]\w\[$(tput bold)$(tput setaf 7)\]]\[$(tput sgr0)\]\$(git_status)\n\[$(tput sgr0)$(tput setaf 3)\]\$(if [[ \$? == 0 ]]; then echo \"\[$(tput setaf 3)\]└────╼\"; else echo \"\[$(tput setaf 3)\]└╼\"; fi) \[$(tput setaf 7)$(tput sgr0)\]"
 
 export PS1;
-
-
-
-
