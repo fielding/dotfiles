@@ -47,6 +47,10 @@ if [[ "$(type -P rbenv)" && ! "$(type -t _rbenv)" ]]; then
   eval "$(rbenv init -)"
 fi
 
+# let luarocks setup suitable env variables for us
+eval $(luarocks path --bin)
+
+
 ### Completions
 
 if [ -f $(brew --prefix)/share/bash-completion/bash_completion ]; then
