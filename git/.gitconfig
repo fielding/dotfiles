@@ -35,8 +35,8 @@
   email = fielding@justfielding.com
 	signingkey = 4F3FB9DB
 [filter "lfs"]
-	clean = git-lfs clean %f
-	smudge = git-lfs smudge %f
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
 	required = true
 [init]
 	templatedir = ~/.git-templates
