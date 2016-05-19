@@ -1,8 +1,6 @@
 bold="$(tput bold)"
 reset="$(tput sgr0)"
 
-# 256 colors if terminal supports it
-
 black="$(tput setaf 0)"
 red="$(tput setaf 1)"
 green="$(tput setaf 2)"
@@ -29,10 +27,10 @@ function parse_git_branch() {
 }
 
 function git_status() {
-  if [ $(git rev-parse --is-inside-work-tree &>/dev/null; echo "${?}") == '0' ]; then
+  if [ "$(git rev-parse --is-inside-work-tree &>/dev/null; echo "${?}")" == '0' ]; then
     echo "╺─╸$white[$reset$bold$white$(parse_git_branch)$reset$white]"
   fi
 }
 
-export PS1="\[$line\]┌─╼ \[$bold$white\][\[$reset\]\[$white\]\w\[$bold$white\]]\[$reset\]$line$(git_status)\n\[$reset\]\$(if [[ \$? == 0 ]]; then echo \"\[$line\]└────╼\"; else echo \"\[$line\]└╼\"; fi) \[$white$reset\]"
+export PS1="\[$line\]┌─╼ \[$bold$white\][\[$reset\]\[$white\]\w\[$bold$white\]]\[$reset$line\]\$(git_status)\n\[$reset\]\$(if [[ \$? == 0 ]]; then echo \"\[$line\]└────╼\"; else echo \"\[$line\]└╼\"; fi) \[$white$reset\]"
 export PS1
