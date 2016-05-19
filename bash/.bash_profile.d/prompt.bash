@@ -15,9 +15,9 @@ white="$(tput setaf 7)"
 if [ "$(hostname)" == "sage" ]; then
   line="$magenta"
 elif [ "$(hostname)" == "mace" ]; then
-  line="$orange"
+  line="$yellow"
 elif [ "$(hostname)" == "jamsmine" ]; then
-  line="$boldmagenta"
+  line="$bold$magenta"
 fi
 
 function parse_git_dirty() {
@@ -30,10 +30,9 @@ function parse_git_branch() {
 
 function git_status() {
   if [ $(git rev-parse --is-inside-work-tree &>/dev/null; echo "${?}") == '0' ]; then
-    echo "╺─╸$bold$white[$reset$white$(parse_git_branch)$white$bold]"
-   # echo "$line╺─╸$bold$white[$reset$white$(parse_git_branch)$white$bold]"
+    echo "╺─╸$white[$reset$bold$white$(parse_git_branch)$reset$white]"
   fi
 }
 
 export PS1="\[$line\]┌─╼ \[$bold$white\][\[$reset\]\[$white\]\w\[$bold$white\]]\[$reset\]$line$(git_status)\n\[$reset\]\$(if [[ \$? == 0 ]]; then echo \"\[$line\]└────╼\"; else echo \"\[$line\]└╼\"; fi) \[$white$reset\]"
-export PS1;
+export PS1
