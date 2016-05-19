@@ -1,3 +1,25 @@
+bold="$(tput bold)"
+reset="$(tput sgr0)"
+
+# 256 colors if terminal supports it
+
+black="$(tput setaf 0)"
+red="$(tput setaf 1)"
+green="$(tput setaf 2)"
+yellow="$(tput setaf 3)"
+blue="$(tput setaf 4)"
+magenta="$(tput setaf 5)"
+cyan="$(tput setaf 6)"
+white="$(tput setaf 7)"
+
+if [ "$(hostname)" == "sage" ]; then
+  line="$magenta"
+elif [ "$(hostname)" == "mace" ]; then
+  line="$orange"
+elif [ "$(hostname)" == "jamsmine" ]; then
+  line="$boldmagenta"
+fi
+
 function parse_git_dirty() {
   [[ $(git status 2> /dev/null | tail -n1) != "nothing to commit, working directory clean" ]] && echo "+"
 }
@@ -8,11 +30,10 @@ function parse_git_branch() {
 
 function git_status() {
   if [ $(git rev-parse --is-inside-work-tree &>/dev/null; echo "${?}") == '0' ]; then
-    echo "$(tput setaf 3)╺─╸$(tput bold)$(tput setaf 7)[$(tput sgr0)$(tput setaf 7)$(parse_git_branch)$(tput setaf 7)$(tput bold)]"
+    echo "╺─╸$bold$white[$reset$white$(parse_git_branch)$white$bold]"
+   # echo "$line╺─╸$bold$white[$reset$white$(parse_git_branch)$white$bold]"
   fi
 }
 
-
-export PS1="\[$(tput setaf 3)\]┌─╼ \[$(tput bold)$(tput setaf 7)\][\[$(tput sgr0)\]\[$(tput setaf 7)\]\w\[$(tput bold)$(tput setaf 7)\]]\[$(tput sgr0)\]\$(git_status)\n\[$(tput sgr0)$(tput setaf 3)\]\$(if [[ \$? == 0 ]]; then echo \"\[$(tput setaf 3)\]└────╼\"; else echo \"\[$(tput setaf 3)\]└╼\"; fi) \[$(tput setaf 7)$(tput sgr0)\]"
-
+export PS1="\[$line\]┌─╼ \[$bold$white\][\[$reset\]\[$white\]\w\[$bold$white\]]\[$reset\]$line$(git_status)\n\[$reset\]\$(if [[ \$? == 0 ]]; then echo \"\[$line\]└────╼\"; else echo \"\[$line\]└╼\"; fi) \[$white$reset\]"
 export PS1;
