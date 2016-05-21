@@ -173,21 +173,6 @@ if has("autocmd")
   autocmd BufWritePost .vimrc source $MYVIMRC
 endif " has("autocmd")
 
-
-
-" Colors/Appearance
-
-set t_Co=256
-set t_Sf=[3%dm
-set t_Sb=[4%dm
-
-let g:hybrid_use_Xresources=1
-set background=dark
-colorscheme hybrid
-highlight Normal ctermbg=NONE
-highlight CursorLine ctermbg=0
-highlight Comment cterm=italic
-
 if has('gui_running')
   set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h8
   set guioptions-=T                                                             " remove toolbar
@@ -197,7 +182,6 @@ if has('gui_running')
   set guioptions-=b                                                             " remove bottom scroll bar
   set guicursor+=a:block-blinkon0                                               " use solid block cursor
 endif
-
                                                                                 " TODO: finish seting up powerline for vim
 python from powerline.vim import setup as powerline_setup
 python powerline_setup()
@@ -218,12 +202,6 @@ endfunction
 au BufReadPre *.nfo call SetFileEncodings('cp437')
 au BufReadPost *.nfo call RestoreFileEncodings()
 
-
-let g:Powerline_symbols='fancy'
-let g:syntastic_check_on_open=1
-let g:syntastic_enable_signs=1
-let g:polyglot_disabled = ['markdown']
-
 " mapping {{{1
 " -----------------------------------------------------------------------------
 
@@ -235,9 +213,23 @@ let g:polyglot_disabled = ['markdown']
 
 " colors {{{1
 " -----------------------------------------------------------------------------
+set t_Co=256
+set t_Sf=[3%dm
+set t_Sb=[4%dm
+
+let g:hybrid_custom_term_colors=1
+set background=dark
+colorscheme hybrid
+highlight Normal ctermbg=NONE
+highlight CursorLine ctermbg=0
+highlight Comment cterm=italic
 
 " statusline {{{1
 " -----------------------------------------------------------------------------
 
 " options {{{1
 " -----------------------------------------------------------------------------
+let g:Powerline_symbols='fancy'
+let g:syntastic_check_on_open=1
+let g:syntastic_enable_signs=1
+let g:polyglot_disabled = ['markdown']

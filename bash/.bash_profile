@@ -47,6 +47,10 @@ if [[ "$(type -P rbenv)" && ! "$(type -t _rbenv)" ]]; then
   eval "$(rbenv init -)"
 fi
 
+# let luarocks setup suitable env variables for us
+eval $(luarocks path --bin)
+
+
 ### Completions
 
 if [ -f $(brew --prefix)/share/bash-completion/bash_completion ]; then
@@ -107,12 +111,3 @@ case $(uname -s) in
 esac
 
 eval "$(thefuck --alias fuck)"
-
-# Setup the prompt
-# TODO: Why does this have to be last in this current setup
-# TODO: Find a better way to do the prompt/powerline mess
-if [ -f /usr/local/lib/python2.7/site-packages/powerline/bindings/bash/powerline.sh ]; then
-  source /usr/local/lib/python2.7/site-packages/powerline/bindings/bash/powerline.sh
-elif [ -f $HOME/.local/lib/python3.4/site-packages/powerline/bindings/bash/powerline.sh ]; then
-  source $HOME/.local/lib/python3.4/site-packages/powerline/bindings/bash/powerline.sh
-fi
