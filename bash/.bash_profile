@@ -62,8 +62,6 @@ fi
 case $(uname -s) in
   Darwin|FreeBSD)
 
-    # TODO: PYTHONPATH, is this the best way to deal with this?
-    export PYTHONPATH=$(brew --prefix)/lib/python2.7/site-packages
     # TODO: PROMPT_COMMAND placement and further explore what all this does
     #   other than allow for iterm2 to show the correct window title
     export PROMPT_COMMAND='echo -ne "\033]0;${PWD/#$HOME/~}\007"'
@@ -91,8 +89,8 @@ case $(uname -s) in
   ;;
   Linux)
 
-    # TODO: PYTHONPATH questions, same as on Darwin machines
-    export PYTHONPATH=$HOME/.local/lib/python3.4/site-packages
+    # TODO: PYTHONPATH do I need to uncomment the line below?
+    # export PYTHONPATH=$HOME/.local/lib/python3.4/site-packages
     # TODO: Do I need to worry about PROMPT_COMMAND on linux machines?
     # TODO: still using keychain?
     # Keychain alias (autostarting it causes SLIM to hang)
