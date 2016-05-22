@@ -19,7 +19,6 @@ alias prettyJSON='python -m json.tool'
 alias show="defaults write com.apple.Finder AppleShowAllFiles -bool true && killall Finder"
 alias hide="defaults write com.apple.Finder AppleShowAllFiles -bool false && killall Finder"
 ## Program shortcuts
-alias marked="open -a 'Marked'"
 alias vlc='/Applications/VLC.app/Contents/MacOS/VLC'
 
 # Shortcuts to scripts

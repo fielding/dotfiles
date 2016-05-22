@@ -30,9 +30,8 @@ fi
 # History Settings
 export HISTCONTROL=ignoredups
 export HISTSIZE=10000
+export HISTFILESIZE=10000
 export HISTIGNORE="ls:ls *:cd:cd -:pwd;exit:date:* --help"
-
-unset file;
 
 shopt -s cdable_vars        # if cd arg is not valid, assumes its a var defining a dir
 shopt -s cdspell            # autocorrects cd misspellings

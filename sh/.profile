@@ -28,8 +28,6 @@ export ANDROID_HOME=/usr/local/opt/android-sdk
 
 export CLICOLOR=1
 
-# Set Grep highlighting color - 1;33 aka Bold Yellow
-# export GREP_COLOR="1;33"
 export GREP_COLORS='ms=33:mc=33:sl=37:cx=37:fn=34:ln=1;31:bn=1;35:se=1;30'
 
 # Less Colors for Man Pages
