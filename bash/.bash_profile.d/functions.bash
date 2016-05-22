@@ -60,7 +60,7 @@ whereisthis() {
   fi
 }
 
-getdef(){
+define(){
   if [[ $# -ge 2 ]]; then
     echo "getdef: too many arguments" >&2
     return 1
