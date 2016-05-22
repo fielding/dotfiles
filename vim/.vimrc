@@ -127,6 +127,22 @@ if has('mouse_sgr')
     set ttymouse=sgr
 endif
 
+
+if has('gui_running')
+  set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h8
+  set guioptions-=T                                                             " remove toolbar
+  set guioptions-=r                                                             " remove right scroll bars
+  set guioptions-=l                                                             " remove left scroll bars
+  set guioptions-=m                                                             " remove menu bar
+  set guioptions-=b                                                             " remove bottom scroll bar
+  set guicursor+=a:block-blinkon0                                               " use solid block cursor
+endif
+                                                                                " TODO: finish seting up powerline for vim
+" mapping {{{1
+" -----------------------------------------------------------------------------
+
+" autocmd {{{1
+" -----------------------------------------------------------------------------
 " Only do this part when compiled with support for autocommands.
 if has("autocmd")
 
@@ -171,43 +187,12 @@ if has("autocmd")
 
   " Enabled auto sourcing when saving my vimrc
   autocmd BufWritePost .vimrc source $MYVIMRC
+
+  " Set tmux pane title
+	autocmd BufEnter * call system("settitle " . expand("%:p:t"))
+  " Mark the current file as recently modified
+	autocmd BufRead,BufEnter * call system("fdb -i /Users/fielding/.local/share/edit.json -a " . shellescape(expand("%:p")) . " &")
 endif " has("autocmd")
-
-if has('gui_running')
-  set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h8
-  set guioptions-=T                                                             " remove toolbar
-  set guioptions-=r                                                             " remove right scroll bars
-  set guioptions-=l                                                             " remove left scroll bars
-  set guioptions-=m                                                             " remove menu bar
-  set guioptions-=b                                                             " remove bottom scroll bar
-  set guicursor+=a:block-blinkon0                                               " use solid block cursor
-endif
-                                                                                " TODO: finish seting up powerline for vim
-python from powerline.vim import setup as powerline_setup
-python powerline_setup()
-python del powerline_setup
-
-" Functions used for .nfo, eventually could be used for others
-function! SetFileEncodings(encodings)
-let b:myfileencodingsbak=&fileencodings
-let &fileencodings=a:encodings
-endfunction
-
-function! RestoreFileEncodings()
-let &fileencodings=b:myfileencodingsbak
-unlet b:myfileencodingsbak
-endfunction
-
-" .NFO specific
-au BufReadPre *.nfo call SetFileEncodings('cp437')
-au BufReadPost *.nfo call RestoreFileEncodings()
-
-" mapping {{{1
-" -----------------------------------------------------------------------------
-
-" autocmd {{{1
-" -----------------------------------------------------------------------------
-
 " commands {{{1
 " -----------------------------------------------------------------------------
 
@@ -226,6 +211,9 @@ highlight Comment cterm=italic
 
 " statusline {{{1
 " -----------------------------------------------------------------------------
+python from powerline.vim import setup as powerline_setup
+python powerline_setup()
+python del powerline_setup
 
 " options {{{1
 " -----------------------------------------------------------------------------
@@ -233,3 +221,18 @@ let g:Powerline_symbols='fancy'
 let g:syntastic_check_on_open=1
 let g:syntastic_enable_signs=1
 let g:polyglot_disabled = ['markdown']
+
+" Functions used for .nfo, eventually could be used for others
+function! SetFileEncodings(encodings)
+let b:myfileencodingsbak=&fileencodings
+let &fileencodings=a:encodings
+endfunction
+
+function! RestoreFileEncodings()
+let &fileencodings=b:myfileencodingsbak
+unlet b:myfileencodingsbak
+endfunction
+
+" .NFO specific
+au BufReadPre *.nfo call SetFileEncodings('cp437')
+au BufReadPost *.nfo call RestoreFileEncodings()
