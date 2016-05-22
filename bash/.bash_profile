@@ -3,6 +3,11 @@
 ## author:       fielding johnston - http://www.justfielding.com
 ##----------------------------------------------------------------------------
 
+# Load ~/.profile regardless of shell version
+if [ -e "$HOME"/.profile ] ; then
+    . "$HOME"/.profile
+fi
+
 # Set PATH
 # TODO: Fgure out why the hell I have to add $HOME/perl5/bin here, which causes
 #   double listing in $PATH in everything except tmux, for functionality in tmux
@@ -19,7 +24,13 @@ if [ -d "$HOME"/.bash_profile.d ]; then
       source "$bash_profile"
     fi
   done
+  unset -v bash_profile
 fi
+
+# History Settings
+export HISTCONTROL=ignoredups
+export HISTSIZE=10000
+export HISTIGNORE="ls:ls *:cd:cd -:pwd;exit:date:* --help"
 
 unset file;
 
