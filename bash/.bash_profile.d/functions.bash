@@ -90,7 +90,7 @@ function duckduckgo {
     open -g 'https://duckduckgo.com/?q='$query
 }
 
-function gi { curl -L -s https://www.gitignore.io/api/$@ ;}
+function gignore { curl -L -s https://www.gitignore.io/api/$@ ;}
 
 function nfo () {
   if [[ -e "$1" && $# -eq 1 ]]; then
@@ -106,3 +106,9 @@ function nfo () {
     echo "Error: $1 not found."
   fi
 };
+
+z() {
+	local dir=$(fdb -q "(?i)$@" | head -n 1)
+	[ -z "$dir" ] && return 1
+	cd "$dir" || fdb -d "$dir"
+}
