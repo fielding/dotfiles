@@ -13,9 +13,13 @@ export PATH="$HOME/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/u
 #   [ -r "$file" ] && [ -f "$file" ] && source "$file";
 # done;
 
-for file in `ls $HOME/.bash_profile.d/*.bash`; do
-    source "$file"
-done
+if [ -d "$HOME"/.bash_profile.d ]; then
+  for bash_profile in "$HOME"/.bash_profile.d/*.bash; do
+    if [[ -e $bash_profile ]]; then
+      source "$bash_profile"
+    fi
+  done
+fi
 
 unset file;
 
