@@ -75,10 +75,7 @@ fi
 
 case $(uname -s) in
   Darwin|FreeBSD)
-
-    # TODO: PROMPT_COMMAND placement and further explore what all this does
-    #   other than allow for iterm2 to show the correct window title
-    export PROMPT_COMMAND='echo -ne "\033]0;${PWD/#$HOME/~}\007"'
+    export PROMPT_COMMAND='echo -ne "\033]0;${PWD/#$HOME/~}\007";[ "$PWD" -ef "$HOME" ] || fdb -a "$PWD"'
 
     # use gdircolors and gls from homebrew's coreutilities for pretty ls output
     eval $(dircolors -b ~/.dir_colors)
