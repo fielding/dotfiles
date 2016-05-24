@@ -23,11 +23,14 @@ XDG_BIN_DIR=/bin
 XDG_TMP_DIR=/tmp
 export XDG_DOWNLOAD_DIR XDG_ETC_DIR XDG_BIN_DIR XDG_TMP_DIR
 
+export CFLAGS=-I/opt/X11/include
+export LDFLAGS=-L/opt/X11/lib
+
+
 # set android_home directory for android development
 export ANDROID_HOME=/usr/local/opt/android-sdk
 
 export CLICOLOR=1
-
 export GREP_COLORS='ms=33:mc=33:sl=37:cx=37:fn=34:ln=1;31:bn=1;35:se=1;30'
 
 # Less Colors for Man Pages
