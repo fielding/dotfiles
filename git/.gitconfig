@@ -1,3 +1,6 @@
+[alias]
+  l = log --pretty=oneline --graph --abbrev-commit
+  s = status -s
 [apply]
   whitespace = fix
 [branch]
@@ -22,10 +25,6 @@
   whitespace = space-before-tab,-indent-with-non-tab,trailing-space
 [credential]
   helper = osxkeychain
-[filter "media"]
-  required = true
-	clean = git media clean %f
-	smudge = git media smudge %f
 [github]
   user = justfielding
 [push]
