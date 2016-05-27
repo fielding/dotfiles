@@ -28,6 +28,7 @@ alias vlc='/Applications/VLC.app/Contents/MacOS/VLC'
 
 alias git="hub"
 alias g="git"
+alias v="v"
 # TODO: is the following vim alias doing anything for vim/tmux/osx and the clipboard
 #alias vim="reattach-to-user-namespace vim"
 
