@@ -137,7 +137,7 @@ if has('gui_running')
   set guioptions-=b                                                             " remove bottom scroll bar
   set guicursor+=a:block-blinkon0                                               " use solid block cursor
 endif
-                                                                                " TODO: finish seting up powerline for vim
+
 " mapping {{{1
 " -----------------------------------------------------------------------------
 
@@ -211,9 +211,6 @@ highlight Comment cterm=italic
 
 " statusline {{{1
 " -----------------------------------------------------------------------------
-python from powerline.vim import setup as powerline_setup
-python powerline_setup()
-python del powerline_setup
 
 " options {{{1
 " -----------------------------------------------------------------------------
