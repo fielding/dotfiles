@@ -3,17 +3,46 @@
 " author:       fielding johnston - http://justfielding.com
 " -----------------------------------------------------------------------------
 
-
-" plugins {{{1
+" plug {{{1
 " -----------------------------------------------------------------------------
-if filereadable(expand("~/.vim/bundles.vim"))                                   " if bundles.vim exists then...
-	source ~/.vim/bundles.vim                                                     " include vundle's bundle config!
-endif
+call plug#begin('~/.vim/plugged')
+" Current color scheme
+Plug 'w0ng/vim-hybrid'
+
+" Features
+Plug 'bronson/vim-trailing-whitespace'
+Plug 'nathanaelkane/vim-indent-guides'
+Plug 'tpope/vim-afterimage'
+Plug 'scrooloose/syntastic'
+Plug 'scrooloose/nerdtree'
+Plug 'terryma/vim-multiple-cursors'
+Plug 'kien/ctrlp.vim'
+Plug 'ryanss/vim-hackernews'
+Plug 'fs111/pydoc.vim'
+Plug 'christoomey/vim-tmux-navigator'
+Plug 'sjl/vitality.vim'
+Plug 'shime/vim-livedown'
+Plug 'mrtazz/simplenote.vim'
+Plug 'junegunn/goyo.vim'
+Plug 'moll/vim-bbye'
+Plug 'tomtom/tcomment_vim'
+Plug 'mhinz/vim-startify'
+Plug 'airblade/vim-gitgutter'
+Plug 'godlygeek/csapprox'
+Plug 'godlygeek/tabular'
+
+" Specific language support/features
+Plug 'plasticboy/vim-markdown'
+Plug 'davidoc/taskpaper.vim'
+Plug 'sheerun/vim-polyglot'
+call plug#end()
 
 " init {{{1
-" -----------------------------------------------------------------------------
+" ----------------------------------------------------------------------------
 filetype plugin indent on
 syntax on
+
+let mapleader=','
 
 " set {{{1
 " ----------------------------------------------------------------------------
@@ -90,32 +119,6 @@ set expandtab                                                                   
 set tabstop=2                                                                   " 2 column tabs
 
 
-let mapleader=','
-" "let g:html_indent_tags = 'li\|p'
-
-                                                                                " TODO: actually implement indent_guides worth a flip
-let g:indent_guides_auto_colors=0
-let g:indent_guides_color_change_percent=10
-let g:indent_guides_guide_size=1
-
-" maps!
-" Q does formatting qith gq. Vim 5.0 style
-map Q gq
-
-" Shift or not to shift! that is the question
-map ; :
-
-" Force writing to a file with sudo
-cmap w!! w !sudo tee % >/dev/null
-
-" enables CTRL-U after inserting a line break
-inoremap <C-U> <C-G>u<C-U>
-" spacebar unhighlights search text
-:noremap <silent> <Space> :silent noh<Bar>echo<CR>
-" Marked.app preview for markdown files
-:nnoremap <leader>m :silent !open -a Marked.app '%:p'<cr>
-:noremap <F6> :NERDTreeToggle<CR>
-
 " In many terminal emulators the mouse works just fine, thus enable it.
 if has('mouse')
   set mouse=a
@@ -138,8 +141,30 @@ if has('gui_running')
   set guicursor+=a:block-blinkon0                                               " use solid block cursor
 endif
 
+" TODO: actually implement indent_guides worth a flip
+let g:indent_guides_auto_colors=0
+let g:indent_guides_color_change_percent=10
+let g:indent_guides_guide_size=1
+
+
 " mapping {{{1
 " -----------------------------------------------------------------------------
+" Q does formatting qith gq. Vim 5.0 style
+map Q gq
+
+" Shift or not to shift! that is the question
+map ; :
+
+" Force writing to a file with sudo
+cmap w!! w !sudo tee % >/dev/null
+
+" enables CTRL-U after inserting a line break
+inoremap <C-U> <C-G>u<C-U>
+" spacebar unhighlights search text
+:noremap <silent> <Space> :silent noh<Bar>echo<CR>
+" Marked.app preview for markdown files
+:nnoremap <leader>m :silent !open -a Marked.app '%:p'<cr>
+:noremap <F6> :NERDTreeToggle<CR>
 
 " autocmd {{{1
 " -----------------------------------------------------------------------------
@@ -193,9 +218,6 @@ if has("autocmd")
   " Mark the current file as recently modified
 	autocmd BufRead,BufEnter * call system("fdb -i /Users/fielding/.local/share/edit.json -a " . shellescape(expand("%:p")) . " &")
 endif " has("autocmd")
-" commands {{{1
-" -----------------------------------------------------------------------------
-
 " colors {{{1
 " -----------------------------------------------------------------------------
 set t_Co=256
@@ -214,7 +236,6 @@ highlight Comment cterm=italic
 
 " options {{{1
 " -----------------------------------------------------------------------------
-let g:Powerline_symbols='fancy'
 let g:syntastic_check_on_open=1
 let g:syntastic_enable_signs=1
 let g:polyglot_disabled = ['markdown']
