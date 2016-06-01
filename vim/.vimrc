@@ -5,6 +5,13 @@
 
 " plug {{{1
 " -----------------------------------------------------------------------------
+" Check and install vim-plug if it isn't installed
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall | source $MYVIMRC
+endif
+
 call plug#begin('~/.vim/plugged')
 " Current color scheme
 Plug 'w0ng/vim-hybrid'
