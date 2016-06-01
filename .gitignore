@@ -3,6 +3,7 @@ terminfo/.terminfo/69/iterm.app
 terminfo/.terminfo/69/iterm
 terminfo/.terminfo/74/tmux
 terminfo/.terminfo/74/tmux-256color
+vim/.vim/autoload/*
 vim/.vim/plugged/*
 vim/.vim/.netrwhist
 tmux/.tmux/resurrect
