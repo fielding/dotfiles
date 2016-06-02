@@ -37,6 +37,7 @@ Plug 'mhinz/vim-startify'
 Plug 'airblade/vim-gitgutter'
 Plug 'godlygeek/csapprox'
 Plug 'godlygeek/tabular'
+Plug 'vim-airline/vim-airline'
 
 " Specific language support/features
 Plug 'plasticboy/vim-markdown'
