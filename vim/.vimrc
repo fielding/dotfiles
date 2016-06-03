@@ -130,7 +130,9 @@ set tabstop=2                                                                   
 " In many terminal emulators the mouse works just fine, thus enable it.
 if has('mouse')
   set mouse=a
-  set ttymouse=xterm
+  if !has('nvim')
+    set ttymouse=xterm
+  endif
 endif
 
 " vim 7.4+ support SGR protocol which avoids issues with mouse reporting in 'big' terminals
