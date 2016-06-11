@@ -1,0 +1,127 @@
+#!/bin/bash
+
+# original at https://gist.github.com/c0wfunk/3666392
+# revised by Fielding Johnston for personal use
+
+# usage: $0 source_dir [source_dir] ...
+# where source_dir args are directories containing git repositories
+
+# TODO
+# 1. figure out a work around for symlinked directories
+# 2. add color to section title
+# 3. check on alternative green for this colorscheme (and then use it for Staged)
+# 4. update revision
+# 5. add comments detailing my revisions
+# 6. take comparison SS to show difference between mine and original
+# 7. consider a quick (-q) option that uses locate instead of find
+# 8. consider an option that groups like statuses together
+# 9. Fill in info for the help (-h) display
+# 10. Fill in the info for the usage display
+# 11. Handle broken links/erroneous paths
+
+
+red=$(tput setaf 1)
+green=$(tput setaf 10)
+yellow=$(tput setaf 3)
+blue=$(tput setaf 4)
+purple=$(tput setaf 5)
+cyan=$(tput setaf 6)
+brightcyan=$(tput setaf 14)
+reset=$(tput sgr0)
+
+cols=$(tput cols)
+
+print_center ()
+{
+  local text="$1"
+  local mid=$(((${#text}+cols)/2))
+  printf "%*s\n" $mid "$text"
+}
+
+while getopts "vh" o; do
+  case "${o}" in
+    v)
+      verbose=true
+      ;;
+    h)
+       # TODO-9
+      echo "help"
+      exit
+      ;;
+    *)
+      # TODO-10
+      echo "usage:"
+      exit
+      ;;
+  esac
+done
+
+shift $(( OPTIND - 1 ))
+
+if [ $# -eq 0 ] ; then
+  # TODO-10
+  echo "usage:"
+else
+  ARGS=$*
+fi
+
+for i in ${ARGS[*]} ; do
+  print_center "[$brightcyan$i$reset]"
+  find "$i" -name ".git" 2>/dev/null |while read -r gitdir; do
+    ( working=$(dirname "$gitdir")
+      cd "$working" || exit # TODO-11
+
+      if [ "$verbose" == true ] ; then
+        RES=$(git status | grep -E '^(Changes|Untracked|Your branch|nothing to commit)')
+      else
+        RES=$(git status | grep -E '^(Changes|Untracked|Your branch)')
+      fi
+
+      STAT=""
+      stat_count=0
+
+      grep -e 'Changes to be committed' <<<"${RES}" >/dev/null 2>&1
+      if [ $? -eq 0 ] ; then
+        STAT="$STAT$green[Staged]$reset"
+        ((stat_count+=1))
+      fi
+
+      grep -e 'Your branch is ahead' <<<"${RES}" >/dev/null 2>&1
+      if [ $? -eq 0 ] ; then
+        STAT="$STAT$yellow[Unpushed]$reset"
+        ((stat_count+=1))
+      fi
+
+      grep -e 'Your branch is behind' <<<"${RES}" >/dev/null 2>&1
+      if [ $? -eq 0 ] ; then
+        STAT="$STAT$cyan[Unmerged]$reset"
+        ((stat_count+=1))
+      fi
+
+      grep -e 'Untracked' <<<"${RES}" >/dev/null 2>&1
+      if [ $? -eq 0 ] ; then
+        STAT="$STAT$purple[Untracked]$reset"
+        ((stat_count+=1))
+      fi
+
+      grep -e 'Changes not staged for commit' <<<"${RES}" >/dev/null 2>&1
+      if [ $? -eq 0 ] ; then
+        STAT="$STAT$red[Modified]$reset"
+        ((stat_count+=1))
+      fi
+
+      grep -e 'nothing to commit, working directory clean' <<<"${RES}" >/dev/null 2>&1
+      if [ $? -eq 0 ] ; then
+        STAT="$STAT$blue[Clean]$reset"
+        ((stat_count+=1))
+      fi
+
+      if [ -n "$STAT" ] ; then
+        working=$(echo "${working//${i}/.}")
+        printf "%s :%$(( cols-${#working}-2+${#blue}*stat_count+${#reset}*stat_count ))b\n" "$working" "$STAT"
+
+      fi
+    )
+  done
+  printf "\n"
+done
