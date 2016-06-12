@@ -117,7 +117,7 @@ for i in ${ARGS[*]} ; do
       fi
 
       if [ -n "$STAT" ] ; then
-        working=$(echo "${working//${i}/.}")
+        working=${working//${i}/.}
         printf "%s :%$(( cols-${#working}-2+${#blue}*stat_count+${#reset}*stat_count ))b\n" "$working" "$STAT"
 
       fi
