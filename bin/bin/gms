@@ -18,7 +18,7 @@
 # 9. Fill in info for the help (-h) display
 # 10. Fill in the info for the usage display
 # 11. Handle broken links/erroneous paths
-
+# 12. Handle no arguments by using current working directory
 
 red=$(tput setaf 1)
 green=$(tput setaf 10)
