@@ -13,7 +13,7 @@ fi
 #   double listing in $PATH in everything except tmux, for functionality in tmux
 export PATH="$HOME/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:/opt/bin:$HOME/.cabal/bin:$HOME/.rbenv/bin:$HOME/perl5/bin:/Library/TeX/texbin:$HOME/.cargo/bin"
 
-### Load the bash profile configurations
+# Load the bash profile configurations
 # for file in ~/.{exports,aliases,functions,extra}; do
 #   [ -r "$file" ] && [ -f "$file" ] && source "$file";
 # done;
@@ -48,11 +48,6 @@ set -o vi                   # set vi-style command line editing
 
 ### Additional sources
 
-# Iterm2 shell integration
-if [ -f /Users/fielding/.iterm2_shell_integration.bash ]; then
-	source /Users/fielding/.iterm2_shell_integration.bash;
-fi
-
 # local:lib for perl modules
 eval $(perl -I${HOME}/perl5/lib/perl5 -Mlocal::lib)
 
@@ -67,17 +62,12 @@ fi
 # let luarocks setup suitable env variables for us
 eval $(luarocks path --bin)
 
-
-### Completions
-
-if [ -f $(brew --prefix)/share/bash-completion/bash_completion ]; then
-  source "$(brew --prefix)/share/bash-completion/bash_completion";
-fi
-
-## Platform Specific
-
 case $(uname -s) in
-  Darwin|FreeBSD)
+  Darwin)
+    # TODO: PYTHONPATH, is this the best way to deal with this?
+    export PYTHONPATH=$(brew --prefix)/lib/python2.7/site-packages
+    # TODO: PROMPT_COMMAND placement and further explore what all this does
+    #   other than allow for iterm2 to show the correct window title
     export PROMPT_COMMAND='echo -ne "\033]0;${PWD/#$HOME/~}\007";[ "$PWD" -ef "$HOME" ] || fdb -a "$PWD"'
 
     # use gdircolors and gls from homebrew's coreutilities for pretty ls output
@@ -100,6 +90,21 @@ case $(uname -s) in
       alias curl='colourify curl'
       alias colorJSON='colourify python -m json.tool'
     fi
+
+    # Completions
+
+    if [ -f $(brew --prefix)/share/bash-completion/bash_completion ]; then
+      source "$(brew --prefix)/share/bash-completion/bash_completion";
+    fi
+
+    # Iterm2 shell integration
+    if [ -f /Users/fielding/.iterm2_shell_integration.bash ]; then
+	    source /Users/fielding/.iterm2_shell_integration.bash;
+    fi
+  ;;
+  FreeBSD)
+    eval $(gdircolors -b ~/.dir_colors)
+    alias ls="gls --color=always -hF"
   ;;
   Linux)
 
