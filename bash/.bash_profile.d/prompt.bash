@@ -14,7 +14,7 @@ if [ "$(hostname)" == "sage" ]; then
   line="$magenta"
 elif [ "$(hostname)" == "mace" ]; then
   line="$yellow"
-elif [ "$(hostname)" == "jamsmine" ]; then
+elif [ "$(hostname)" == "jasmine" ]; then
   line="$bold$magenta"
 fi
 
