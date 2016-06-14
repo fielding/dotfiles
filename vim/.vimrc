@@ -141,16 +141,6 @@ if has('mouse_sgr')
 endif
 
 
-if has('gui_running')
-  set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h8
-  set guioptions-=T                                                             " remove toolbar
-  set guioptions-=r                                                             " remove right scroll bars
-  set guioptions-=l                                                             " remove left scroll bars
-  set guioptions-=m                                                             " remove menu bar
-  set guioptions-=b                                                             " remove bottom scroll bar
-  set guicursor+=a:block-blinkon0                                               " use solid block cursor
-endif
-
 " TODO: actually implement indent_guides worth a flip
 let g:indent_guides_auto_colors=0
 let g:indent_guides_color_change_percent=10
