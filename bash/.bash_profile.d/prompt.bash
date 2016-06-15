@@ -10,11 +10,11 @@ magenta="$(tput setaf 5)"
 cyan="$(tput setaf 6)"
 white="$(tput setaf 7)"
 
-if [ "$(hostname)" == "sage" ]; then
+if [ "$(hostname -s)" == "sage" ]; then
   line="$magenta"
-elif [ "$(hostname)" == "mace" ]; then
+elif [ "$(hostname -s)" == "mace" ]; then
   line="$yellow"
-elif [ "$(hostname)" == "jasmine" ]; then
+elif [ "$(hostname -s)" == "jasmine" ]; then
   line="$bold$magenta"
 fi
 
