@@ -15,7 +15,7 @@ if [ "$(hostname -s)" == "sage" ]; then
 elif [ "$(hostname -s)" == "mace" ]; then
   line="$yellow"
 elif [ "$(hostname -s)" == "jasmine" ]; then
-  line="$bold$magenta"
+  line="$green"
 fi
 
 function parse_git_dirty() {
