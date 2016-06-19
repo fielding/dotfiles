@@ -107,8 +107,18 @@ function nfo () {
   fi
 };
 
+#
+# move to generic shell functions
+#
+
 z() {
 	local dir=$(fdb -q "(?i)$@" | head -n 1)
 	[ -z "$dir" ] && return 1
 	cd "$dir" || fdb -d "$dir"
+}
+
+lc() {
+  local start=${1:-1}
+  local end=${2:-"$start"}
+  fc -ln -$start -$end | sed 's/^[[:space:]]*//'
 }
