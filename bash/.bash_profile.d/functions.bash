@@ -122,3 +122,7 @@ lc() {
   local end=${2:-"$start"}
   fc -ln -$start -$end | sed 's/^[[:space:]]*//'
 }
+
+yc() {
+  lc "$@" | pbcopy
+}
