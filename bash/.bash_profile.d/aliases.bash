@@ -3,8 +3,12 @@ alias la="ls -al" # high frequency in history, so I made an alias
 alias grep="grep --color=auto" # always grep with color
 
 # Shortcuts
-alias sv="sudo vim"
-# alias irc="rm -f ~/.irssi/saved_colors & irssi"
+alias git="hub"
+alias g="git"
+alias v="nvim"
+alias sv="sudo nvim"
+alias tm="tmux"
+
 alias irc="weechat"
 alias reboot="sudo shutdown -r now"
 alias shutdown="sudo shutdown -h now"
@@ -23,10 +27,6 @@ alias vlc='/Applications/VLC.app/Contents/MacOS/VLC'
 #alias note-se="$HOME/bin/vw/vw-update.pl /Users/fielding/notes"
 #alias fm="$HOME/bin/fieldMatter.rb"
 
-alias git="hub"
-alias g="git"
-alias tm="tmux"
-alias v="nvim"
 # TODO: is the following vim alias doing anything for vim/tmux/osx and the clipboard
 #alias vim="reattach-to-user-namespace vim"
 
