@@ -1,6 +1,6 @@
 #!/bin/sh
-# Default Editor set to vim
-export EDITOR=vim
+# Default Editor set to nvim
+export EDITOR=nvim
 export PAGER=less
 export BROWSER=open
 
