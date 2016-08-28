@@ -41,6 +41,7 @@ Plug 'godlygeek/tabular'
 Plug 'vim-airline/vim-airline'
 Plug 'xolox/vim-misc'
 Plug 'xolox/vim-notes'
+Plug 'szw/vim-dict'
 
 " Specific language support/features
 Plug 'plasticboy/vim-markdown'
@@ -244,6 +245,7 @@ let g:syntastic_enable_signs=1
 let g:polyglot_disabled = ['markdown']
 let g:notes_directories = ['~/cloud/Dropbox/notes']
 let g:notes_suffix = '.md'
+let g:dict_hosts = [["dict.org", ["gcide", "wn", "moby-thes", "vera", "jargon", "foldoc", "bouvier", "devil"]]]
 
 " Functions used for .nfo, eventually could be used for others
 function! SetFileEncodings(encodings)
