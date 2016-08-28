@@ -39,6 +39,8 @@ Plug 'airblade/vim-gitgutter'
 Plug 'godlygeek/csapprox'
 Plug 'godlygeek/tabular'
 Plug 'vim-airline/vim-airline'
+Plug 'xolox/vim-misc'
+Plug 'xolox/vim-notes'
 
 " Specific language support/features
 Plug 'plasticboy/vim-markdown'
@@ -240,6 +242,8 @@ highlight Comment cterm=italic
 let g:syntastic_check_on_open=1
 let g:syntastic_enable_signs=1
 let g:polyglot_disabled = ['markdown']
+let g:notes_directories = ['~/cloud/Dropbox/notes']
+let g:notes_suffix = '.md'
 
 " Functions used for .nfo, eventually could be used for others
 function! SetFileEncodings(encodings)
