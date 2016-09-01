@@ -3,13 +3,13 @@ alias la="ls -al" # high frequency in history, so I made an alias
 alias grep="grep --color=auto" # always grep with color
 
 # Shortcuts
-alias git="hub"
+# alias git="hub"
 alias g="git"
 alias kb="keybase"
-alias e="nvim"
-alias v="nvim"
-alias vim="nvim"
-alias sv="sudo nvim"
+alias e="vim"
+alias v="vim"
+#alias vim="nvim"
+alias sv="sudo v"
 alias tm="tmux"
 
 alias irc="weechat"
