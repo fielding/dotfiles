@@ -47,3 +47,6 @@ alias update="sudo softwareupdate -i -a; brew update; brew upgrade --all; brew c
 
 # rot13: or caesar cipher or substitution cipher shifting 13 characters
 alias rot13="tr a-zA-Z n-za-mN-ZA-M"
+
+# Corporate random bullshit generator
+alias cbsg='curl -s http://cbsg.sourceforge.net/cgi-bin/live | grep -Eo "^<li>.*</li>" | sed s,\</\\?li\>,,g | shuf -n 1'
