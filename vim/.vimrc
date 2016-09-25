@@ -167,16 +167,18 @@ map Q gq
 map ; :
 
 " Force writing to a file with sudo
-cmap w!! w !sudo tee % >/dev/null
+command W :execute ':silent w !sudo tee % > /dev/null' | :edit!
 
 " enables CTRL-U after inserting a line break
 inoremap <C-U> <C-G>u<C-U>
+
 " spacebar unhighlights search text
 :noremap <silent> <Space> :silent noh<Bar>echo<CR>
+
 " Marked.app preview for markdown files
 :nnoremap <leader>m :silent !open -a Marked.app '%:p'<cr>
-:noremap <F6> :NERDTreeToggle<CR>
 
+:noremap <F6> :NERDTreeToggle<CR>
 " autocmd {{{1
 " -----------------------------------------------------------------------------
 " Only do this part when compiled with support for autocommands.
