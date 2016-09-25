@@ -6,6 +6,7 @@ alias grep="grep --color=auto" # always grep with color
 alias git="hub"
 alias g="git"
 alias kb="keybase"
+alias e="nvim"
 alias v="nvim"
 alias vim="nvim"
 alias sv="sudo nvim"
