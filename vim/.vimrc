@@ -39,14 +39,17 @@ Plug 'airblade/vim-gitgutter'
 Plug 'godlygeek/csapprox'
 Plug 'godlygeek/tabular'
 Plug 'vim-airline/vim-airline'
-Plug 'xolox/vim-misc'
-Plug 'xolox/vim-notes'
+Plug 'vimwiki/vimwiki'
 Plug 'szw/vim-dict'
+Plug 'lilydjwg/colorizer'
+Plug 'tpope/vim-surround'
+Plug 'mattn/webapi-vim'
 
 " Specific language support/features
 Plug 'plasticboy/vim-markdown'
 Plug 'davidoc/taskpaper.vim'
 Plug 'sheerun/vim-polyglot'
+Plug 'jbgutierrez/vim-babel'
 call plug#end()
 
 " init {{{1
