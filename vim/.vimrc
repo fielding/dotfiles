@@ -272,3 +272,5 @@ endfunction
 " .NFO specific
 au BufReadPre *.nfo call SetFileEncodings('cp437')
 au BufReadPost *.nfo call RestoreFileEncodings()
+
+highlight Conceal cterm=NONE ctermbg=NONE ctermfg=darkblue
