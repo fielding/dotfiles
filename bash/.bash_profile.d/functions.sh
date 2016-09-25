@@ -117,6 +117,15 @@ z() {
 	cd "$dir" || fdb -d "$dir"
 }
 
+zc() {
+	z "$PWD" "$@"
+}
+
+oz() {
+	local fp="$(fdb -i "$XDG_DATA_HOME"/open.json -q "(?i)$@" | head -n 1)"
+	[ -e "$fp" ] && o "$fp"
+}
+
 lc() {
   local start=${1:-1}
   local end=${2:-"$start"}
