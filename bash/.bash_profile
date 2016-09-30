@@ -19,7 +19,7 @@ export PATH="$HOME/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/u
 # done;
 
 if [ -d "$HOME"/.bash_profile.d ]; then
-  for bash_profile in "$HOME"/.bash_profile.d/*.bash; do
+  for bash_profile in "$HOME"/.bash_profile.d/*.sh; do
     if [[ -e $bash_profile ]]; then
       source "$bash_profile"
     fi
