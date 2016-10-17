@@ -42,6 +42,7 @@ Plug 'vim-airline/vim-airline'
 Plug 'vimwiki/vimwiki'
 Plug 'szw/vim-dict'
 Plug 'tpope/vim-surround'
+Plug 'tpope/vim-repeat'
 Plug 'mattn/webapi-vim'
 Plug 'ap/vim-css-color'
 
