@@ -170,7 +170,7 @@ map Q gq
 map ; :
 
 " Force writing to a file with sudo
-command W :execute ':silent w !sudo tee % > /dev/null' | :edit!
+command SW :execute ':silent w !sudo tee % > /dev/null' | :edit!
 
 " enables CTRL-U after inserting a line break
 inoremap <C-U> <C-G>u<C-U>
