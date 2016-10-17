@@ -53,6 +53,9 @@ if [ -f /Users/fielding/.iterm2_shell_integration.bash ]; then
 	source /Users/fielding/.iterm2_shell_integration.bash;
 fi
 
+# For Travis gem
+[ -f /Users/fielding/.travis/travis.sh ] && source /Users/fielding/.travis/travis.sh
+
 # local:lib for perl modules
 eval $(perl -I${HOME}/perl5/lib/perl5 -Mlocal::lib)
 
