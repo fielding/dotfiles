@@ -47,10 +47,12 @@ Plug 'mattn/webapi-vim'
 Plug 'ap/vim-css-color'
 
 " Specific language support/features
+Plug 'sheerun/vim-polyglot'
 Plug 'plasticboy/vim-markdown'
 Plug 'davidoc/taskpaper.vim'
-Plug 'sheerun/vim-polyglot'
 Plug 'jbgutierrez/vim-babel'
+Plug 'cakebaker/scss-syntax.vim'
+
 call plug#end()
 
 " init {{{1
