@@ -41,9 +41,9 @@ Plug 'godlygeek/tabular'
 Plug 'vim-airline/vim-airline'
 Plug 'vimwiki/vimwiki'
 Plug 'szw/vim-dict'
-Plug 'lilydjwg/colorizer'
 Plug 'tpope/vim-surround'
 Plug 'mattn/webapi-vim'
+Plug 'ap/vim-css-color'
 
 " Specific language support/features
 Plug 'plasticboy/vim-markdown'
