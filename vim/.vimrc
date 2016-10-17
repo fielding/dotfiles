@@ -254,6 +254,11 @@ highlight Comment cterm=italic
 " -----------------------------------------------------------------------------
 let g:syntastic_check_on_open=1
 let g:syntastic_enable_signs=1
+let g:syntastic_javascript_eslint_generic = 1
+let g:syntastic_javascript_eslint_exec = 'xo'
+let g:syntastic_javascript_eslint_args = '--reporter=compact'
+let g:syntastic_javascript_checkers = ['eslint']
+
 let g:polyglot_disabled = ['markdown']
 let g:vim_markdown_folding_style_pythonic = 1
 let g:vimwiki_list = [{'path': '~/cloud/Dropbox/notes/', 'path_html': '~/Documents/wiki', 'syntax': 'markdown', 'ext': '.md', 'folding': 'expr'},
