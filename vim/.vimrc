@@ -45,6 +45,7 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-repeat'
 Plug 'mattn/webapi-vim'
 Plug 'ap/vim-css-color'
+Plug 'editorconfig/editorconfig-vim'
 
 " Specific language support/features
 Plug 'sheerun/vim-polyglot'
@@ -252,6 +253,8 @@ highlight Comment cterm=italic
 
 " options {{{1
 " -----------------------------------------------------------------------------
+let g:EditorConfig_exec_path = '/usr/local/bin/editorconfig'
+let g:EditorConfig_core_mode = 'external_command'
 let g:syntastic_check_on_open=1
 let g:syntastic_enable_signs=1
 let g:syntastic_javascript_eslint_generic = 1
