@@ -45,8 +45,12 @@
 [init]
 	templatedir = ~/.git-templates
 [commit]
+<<<<<<< HEAD
 #gpgsign = true
 #
+=======
+  gpgsign = true
+>>>>>>> 7cda5f3b8f8e3df0a10eb21f7b10e070b0b0f6a9
 	template = /Users/fielding/.git-commit-template
 [secrets]
 	providers = git secrets --aws-provider
