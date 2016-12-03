@@ -29,7 +29,7 @@
   excludesfile = ~/.gitignore.global
   whitespace = space-before-tab,-indent-with-non-tab,trailing-space
 [credential]
-  helper = osxkeychain
+#  helper = osxkeychain
 [github]
   user = justfielding
 [push]
@@ -45,7 +45,7 @@
 [init]
 	templatedir = ~/.git-templates
 [commit]
-	# gpgsign = true
+#  	gpgsign = true
 	template = /Users/fielding/.git-commit-template
 [secrets]
 	providers = git secrets --aws-provider
