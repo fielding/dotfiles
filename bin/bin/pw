@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-username='$LP_UN'
+username=$LP_UN
 
 status=$(lpass status)
 
