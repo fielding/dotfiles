@@ -53,6 +53,11 @@ Plug 'editorconfig/editorconfig-vim'
 Plug 'neomake/neomake'
 Plug 'mklabs/split-term.vim'
 Plug 'christoomey/vim-tmux-navigator'
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'ternjs/tern_for_vim', { 'for': ['javascript', 'javascript.jsx'] }
+Plug 'carlitux/deoplete-ternjs', { 'for': ['javascript', 'javascript.jsx'] }
+Plug 'othree/jspc.vim', { 'for': ['javascript', 'javascript.jsx'] }
+Plug 'ervandew/supertab'
 Plug 'ryanoasis/vim-devicons'
 Plug 'mattn/gist-vim'
 Plug 'sbdchd/neoformat'
@@ -311,6 +316,24 @@ let g:airline_theme='raven'
 " let g:airline_right_sep=''
 " let g:airline_right_alt_sep=''
 let g:airline_powerline_fonts=1
+
+
+
+
+let g:deoplete#enable_at_startup = 1
+let g:deoplete#omni#functions = {}
+let g:deoplete#omni#functions.javascript = [
+  \ 'tern#Complete',
+  \ 'jspc#omni'
+\]
+
+let g:deoplete#sources = {}
+let g:deoplete#sources.javascript = ['file', 'ternjs', 'ultisnips']
+
+
+let g:tern#command = ['tern']
+let g:tern#arguments = ['--persistent']
+
 
 
 let g:polyglot_disabled = ['markdown']
