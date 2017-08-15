@@ -3,7 +3,7 @@
 " author:       fielding johnston - http://justfielding.com
 " -----------------------------------------------------------------------------
 
-" plug {{{1
+" plug
 " -----------------------------------------------------------------------------
 " Check and install vim-plug if it isn't installed
 if empty(glob('~/.vim/autoload/plug.vim'))
@@ -56,14 +56,14 @@ Plug 'cakebaker/scss-syntax.vim'
 
 call plug#end()
 
-" init {{{1
+" init
 " ----------------------------------------------------------------------------
 filetype plugin indent on
 syntax on
 
 let mapleader=','
 
-" set {{{1
+" set
 " ----------------------------------------------------------------------------
 set nocompatible                                                                " vim sets this automatically upon findin a vimrc file, keeping because it's my homie
 set ffs=mac,unix,dos
@@ -162,7 +162,7 @@ let g:is_bash = 1
 
 au FocusLost * :silent! wall
 
-" mapping {{{1
+" mapping
 " -----------------------------------------------------------------------------
 " Q does formatting qith gq. Vim 5.0 style
 map Q gq
@@ -183,7 +183,7 @@ inoremap <C-U> <C-G>u<C-U>
 :nnoremap <leader>m :silent !open -a Marked.app '%:p'<cr>
 
 :noremap <F6> :NERDTreeToggle<CR>
-" autocmd {{{1
+" autocmd
 " -----------------------------------------------------------------------------
 " Only do this part when compiled with support for autocommands.
 if has("autocmd")
@@ -235,7 +235,9 @@ if has("autocmd")
   " Mark the current file as recently modified
 	autocmd BufRead,BufEnter * call system("fdb -i /Users/fielding/.local/share/edit.json -a " . shellescape(expand("%:p")) . " &")
 endif " has("autocmd")
-" colors {{{1
+
+
+" colors
 " -----------------------------------------------------------------------------
 set t_Co=256
 set t_Sf=[3%dm
@@ -248,10 +250,10 @@ highlight Normal ctermbg=NONE
 highlight CursorLine ctermbg=0
 highlight Comment cterm=italic
 
-" statusline {{{1
+" statusline
 " -----------------------------------------------------------------------------
 
-" options {{{1
+" options
 " -----------------------------------------------------------------------------
 let g:EditorConfig_exec_path = '/usr/local/bin/editorconfig'
 let g:EditorConfig_core_mode = 'external_command'
