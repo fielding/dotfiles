@@ -152,7 +152,7 @@ if has('mouse_sgr')
 endif
 
 
-" TODO: actually implement indent_guides worth a flip
+" TODO: actually implement ident_guides worth a flip
 let g:indent_guides_auto_colors = 0
 let g:indent_guides_color_change_percent = 10
 let g:indent_guides_guide_size = 1
