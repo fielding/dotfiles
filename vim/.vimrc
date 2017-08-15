@@ -221,6 +221,13 @@ if has("autocmd")
 
   augroup END
 
+  " Enabled auto sourcing when saving my vimrc
+  augroup resource
+    autocmd!
+    autocmd BufWritePost $MYVIMRC source $MYVIMRC
+  augroup END
+
+
   autocmd StdinReadPre * let s:std_in=1
 
   " for now not diffing NERDTree until I get it setup properly
@@ -230,8 +237,6 @@ if has("autocmd")
 
   autocmd FileType python setlocal sw=4 sts=4 et
 
-  " Enabled auto sourcing when saving my vimrc
-  autocmd BufWritePost .vimrc source $MYVIMRC
 
   " Set tmux pane title
 	autocmd BufEnter * call system("settitle " . expand("%:p:t"))
