@@ -38,6 +38,7 @@ Plug 'airblade/vim-gitgutter'
 Plug 'godlygeek/csapprox'
 Plug 'godlygeek/tabular'
 Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 Plug 'vimwiki/vimwiki'
 Plug 'szw/vim-dict'
 Plug 'tpope/vim-surround'
@@ -285,6 +286,15 @@ let g:neoformat_javascript_prettier = {
             \ 'args': ['--stdin', '--single-quote', '--trailing-comma es5'],
             \ 'stdin': 1,
             \ }
+
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_theme='raven'
+" let g:airline_left_sep=''
+" let g:airline_left_alt_sep=''
+" let g:airline_right_sep=''
+" let g:airline_right_alt_sep=''
+let g:airline_powerline_fonts=1
+
 
 let g:polyglot_disabled = ['markdown']
 let g:vim_markdown_folding_style_pythonic = 1
