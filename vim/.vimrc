@@ -63,6 +63,7 @@ Plug '/usr/local/opt/fzf' | Plug 'junegunn/fzf.vim'
 Plug 'ryanoasis/vim-devicons'
 Plug 'mattn/gist-vim'
 Plug 'sbdchd/neoformat'
+Plug 'metakirby5/codi.vim'
 Plug 'vimlab/mdn.vim'
 
 " Specific language support/features
