@@ -249,6 +249,8 @@ colorscheme hybrid
 highlight Normal ctermbg=NONE
 highlight CursorLine ctermbg=0
 highlight Comment cterm=italic
+highlight ColorColumn ctermbg=234 guibg=234
+highlight Conceal cterm=NONE ctermbg=NONE ctermfg=darkblue
 
 " statusline
 " -----------------------------------------------------------------------------
@@ -284,5 +286,3 @@ endfunction
 " .NFO specific
 au BufReadPre *.nfo call SetFileEncodings('cp437')
 au BufReadPost *.nfo call RestoreFileEncodings()
-
-highlight Conceal cterm=NONE ctermbg=NONE ctermfg=darkblue
