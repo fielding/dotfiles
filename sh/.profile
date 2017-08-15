@@ -58,8 +58,6 @@ export LESS_TERMCAP_mb LESS_TERMCAP_md LESS_TERMCAP_me LESS_TERMCAP_se LESS_TERM
 
 export FZF_DEFAULT_COMMAND='ag -g ""'
 
-
-echo "~/.profile sourced"
 # the fuck is this
 # eval $(docker-machine env)
 
