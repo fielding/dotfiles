@@ -33,6 +33,7 @@ shopt -s expand_aliases     # expand aliases
 shopt -s extglob            # enable extended pattern-matching features
 shopt -s hostcomplete       # attempt hostname expansion when @ is at the beginning of a word
 shopt -s nocaseglob         # pathname expansion will be treated as case-insensitive
+shopt -s globstar           # enable ** pattern during globbing
 
 set -o vi                   # set vi-style command line editing
 
