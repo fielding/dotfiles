@@ -79,7 +79,7 @@ set nowrap                                                                      
 set textwidth=0                                                                 " stops linewrapping at invisible margins
 set colorcolumn=80                                                              " column indicator
 set lbr                                                                         " wrap text
-set relativenumber                                                              " show relative line numbers
+set relativenumber number                                                       " show absolute line number for current line and relative for all other lines
 set pastetoggle=<f5>                                                            " toggle paste mode
 set clipboard=unnamed                                                           " Use the OS clipboard by default
 set wildmenu                                                                    " enhanced tab-completion
