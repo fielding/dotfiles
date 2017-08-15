@@ -25,9 +25,10 @@ Plug 'bronson/vim-trailing-whitespace'
 Plug 'nathanaelkane/vim-indent-guides'
 Plug 'tpope/vim-afterimage'
 Plug 'tpope/vim-fugitive'
-Plug 'scrooloose/nerdtree'
+" Plug 'scrooloose/nerdtree'
+Plug 'shougo/unite.vim'
+Plug 'shougo/vimfiler.vim'
 Plug 'terryma/vim-multiple-cursors'
-Plug 'kien/ctrlp.vim'
 Plug 'ryanss/vim-hackernews'
 Plug 'fs111/pydoc.vim'
 Plug 'christoomey/vim-tmux-navigator'
@@ -58,6 +59,7 @@ Plug 'ternjs/tern_for_vim', { 'for': ['javascript', 'javascript.jsx'] }
 Plug 'carlitux/deoplete-ternjs', { 'for': ['javascript', 'javascript.jsx'] }
 Plug 'othree/jspc.vim', { 'for': ['javascript', 'javascript.jsx'] }
 Plug 'ervandew/supertab'
+Plug '/usr/local/opt/fzf' | Plug 'junegunn/fzf.vim'
 Plug 'ryanoasis/vim-devicons'
 Plug 'mattn/gist-vim'
 Plug 'sbdchd/neoformat'
@@ -208,7 +210,7 @@ inoremap <C-U> <C-G>u<C-U>
 " Marked.app preview for markdown files
 :nnoremap <leader>m :silent !open -a Marked.app '%:p'<cr>
 
-:noremap <F6> :NERDTreeToggle<CR>
+:noremap <F6> :VimFilerExplorer<CR>
 nnoremap <silent> <BS> :TmuxNavigateLeft<cr>
 
 " Align blocks of text and keep them selected
@@ -217,6 +219,15 @@ vmap > >gv
 " leader d to dump
 nnoremap <leader>d "_d
 vnoremap <leader>d "_d
+
+" FZF
+nnoremap <silent> <expr> <Leader><Leader> (expand('%') =~ 'NERD_tree' ? "\<c-w>\<c-w>" : '').":Files\<cr>"
+nnoremap <silent> <Leader><Enter> :Buffers<CR>
+
+nmap <leader><tab> <plug>(fzf-maps-n)
+xmap <leader><tab> <plug>(fzf-maps-x)
+omap <leader><tab> <plug>(fzf-maps-o)
+
 " autocmd
 " -----------------------------------------------------------------------------
 " Only do this part when compiled with support for autocommands.
@@ -358,6 +369,8 @@ let g:vimwiki_list = [{'path': '~/cloud/Dropbox/notes/', 'path_html': '~/Documen
 let g:vimwiki_global_ext = 0
 
 let g:dict_hosts = [["dict.org", ["gcide", "wn", "moby-thes", "vera", "jargon", "foldoc", "bouvier", "dcevil"]]]
+
+let g:vimfiler_as_default_explorer = 1
 
 " Functions used for .nfo, eventually could be used for others
 function! SetFileEncodings(encodings)
