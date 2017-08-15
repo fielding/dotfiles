@@ -38,10 +38,14 @@ shopt -s globstar           # enable ** pattern during globbing
 set -o vi                   # set vi-style command line editing
 
 ### Additional sources
+### bash completion time!
 
-# Iterm2 shell integration
-if [ -f /Users/fielding/.iterm2_shell_integration.bash ]; then
-	source /Users/fielding/.iterm2_shell_integration.bash;
+if which brew &> /dev/null && [ -f "$(brew --prefix)/share/bash-completion/bash_completion" ]; then
+  source "$(brew --prefix)/share/bash-completion/bash_completion";
+elif [ -f /usr/local/etc/bash_completion ]; then
+  source /usr/local/etc/bash_completion;
+elif [ -f /etc/bash_completion ]; then
+  source /etc/bash_completion;
 fi
 
 # For Travis gem
@@ -60,11 +64,6 @@ fi
 eval $(luarocks path --bin)
 
 
-### Completions
-
-if [ -f $(brew --prefix)/share/bash-completion/bash_completion ]; then
-  source "$(brew --prefix)/share/bash-completion/bash_completion";
-fi
 # local:lib for perl modules
 eval "$(perl -I${HOME}/perl5/lib/perl5 -Mlocal::lib)"
 
@@ -94,7 +93,7 @@ case $(uname -s) in
       alias curl='colourify curl'
       alias colorJSON='colourify python -m json.tool'
     fi
-  ;;
+    ;;
   Linux)
 
     # TODO: PYTHONPATH do I need to uncomment the line below?
@@ -113,7 +112,7 @@ case $(uname -s) in
     ;;
   NetBSD|OpenBSD)
     alias ls="ls -hf"
-  ;;
+    ;;
 esac
 
 eval "$(thefuck --alias fuck)"
