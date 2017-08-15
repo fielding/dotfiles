@@ -65,6 +65,7 @@ Plug 'mattn/gist-vim'
 Plug 'sbdchd/neoformat'
 Plug 'metakirby5/codi.vim'
 Plug 'vimlab/mdn.vim'
+Plug 'maxbrunsfeld/vim-yankstack'
 
 " Specific language support/features
 Plug 'sheerun/vim-polyglot'
@@ -229,7 +230,10 @@ nmap <leader><tab> <plug>(fzf-maps-n)
 xmap <leader><tab> <plug>(fzf-maps-x)
 omap <leader><tab> <plug>(fzf-maps-o)
 
-" autocmd
+" Mappings for yankstack
+nmap <leader>p <Plug>yankstack_substitute_older_paste
+nmap <leader>P <Plug>yankstack_substitute_newer_paste
+" autocmd {{{1
 " -----------------------------------------------------------------------------
 " Only do this part when compiled with support for autocommands.
 if has("autocmd")

@@ -1,0 +1,9 @@
+#!/bin/bash
+# Consider changing this to volume info and including both max_volume and mean_volume... maybe more info as well
+
+
+for f in *.mkv
+do
+  MV=$(ffmpeg -i "$f" -af volumedetect -f null /dev/null 2>&1 | grep max_volume | awk -F' ' '{printf "\t%s %s\n" , $5, $6}')
+  echo "$f: $MV"
+done
