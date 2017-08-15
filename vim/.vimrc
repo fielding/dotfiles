@@ -61,13 +61,19 @@ Plug 'ervandew/supertab'
 Plug 'ryanoasis/vim-devicons'
 Plug 'mattn/gist-vim'
 Plug 'sbdchd/neoformat'
+Plug 'vimlab/mdn.vim'
 
 " Specific language support/features
 Plug 'sheerun/vim-polyglot'
+Plug 'bigfish/vim-js-context-coloring', { 'branch': 'neovim' }
 Plug 'plasticboy/vim-markdown'
 Plug 'davidoc/taskpaper.vim'
 Plug 'jbgutierrez/vim-babel'
 Plug 'cakebaker/scss-syntax.vim'
+Plug 'jaawerth/nrun.vim'
+Plug 'heavenshell/vim-jsdoc'
+Plug 'sheerun/vim-polyglot'
+Plug 'chr4/nginx.vim'
 
 call plug#end()
 
@@ -154,6 +160,8 @@ set noeol
 " tabs
 set expandtab                                                                   " use spaces instead of true tabs
 set tabstop=2                                                                   " 2 column tabs
+
+set completeopt=longest,menuone,preview
 
 
 " In many terminal emulators the mouse works just fine, thus enable it.
@@ -260,6 +268,7 @@ if has("autocmd")
 
   autocmd FileType python setlocal sw=4 sts=4 et
 
+  autocmd FileType javascript setlocal foldmethod=syntax foldlevelstart=1
   " Have eslint check for local npm binary before falling back to global
   autocmd BufEnter *.js let b:neomake_javascript_eslint_exe = nrun#Which('eslint')
 
@@ -296,6 +305,9 @@ highlight Conceal cterm=NONE ctermbg=NONE ctermfg=darkblue
 " -----------------------------------------------------------------------------
 let g:EditorConfig_exec_path = '/usr/local/bin/editorconfig'
 let g:EditorConfig_core_mode = 'external_command'
+
+let g:jsx_ext_required = 1
+
 
 " let g:neomake_markdown_markdownlint_maker
 
