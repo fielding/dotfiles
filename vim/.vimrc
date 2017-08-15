@@ -13,6 +13,10 @@ if empty(glob('~/.vim/autoload/plug.vim'))
 endif
 
 call plug#begin('~/.vim/plugged')
+
+" Plugin Host
+Plug 'neovim/node-host'
+
 " Current color scheme
 Plug 'w0ng/vim-hybrid'
 
@@ -47,6 +51,11 @@ Plug 'mattn/webapi-vim'
 Plug 'ap/vim-css-color'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'neomake/neomake'
+Plug 'mklabs/split-term.vim'
+Plug 'christoomey/vim-tmux-navigator'
+Plug 'ryanoasis/vim-devicons'
+Plug 'mattn/gist-vim'
+Plug 'sbdchd/neoformat'
 
 " Specific language support/features
 Plug 'sheerun/vim-polyglot'
@@ -187,6 +196,14 @@ inoremap <C-U> <C-G>u<C-U>
 :nnoremap <leader>m :silent !open -a Marked.app '%:p'<cr>
 
 :noremap <F6> :NERDTreeToggle<CR>
+nnoremap <silent> <BS> :TmuxNavigateLeft<cr>
+
+" Align blocks of text and keep them selected
+vmap < <gv
+vmap > >gv
+" leader d to dump
+nnoremap <leader>d "_d
+vnoremap <leader>d "_d
 " autocmd
 " -----------------------------------------------------------------------------
 " Only do this part when compiled with support for autocommands.
