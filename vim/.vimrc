@@ -350,9 +350,14 @@ let g:tern#arguments = ['--persistent']
 
 let g:polyglot_disabled = ['markdown']
 let g:vim_markdown_folding_style_pythonic = 1
+
 let g:vimwiki_list = [{'path': '~/cloud/Dropbox/notes/', 'path_html': '~/Documents/wiki', 'syntax': 'markdown', 'ext': '.md', 'folding': 'expr'},
-                    \ {'path': '~/src/hack/imbue-wiki/', 'index': 'home', 'syntax': 'markdown', 'ext': '.md', 'folding': 'expr'}]
-let g:dict_hosts = [["dict.org", ["gcide", "wn", "moby-thes", "vera", "jargon", "foldoc", "bouvier", "devil"]]]
+                    \ {'path': '~/src/hack/imbue-wiki/', 'index': 'vimwiki', 'syntax': 'markdown', 'ext': '.md', 'folding': 'expr'},
+                    \ {'path': '~/tmp/'}]
+
+let g:vimwiki_global_ext = 0
+
+let g:dict_hosts = [["dict.org", ["gcide", "wn", "moby-thes", "vera", "jargon", "foldoc", "bouvier", "dcevil"]]]
 
 " Functions used for .nfo, eventually could be used for others
 function! SetFileEncodings(encodings)
