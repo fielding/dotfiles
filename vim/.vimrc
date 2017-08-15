@@ -21,7 +21,6 @@ Plug 'bronson/vim-trailing-whitespace'
 Plug 'nathanaelkane/vim-indent-guides'
 Plug 'tpope/vim-afterimage'
 Plug 'tpope/vim-fugitive'
-Plug 'scrooloose/syntastic'
 Plug 'scrooloose/nerdtree'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'kien/ctrlp.vim'
@@ -46,6 +45,7 @@ Plug 'tpope/vim-repeat'
 Plug 'mattn/webapi-vim'
 Plug 'ap/vim-css-color'
 Plug 'editorconfig/editorconfig-vim'
+Plug 'neomake/neomake'
 
 " Specific language support/features
 Plug 'sheerun/vim-polyglot'
@@ -237,6 +237,12 @@ if has("autocmd")
 
   autocmd FileType python setlocal sw=4 sts=4 et
 
+  " Have eslint check for local npm binary before falling back to global
+  autocmd BufEnter *.js let b:neomake_javascript_eslint_exe = nrun#Which('eslint')
+
+
+  autocmd BufWritePost * Neomake
+
 
  " Set tmux pane title
 	autocmd BufEnter * call system("settitle " . expand("%:p:t"))
@@ -267,12 +273,18 @@ highlight Conceal cterm=NONE ctermbg=NONE ctermfg=darkblue
 " -----------------------------------------------------------------------------
 let g:EditorConfig_exec_path = '/usr/local/bin/editorconfig'
 let g:EditorConfig_core_mode = 'external_command'
-let g:syntastic_check_on_open=1
-let g:syntastic_enable_signs=1
-let g:syntastic_javascript_eslint_generic = 1
-let g:syntastic_javascript_eslint_exec = 'xo'
-let g:syntastic_javascript_eslint_args = '--reporter=compact'
-let g:syntastic_javascript_checkers = ['eslint']
+
+" let g:neomake_markdown_markdownlint_maker
+
+let g:neomake_markdown_enabled_makers = ['markdownlint', 'proselint', 'writegood']
+" let g:neomake_vimwiki_enabled_makers = ['proselint', 'writegood']
+let g:neomake_javascript_enabled_makers = ['eslint']
+
+let g:neoformat_javascript_prettier = {
+            \ 'exe': 'prettier',
+            \ 'args': ['--stdin', '--single-quote', '--trailing-comma es5'],
+            \ 'stdin': 1,
+            \ }
 
 let g:polyglot_disabled = ['markdown']
 let g:vim_markdown_folding_style_pythonic = 1
