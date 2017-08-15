@@ -114,7 +114,11 @@ function nfo () {
 z() {
 	local dir=$(fdb -q "(?i)$@" | head -n 1)
 	[ -z "$dir" ] && return 1
-	cd "$dir" || fdb -d "$dir"
+  if cd "$dir"; then
+    echo "$dir" | sed "s;^$HOME;~;"
+  else
+    fdb -d "$dir"
+  fi
 }
 
 zc() {
