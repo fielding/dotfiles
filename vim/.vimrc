@@ -238,7 +238,7 @@ if has("autocmd")
   autocmd FileType python setlocal sw=4 sts=4 et
 
 
-  " Set tmux pane title
+ " Set tmux pane title
 	autocmd BufEnter * call system("settitle " . expand("%:p:t"))
   " Mark the current file as recently modified
 	autocmd BufRead,BufEnter * call system("fdb -i /Users/fielding/.local/share/edit.json -a " . shellescape(expand("%:p")) . " &")
