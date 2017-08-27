@@ -294,8 +294,10 @@ if has("autocmd")
   autocmd FileType python setlocal sw=4 sts=4 et
 
   autocmd FileType javascript setlocal foldmethod=syntax foldlevelstart=1
+
   " Have eslint check for local npm binary before falling back to global
   autocmd BufEnter *.js let b:neomake_javascript_eslint_exe = nrun#Which('eslint')
+  autocmd BufEnter *.css let b:neomake_css_csslint_exe = nrun#Which('csslint')
 
 
   autocmd BufWritePost * Neomake
