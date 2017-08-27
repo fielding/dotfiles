@@ -245,7 +245,7 @@ nmap <leader>P <Plug>yankstack_substitute_newer_paste
 " autocmd {{{1
 " -----------------------------------------------------------------------------
 " Only do this part when compiled with support for autocommands.
-if has("autocmd")
+if has('autocmd')
 
   " Enable file type detection.
   " Use the default filetype settings, so that mail gets 'tw' set to 72,
