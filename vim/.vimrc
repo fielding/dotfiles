@@ -384,7 +384,7 @@ let g:vimwiki_list = [{'path': '~/cloud/Dropbox/notes/', 'path_html': '~/Documen
 
 let g:vimwiki_global_ext = 0
 
-let g:dict_hosts = [["dict.org", ["gcide", "wn", "moby-thes", "vera", "jargon", "foldoc", "bouvier", "dcevil"]]]
+let g:dict_hosts = [['dict.org', ['gcide', 'wn', 'moby-thes', 'vera', 'jargon', 'foldoc', 'bouvier', 'dcevil']]]
 
 let g:vimfiler_as_default_explorer = 1
 
