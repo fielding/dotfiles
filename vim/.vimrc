@@ -342,9 +342,16 @@ let g:neomake_markdown_enabled_makers = ['markdownlint', 'proselint', 'writegood
 " let g:neomake_vimwiki_enabled_makers = ['proselint', 'writegood']
 let g:neomake_javascript_enabled_makers = ['eslint']
 
+
 let g:neoformat_javascript_prettier = {
-            \ 'exe': 'prettier',
+            \ 'exe': nrun#Which('prettier'),
             \ 'args': ['--stdin', '--single-quote', '--trailing-comma es5'],
+            \ 'stdin': 1,
+            \ }
+
+let g:neoformat_css_prettier = {
+            \ 'exe': nrun#Which('prettier'),
+            \ 'args': ['--stdin', '--parser', 'postcss'],
             \ 'stdin': 1,
             \ }
 
