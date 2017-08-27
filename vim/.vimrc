@@ -82,14 +82,20 @@ call plug#end()
 
 " init
 " ----------------------------------------------------------------------------
+" Following line is taken care of by neovim and vim-plug
+" Not sure if I need to keep this for vanilla vim compatability
 filetype plugin indent on
+
 syntax on
 
 let mapleader=','
 
 " set
 " ----------------------------------------------------------------------------
-set nocompatible                                                                " vim sets this automatically upon findin a vimrc file, keeping because it's my homie
+" Testing to make sure that removing set nocompat doesn't cause any problems.
+" Neovim straight ignores it, and I had made a comment suggesting vim was
+" doing it for me, so we will see
+" set nocompatible                                                                " vim sets this automatically upon findin a vimrc file, keeping because it's my homie
 set fileformats=mac,unix,dos
 set autoread                                                                    " Re-read file if changed outside
 set autowrite                                                                   " Auto save before commands like :next
