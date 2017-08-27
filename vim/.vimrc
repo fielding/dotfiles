@@ -90,7 +90,7 @@ let mapleader=','
 " set
 " ----------------------------------------------------------------------------
 set nocompatible                                                                " vim sets this automatically upon findin a vimrc file, keeping because it's my homie
-set ffs=mac,unix,dos
+set fileformats=mac,unix,dos
 set autoread                                                                    " Re-read file if changed outside
 set autowrite                                                                   " Auto save before commands like :next
 set backspace=2                                                                 " full backspacing compat
@@ -102,7 +102,7 @@ set hlsearch                                                                    
 set nowrap                                                                      " don't wrap line
 set textwidth=0                                                                 " stops linewrapping at invisible margins
 set colorcolumn=80                                                              " column indicator
-set lbr                                                                         " wrap text
+set linebreak                                                                         " wrap text
 set relativenumber number                                                       " show absolute line number for current line and relative for all other lines
 set pastetoggle=<f5>                                                            " toggle paste mode
 set clipboard=unnamed                                                           " Use the OS clipboard by default
@@ -129,7 +129,7 @@ set backupskip=
 set viminfo='100,n~/.vim/files/viminfo
 
                                                                                 " TODO: Come up with what I want to use for listchars
-set lcs=tab:▸\ ,trail:·,eol:¬,nbsp:_
+set listchars=tab:▸\ ,trail:·,eol:¬,nbsp:_
 set list
 
 " disable audio/visual bells
@@ -158,7 +158,7 @@ set shiftwidth=2                                                                
 
 " don't add newlines at the end of files
 set binary
-set noeol
+set noendofline
 
 " tabs
 set expandtab                                                                   " use spaces instead of true tabs
@@ -242,7 +242,7 @@ if has("autocmd")
   " 'cindent' is on in C files, etc.
   " Also load indent files, to automatically do language-dependent indenting.
   filetype plugin indent on
-  set ofu=syntaxcomplete#Complete
+  set omnifunc=syntaxcomplete#Complete
   set path+=/path/to/your/rails-application/app/**
   set path+=/path/to/your/rails-application/lib/**
   set suffixesadd=.rb
