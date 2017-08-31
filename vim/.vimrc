@@ -3,7 +3,7 @@
 " author:       fielding johnston - http://justfielding.com
 " -----------------------------------------------------------------------------
 
-" plug
+" plug {{{1
 " -----------------------------------------------------------------------------
 " Check and install vim-plug if it isn't installed
 if empty(glob('~/.vim/autoload/plug.vim'))
@@ -80,7 +80,7 @@ Plug 'chr4/nginx.vim'
 
 call plug#end()
 
-" init
+" init {{{1
 " ----------------------------------------------------------------------------
 " Following line is taken care of by neovim and vim-plug
 " Not sure if I need to keep this for vanilla vim compatability
@@ -90,7 +90,7 @@ syntax on
 
 let mapleader=','
 
-" set
+" set {{{1
 " ----------------------------------------------------------------------------
 " Testing to make sure that removing set nocompat doesn't cause any problems.
 " Neovim straight ignores it, and I had made a comment suggesting vim was
@@ -201,7 +201,7 @@ let g:python3_host_prog = '/usr/local/bin/python3'
 
 au FocusLost * :silent! wall
 
-" mapping
+" mapping {{{1
 " -----------------------------------------------------------------------------
 " Q does formatting qith gq. Vim 5.0 style
 map Q gq
@@ -310,7 +310,7 @@ if has('autocmd')
 endif " has("autocmd")
 
 
-" colors
+" colors {{{1
 " -----------------------------------------------------------------------------
 set t_Co=256
 set t_Sf=[3%dm
@@ -325,10 +325,10 @@ highlight Comment cterm=italic
 highlight ColorColumn ctermbg=234 guibg=234
 highlight Conceal cterm=NONE ctermbg=NONE ctermfg=darkblue
 
-" statusline
+" statusline {{{1
 " -----------------------------------------------------------------------------
 
-" options
+" options {{{1
 " -----------------------------------------------------------------------------
 let g:EditorConfig_exec_path = '/usr/local/bin/editorconfig'
 let g:EditorConfig_core_mode = 'external_command'
