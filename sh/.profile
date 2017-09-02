@@ -43,12 +43,13 @@ export CFLAGS CXXFLAGS LDFLAGS PKG_CONFIG_PATH
 # help slimerjs find firefox
 export SLIMERJSLAUNCHER=/Applications/Firefox52.0.2.app/Contents/MacOS/firefox
 
-CLICOLOR=1
 #GREP_OPTIONS
 #LSCOLORS=ExDxCxcxBxGxgxHxHxFxfx
 #Go over the commented settings
+CLICOLOR=1
 GREP_COLORS='ms=33:mc=33:sl=37:cx=37:fn=34:ln=1;31:bn=1;35:se=1;30'
 export CLICOLOR GREP_COLORS
+
 # Less Colors for Man Pages
 LESS_TERMCAP_mb=$(tput bold; tput setaf 2)
 LESS_TERMCAP_md=$(tput bold; tput setaf 1)
@@ -57,19 +58,9 @@ LESS_TERMCAP_so=$(tput bold; tput setaf 3; tput setab 4)
 LESS_TERMCAP_se=$(tput rmso; tput sgr0)
 LESS_TERMCAP_us=$(tput smul; tput bold; tput setaf 3)
 LESS_TERMCAP_ue=$(tput rmul; tput sgr0)
-
 export LESS_TERMCAP_mb LESS_TERMCAP_md LESS_TERMCAP_me LESS_TERMCAP_se LESS_TERMCAP_so LESS_TERMCAP_ue LESS_TERMCAP_us
 
 
 export FZF_DEFAULT_COMMAND='ag -g ""'
 
-# the fuck is this
-# eval $(docker-machine env)
-
-
-
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
-
-export HOMEBREW_NO_ANALYTICS=1
-
-export PATH=/usr/local/Cellar/openssl/1.0.2l/bin:$PATH
