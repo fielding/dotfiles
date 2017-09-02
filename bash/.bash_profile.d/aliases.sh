@@ -3,6 +3,9 @@ alias less='less -m -N -g -i -J --underline-special --SILENT'
 alias grep="grep --color=auto" 
 
 # Shortcuts
+# Considerations:
+#   hb vs b for homebrew. Other contendors for b alias would be?
+alias b="brew"
 alias e="nvim"
 alias git="hub"
 alias g="git"
