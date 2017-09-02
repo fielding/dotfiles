@@ -242,6 +242,7 @@ omap <leader><tab> <plug>(fzf-maps-o)
 " Mappings for yankstack
 nmap <leader>p <Plug>yankstack_substitute_older_paste
 nmap <leader>P <Plug>yankstack_substitute_newer_paste
+
 " autocmd {{{1
 " -----------------------------------------------------------------------------
 " Only do this part when compiled with support for autocommands.
@@ -308,7 +309,6 @@ if has('autocmd')
   " Mark the current file as recently modified
 	autocmd BufRead,BufEnter * call system("fdb -i /Users/fielding/.local/share/edit.json -a " . shellescape(expand("%:p")) . " &")
 endif " has("autocmd")
-
 
 " colors {{{1
 " -----------------------------------------------------------------------------
