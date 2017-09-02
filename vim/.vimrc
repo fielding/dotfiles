@@ -211,6 +211,7 @@ map ; :
 
 " Force writing to a file with sudo
 command! Sudo :execute ':silent w !sudo tee % > /dev/null' | :edit!
+command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --hidden --follow --glob "!.git/*" --color "always" '.shellescape(<q-args>), 1, <bang>0)
 
 " enables CTRL-U after inserting a line break
 inoremap <C-U> <C-G>u<C-U>
