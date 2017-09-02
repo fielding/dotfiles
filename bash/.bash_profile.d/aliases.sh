@@ -42,6 +42,10 @@ alias vlc='/Applications/VLC.app/Contents/MacOS/VLC'
 # TODO: is the following vim alias doing anything for vim/tmux/osx and the clipboard
 #alias vim="reattach-to-user-namespace vim"
 
+# Spotlight go to hell... until summoned again
+alias spotoff="sudo mdutil -a -i off"
+alias spoton="sudo mdutil -a -i on"
+
 # Empty the Trash on all mounted volumes and the main HDD.
 # Also, clear Apple’s System Logs to improve shell startup speed.
 # Finally, clear download history from quarantine.
