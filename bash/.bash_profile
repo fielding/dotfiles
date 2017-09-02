@@ -75,7 +75,15 @@ case $(uname -s) in
 
     # use gdircolors and gls from homebrew's coreutilities for pretty ls output
     eval $(dircolors -b ~/.dir_colors)
-    alias ls="ls --color=always -hF"
+
+    if [[ -n $(which exa) ]]; then
+      alias ls='exa'
+      alias l='exa -a -lgmH'
+      alias ll='l -h --git'
+    else
+      alias ls='ls --color=always -hF'
+      alias l='ls -al'
+    fi
 
     # TODO: Figure out a way to incorporate the following alias/command/ifunction
     # colourify `alias ls |awk -F "'" '{print $2}'` -al ~
