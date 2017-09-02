@@ -121,7 +121,7 @@ set modelines=4
 set lazyredraw
 set splitbelow
 set splitright
-
+set wildignore+=*/.git/*,*/tmp/*,*.swp
 
 " working file settings and location
 set directory=~/.vim/files/swap//
