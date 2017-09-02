@@ -1,5 +1,4 @@
 # Improved Command Options
-alias la="ls -al" # high frequency in history, so I made an alias
 alias less='less -m -N -g -i -J --underline-special --SILENT'
 alias grep="grep --color=auto" 
 
