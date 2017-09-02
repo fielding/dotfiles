@@ -1,7 +1,7 @@
 # Improved Command Options
 alias la="ls -al" # high frequency in history, so I made an alias
 alias less='less -m -N -g -i -J --underline-special --SILENT'
-alias grep="grep --color=auto" # always grep with color
+alias grep="grep --color=auto" 
 
 # Shortcuts
 alias e="nvim"
@@ -19,7 +19,6 @@ alias y="yarn"
 # Shortcut Completion mappings
 complete -F _git g
 
-alias irc="weechat"
 alias reboot="sudo shutdown -r now"
 alias shutdown="sudo shutdown -h now"
 alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
@@ -30,6 +29,7 @@ alias show="defaults write com.apple.Finder AppleShowAllFiles -bool true && kill
 alias hide="defaults write com.apple.Finder AppleShowAllFiles -bool false && killall Finder"
 
 ## Program shortcuts
+alias irc="weechat"
 alias vlc='/Applications/VLC.app/Contents/MacOS/VLC'
 
 # Shortcuts to scripts
