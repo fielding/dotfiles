@@ -78,8 +78,9 @@ case $(uname -s) in
 
     if [[ -n $(which exa) ]]; then
       alias ls='exa'
-      alias l='exa -a -lgmH'
-      alias ll='l -h --git'
+      alias l='exa -a -lgmH --git --time-style long-iso'
+      alias lh='l -h'
+      alias lm='l --group-directories-first --sort modified'
     else
       alias ls='ls --color=always -hF'
       alias l='ls -al'
