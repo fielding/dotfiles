@@ -22,6 +22,7 @@ alias y="yarn"
 complete -F _git g
 
 alias reboot="sudo shutdown -r now"
+alias reload="exec ${SHELL} -l"
 alias shutdown="sudo shutdown -h now"
 alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
 alias prettyJSON='python -m json.tool'
