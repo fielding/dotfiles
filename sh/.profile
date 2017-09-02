@@ -1,13 +1,13 @@
 #!/bin/sh
-PATH="$HOME/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:\
+
+# Path
+PATH="$HOME/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:/opt/bin:$HOME/.cabal/bin:$HOME/.rbenv/bin:$HOME/perl5/bin:/Library/TeX/texbin:$HOME/.cargo/bin:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:/usr/local/lib/python2.7/site-packages:/opt/metasploit-framework/bin:/usr/local/Cellar/openssl/1.0.2l/bin"
+export PATH
 
 # set android_home directory for android development
 ANDROID_HOME=$HOME/Library/Android/sdk
 export ANDROID_HOME
 
-# Set PATH
-/opt/bin:$HOME/.cabal/bin:$HOME/.rbenv/bin:$HOME/perl5/bin:/Library/TeX/texbin:$HOME/.cargo/bin:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:`yarn global bin`:/usr/local/lib/python2.7/site-packages:/opt/metasploit-framework/bin"
-export PATH
 export LESSOPEN="| /usr/local/bin/src-hilite-lesspipe.sh %s"
 export LESS="-R"
 
