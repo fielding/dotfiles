@@ -8,14 +8,13 @@ export PATH
 ANDROID_HOME=$HOME/Library/Android/sdk
 export ANDROID_HOME
 
-export LESSOPEN="| /usr/local/bin/src-hilite-lesspipe.sh %s"
-export LESS="-R"
-
 # Default
 EDITOR=nvim
 PAGER=less
 BROWSER=open
-export EDITOR PAGER BROWSER
+LESSOPEN="| /usr/local/bin/src-hilite-lesspipe.sh %s"
+LESS="-R"
+export EDITOR PAGER BROWSER LESSOPEN LESS
 
 # Timezone, Language and use Unicode
 TZ=America/Chicago
