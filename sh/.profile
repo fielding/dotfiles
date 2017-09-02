@@ -60,7 +60,16 @@ LESS_TERMCAP_us=$(tput smul; tput bold; tput setaf 3)
 LESS_TERMCAP_ue=$(tput rmul; tput sgr0)
 export LESS_TERMCAP_mb LESS_TERMCAP_md LESS_TERMCAP_me LESS_TERMCAP_se LESS_TERMCAP_so LESS_TERMCAP_ue LESS_TERMCAP_us
 
-
-export FZF_DEFAULT_COMMAND='ag -g ""'
+# Fuzzy Find
+FZF_DEFAULT_OPTS='--color fg:7,bg:0,hl:1,fg+:15,bg+:0,hl+:9
+  --color info:10,prompt:12,spinner:13,pointer:14,marker:5
+  --preview "[[ $(file --mime {}) =~ binary ]] &&
+   echo {} is a binary file ||
+   (highlight -O xterm256 -s molokai -l {} ||
+    coderay {} ||
+    rougify {} ||
+    cat {}) 2> /dev/null | head -500"'
+FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob="!.git/*"'
+export FZF_DEFAULT_COMMAND FZF_DEFAULT_OPTS
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
