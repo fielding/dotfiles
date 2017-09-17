@@ -69,6 +69,18 @@ eval "$(perl -I${HOME}/perl5/lib/perl5 -Mlocal::lib)"
 
 ## Platform Specific
 
+
+## REDO THIS to something like the following
+## Move/incorporate it in to sourcing of bash_profile.d files
+## still considering host and os specific file, so will need
+## to adjust the commented idea. Still serves as food for thought
+
+# [[ $(uname -s) == 'Darwin' ]] && source bash_profile.d/*.mac.sh
+# [[ $(uname -s) == 'FreeBSD' ]] && source bash_profile.d/*.bsd.sh
+# [[ $(uname -s) == 'Linux' ]] && source bash_profile.d/*.linux.sh
+# [[ $(uname -s) == MINGW32_* ]] && source bash_profile.d/*.win.sh
+
+
 case $(uname -s) in
   Darwin|FreeBSD)
     export PROMPT_COMMAND='echo -ne "\033]0;${PWD/#$HOME/~}\007";[ "$PWD" -ef "$HOME" ] || fdb -a "$PWD"'
