@@ -58,7 +58,7 @@ if [[ "$(type -P rbenv)" && ! "$(type -t _rbenv)" ]]; then
 fi
 
 # go version manager
-[[ -s "/home/fielding/.gvm/scripts/gvm" ]] && source "/home/fielding/.gvm/scripts/gvm"
+# [[ -s "/home/fielding/.gvm/scripts/gvm" ]] && source "/home/fielding/.gvm/scripts/gvm"
 
 # let luarocks setup suitable env variables for us
 eval $(luarocks path --bin)
