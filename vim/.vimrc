@@ -77,6 +77,7 @@ Plug 'jaawerth/nrun.vim'
 Plug 'heavenshell/vim-jsdoc'
 Plug 'sheerun/vim-polyglot'
 Plug 'chr4/nginx.vim'
+Plug 'xu-cheng/brew.vim'
 
 call plug#end()
 
