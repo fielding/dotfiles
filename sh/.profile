@@ -1,12 +1,23 @@
 #!/bin/sh
 
-# Path
-PATH="$HOME/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:/opt/bin:$HOME/.cabal/bin:$HOME/.rbenv/bin:$HOME/perl5/bin:/Library/TeX/texbin:$HOME/.cargo/bin:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:/usr/local/lib/python2.7/site-packages:/opt/metasploit-framework/bin:/usr/local/Cellar/openssl/1.0.2l/bin"
-export PATH
-
 # set android_home directory for android development
 ANDROID_HOME=$HOME/Library/Android/sdk
 export ANDROID_HOME
+
+# Attempt to keep macos system ruby seperate and not have to sudo gem install
+RBENV_ROOT="$(brew --prefix rbenv)"
+GEM_HOME="$(brew --prefix)/opt/gems"
+GEM_PATH="$(brew --prefix)/opt/gems"
+export RBENV_ROOT GEM_HOME GEM_PATH
+
+# golang go get'em
+GOPATH="$HOME/.go"
+GOROOT="/usr/local/opt/go/libexec"
+export GOPATH GOROOT
+
+# Path
+PATH="$HOME/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:/opt/bin:$HOME/.cabal/bin:$HOME/perl5/bin:/Library/TeX/texbin:$HOME/.cargo/bin:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:/usr/local/lib/python2.7/site-packages:/opt/metasploit-framework/bin:/usr/local/Cellar/openssl/1.0.2l/bin:$GEM_PATH/bin:$GOPATH/bin"
+export PATH
 
 # Default
 EDITOR=nvim
