@@ -65,7 +65,7 @@ eval $(luarocks path --bin)
 
 
 # local:lib for perl modules
-eval "$(perl -I${HOME}/perl5/lib/perl5 -Mlocal::lib)"
+[ -d "$HOME/perl5/lib/perl5" ] && eval "$(perl -I${HOME}/perl5/lib/perl5 -Mlocal::lib)"
 
 ## Platform Specific
 
