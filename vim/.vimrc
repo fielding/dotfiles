@@ -196,7 +196,7 @@ let g:indent_guides_guide_size = 1
 " Set bash as the default shell type/syntax
 let g:is_bash = 1
 
-let g:python_host_prog = '/usr/local/bin/python2'
+let g:python_host_prog = '/usr/local/bin/python'
 let g:python3_host_prog = '/usr/local/bin/python3'
 
 
