@@ -4,9 +4,9 @@
 ## credit:        inspired by Mathias Bynens and his .osx file
 ##----------------------------------------------------------------------------
 
-# Make ~/Library permanently visible
-
-chflags nohidden ~/Library/
+# Remove all of whatever that is in the dock
+# Consider that this might only want to be ran after fresh install
+# defaults write com.apple.dock persistent-apps -array && killall Dock
 
 # Enable AirDrop over Ethernet and on unsupported Macs running Lion
 
