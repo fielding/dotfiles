@@ -294,6 +294,10 @@ if has('autocmd')
   " autocmd VimEnter * if !argc() | Startify | NERDTree | endif
   " autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 
+  autocmd BufRead,BufNewFile,BufFilePre *.md set filetype=markdown 
+  autocmd FileType markdown setlocal textwidth=79 wrap 
+
+
   autocmd FileType python setlocal sw=4 sts=4 et
 
   autocmd FileType javascript setlocal foldmethod=syntax foldlevelstart=1
