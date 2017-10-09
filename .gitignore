@@ -1,5 +1,6 @@
 bash/.bash_profile.d/extra.sh
 bash/.bash_profile.d/extra.bash
+git/.git-templates/hooks/*.sample
 terminfo/.terminfo/69/iterm.app
 terminfo/.terminfo/69/iterm
 terminfo/.terminfo/74/tmux
