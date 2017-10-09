@@ -221,7 +221,7 @@ inoremap <C-U> <C-G>u<C-U>
 :noremap <silent> <Space> :silent noh<Bar>echo<CR>
 
 " Marked.app preview for markdown files
-:nnoremap <leader>m :silent !open -a Marked.app '%:p'<cr>
+" :nnoremap <leader>m :silent !open -a Marked.app '%:p'<cr>
 
 :noremap <F6> :VimFilerExplorer<CR>
 nnoremap <silent> <BS> :TmuxNavigateLeft<cr>
