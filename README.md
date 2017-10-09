@@ -12,16 +12,24 @@
 ## Overview
 
 ```
+babel       >
 bash        > bash settings, aliases, functions
 bin         > scripts
 dircolors   > color settings for ls output
+eslint      >
+fonts       >
 git         > global git configuration and templates
 grc         > colorized command output configuration
 iterm2      > iterm2 color presets
+mpv         >
+neovim      > config and colors for the successor to vim
 readline    > vi editing mode and iterm2 unicode usage via .inputrc
+ruby        >
+shell       >
 terminfo    > iterm and tmux-256color with italics support terminfo files
 tmux        > .tmux.conf and tmux plugins
-vim         > .vimrc, colorscheme and plugins
+vim         >
+vint        >
 .osx        > sensible os x defaults
 ```
 
@@ -32,7 +40,7 @@ vim         > .vimrc, colorscheme and plugins
 ```sh
 brew install stow
 
-stow bash bin discolors git grc iterm2 deadline terminfo tmux vim
+stow babel bash bin dircolors eslint fonts git grc iterm2 mpv neovim readline ruby shell terminfo tmux vim vint
 
 git submodule update --init --recursive
 
