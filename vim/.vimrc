@@ -294,23 +294,22 @@ if has('autocmd')
   " autocmd VimEnter * if !argc() | Startify | NERDTree | endif
   " autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 
-  autocmd BufRead,BufNewFile,BufFilePre *.md set filetype=markdown
-  autocmd FileType markdown setlocal textwidth=79 wrap
-
   autocmd FileType python setlocal sw=4 sts=4 et
+
   autocmd FileType javascript setlocal foldmethod=syntax foldlevelstart=1
 
   " Have eslint check for local npm binary before falling back to global
-
   autocmd BufEnter *.js let b:neomake_javascript_eslint_exe = nrun#Which('eslint')
   autocmd BufEnter *.css let b:neomake_css_csslint_exe = nrun#Which('csslint')
 
+
   autocmd BufWritePost * Neomake
 
+
  " Set tmux pane title
-  " autocmd BufEnter * call system("settitle " . expand("%:p:t"))
+	autocmd BufEnter * call system("settitle " . expand("%:p:t"))
   " Mark the current file as recently modified
-  " autocmd BufRead,BufEnter * call system("fdb -i /Users/fielding/.local/share/edit.json -a " . shellescape(expand("%:p")) . " &")
+	autocmd BufRead,BufEnter * call system("fdb -i /Users/fielding/.local/share/edit.json -a " . shellescape(expand("%:p")) . " &")
 endif " has("autocmd")
 
 " colors {{{1
