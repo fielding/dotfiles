@@ -204,6 +204,12 @@ au FocusLost * :silent! wall
 
 " mapping {{{1
 " -----------------------------------------------------------------------------
+" I must banish these newbie poser habits
+noremap <up> <nop>
+noremap <down> <nop>
+noremap <left> <nop>
+noremap <right> <nop>
+
 " Q does formatting qith gq. Vim 5.0 style
 map Q gq
 
