@@ -232,6 +232,7 @@ nnoremap <silent> <BS> :TmuxNavigateLeft<cr>
 " Align blocks of text and keep them selected
 vmap < <gv
 vmap > >gv
+
 " leader d to dump
 nnoremap <leader>d "_d
 vnoremap <leader>d "_d
@@ -312,6 +313,20 @@ if has('autocmd')
 
   autocmd BufWritePost * Neomake
 
+  " Functions used for .nfo, eventually could be used for others
+  function! SetFileEncodings(encodings)
+  let b:myfileencodingsbak=&fileencodings
+  let &fileencodings=a:encodings
+  endfunction
+
+  function! RestoreFileEncodings()
+  let &fileencodings=b:myfileencodingsbak
+  unlet b:myfileencodingsbak
+  endfunction
+
+  " .NFO specific
+  au BufReadPre *.nfo call SetFileEncodings('cp437')
+  au BufReadPost *.nfo call RestoreFileEncodings()
 
  " Set tmux pane title
 	autocmd BufEnter * call system("settitle " . expand("%:p:t"))
@@ -403,17 +418,3 @@ let g:dict_hosts = [['dict.org', ['gcide', 'wn', 'moby-thes', 'vera', 'jargon', 
 
 let g:vimfiler_as_default_explorer = 1
 
-" Functions used for .nfo, eventually could be used for others
-function! SetFileEncodings(encodings)
-let b:myfileencodingsbak=&fileencodings
-let &fileencodings=a:encodings
-endfunction
-
-function! RestoreFileEncodings()
-let &fileencodings=b:myfileencodingsbak
-unlet b:myfileencodingsbak
-endfunction
-
-" .NFO specific
-au BufReadPre *.nfo call SetFileEncodings('cp437')
-au BufReadPost *.nfo call RestoreFileEncodings()
