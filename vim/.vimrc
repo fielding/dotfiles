@@ -32,7 +32,6 @@ Plug 'ryanss/vim-hackernews'
 Plug 'fs111/pydoc.vim'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'sjl/vitality.vim'
-Plug 'shime/vim-livedown'
 Plug 'mrtazz/simplenote.vim'
 Plug 'junegunn/goyo.vim'
 Plug 'moll/vim-bbye'
@@ -69,7 +68,6 @@ Plug 'maxbrunsfeld/vim-yankstack'
 " Specific language support/features
 Plug 'sheerun/vim-polyglot'
 Plug 'bigfish/vim-js-context-coloring', { 'branch': 'neovim' }
-Plug 'plasticboy/vim-markdown'
 Plug 'davidoc/taskpaper.vim'
 Plug 'jbgutierrez/vim-babel'
 Plug 'cakebaker/scss-syntax.vim'
@@ -78,6 +76,8 @@ Plug 'heavenshell/vim-jsdoc'
 Plug 'sheerun/vim-polyglot'
 Plug 'chr4/nginx.vim'
 Plug 'xu-cheng/brew.vim'
+Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
+Plug 'shime/vim-livedown', { 'for': 'markdown', 'do': ':!npm install -g livedown' }
 
 call plug#end()
 
@@ -225,9 +225,6 @@ inoremap <C-U> <C-G>u<C-U>
 
 " spacebar unhighlights search text
 :noremap <silent> <Space> :silent noh<Bar>echo<CR>
-
-" Marked.app preview for markdown files
-" :nnoremap <leader>m :silent !open -a Marked.app '%:p'<cr>
 
 :noremap <F6> :VimFilerExplorer<CR>
 nnoremap <silent> <BS> :TmuxNavigateLeft<cr>
