@@ -319,7 +319,8 @@ if has('autocmd')
  " Set tmux pane title
 	autocmd BufEnter * call system("settitle " . expand("%:p:t"))
   " Mark the current file as recently modified
-	autocmd BufRead,BufEnter * call system("fdb -i /Users/fielding/.local/share/edit.json -a " . shellescape(expand("%:p")) . " &")
+  autocmd BufRead,BufEnter * call system("fdb -i /Users/fielding/.local/share/edit.z -a " . shellescape(expand("%:p")) . " &")
+
 endif " has("autocmd")
 
 " colors {{{1

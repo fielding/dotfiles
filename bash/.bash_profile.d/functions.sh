@@ -126,7 +126,7 @@ zc() {
 }
 
 oz() {
-	local fp="$(fdb -i "$XDG_DATA_HOME"/open.json -q "(?i)$@" | head -n 1)"
+	local fp="$(fdb -i "$XDG_DATA_HOME"/open.z -q "(?i)$@" | head -n 1)"
 	[ -e "$fp" ] && o "$fp"
 }
 

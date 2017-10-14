@@ -2,6 +2,6 @@
 
 if [ -e "$1" ]; then
   mime_type=$(file -L -b --mime-type "$1")
-  fdb -i "$XDG_DATA_HOME"/view.json -a "$(realpath "$1")"
+  fdb -i "$XDG_DATA_HOME"/view.z -a "$(realpath "$1")"
   qlmanage -p "$@" &> /dev/null
 fi
