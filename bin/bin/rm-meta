@@ -1,0 +1,4 @@
+#!/bin/sh
+# recursively remove ._AppleDouble from cwd or given path
+
+find "${1:-.}" -name "._*" -print -exec rm -- "{}" +

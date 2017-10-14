@@ -1,0 +1,4 @@
+#!/bin/sh
+# recursively remove broken links from cwd or given path
+
+find -L "${1:-.}" -type l -print -exec rm -- {} +

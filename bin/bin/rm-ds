@@ -1,0 +1,4 @@
+#!/bin/sh
+# recursvely remove .DS_store files from cwd or given path
+
+find "${1:-.}" -name .DS_Store -print -exec rm -- {} +

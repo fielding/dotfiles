@@ -1,0 +1,7 @@
+#!/bin/sh
+# recursively remove all "turd" files from from cwd or given path
+# turd files removed: .DS_Store, ._AppleDouble, and broken symlinks
+
+find "${1:-.}" -name .DS_Store -print -exec rm -- {} +
+find "${1:-.}" -name "._*" -print -exec rm -- "{}" +
+find -L "${1:-.}" -type l -print -exec rm -- {} +
