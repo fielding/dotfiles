@@ -22,3 +22,10 @@ $if mode=vi
   "\e[B": history-search-forward
 
 $endif
+
+
+# allow chunkwm to pass through ctrl-h/j/k/l so that vim can switch panes without triggering shell escape characters
+"\C-l":
+"\C-h":
+"\C-j":
+"\C-k":
