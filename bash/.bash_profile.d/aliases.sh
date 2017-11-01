@@ -31,6 +31,9 @@ alias prettyJSON='python -m json.tool'
 alias showHidden="defaults write com.apple.Finder AppleShowAllFiles -bool true && killall Finder"
 alias hideHidden="defaults write com.apple.Finder AppleShowAllFiles -bool false && killall Finder"
 
+alias hideDesktop="defaults write com.apple.finder CreateDesktop false && killall Finder"
+alias showDesktop="defaults write com.apple.finder CreateDesktop true && killall Finder"
+
 ## Program shortcuts
 alias irc="weechat"
 alias vlc='/Applications/VLC.app/Contents/MacOS/VLC'
