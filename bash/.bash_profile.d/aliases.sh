@@ -28,8 +28,8 @@ alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
 alias prettyJSON='python -m json.tool'
 
 ## Show/hide hidden files in Finder
-alias show="defaults write com.apple.Finder AppleShowAllFiles -bool true && killall Finder"
-alias hide="defaults write com.apple.Finder AppleShowAllFiles -bool false && killall Finder"
+alias showHidden="defaults write com.apple.Finder AppleShowAllFiles -bool true && killall Finder"
+alias hideHidden="defaults write com.apple.Finder AppleShowAllFiles -bool false && killall Finder"
 
 ## Program shortcuts
 alias irc="weechat"
