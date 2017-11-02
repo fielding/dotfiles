@@ -21,6 +21,7 @@ fonts       >
 git         > global git configuration and templates
 grc         > colorized command output configuration
 iterm2      > iterm2 color presets
+karabiner   > karabiner config files
 mpv         >
 neovim      > config and colors for the successor to vim
 readline    > vi editing mode and iterm2 unicode usage via .inputrc
