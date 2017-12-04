@@ -43,7 +43,7 @@ Plug 'godlygeek/csapprox'
 Plug 'godlygeek/tabular'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
-Plug 'vimwiki/vimwiki'
+Plug 'vimwiki/vimwiki', { 'branch': 'dev' }
 Plug 'szw/vim-dict'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-repeat'
