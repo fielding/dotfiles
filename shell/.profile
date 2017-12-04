@@ -5,7 +5,7 @@ ANDROID_HOME=$HOME/Library/Android/sdk
 export ANDROID_HOME
 
 # Attempt to keep macos system ruby seperate and not have to sudo gem install
-RBENV_ROOT="$(brew --prefix rbenv)"
+RBENV_ROOT="$HOME/.rbenv"
 GEM_HOME="$(brew --prefix)/opt/gems"
 GEM_PATH="$(brew --prefix)/opt/gems"
 export RBENV_ROOT GEM_HOME GEM_PATH
