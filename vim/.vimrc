@@ -79,6 +79,7 @@ Plug 'chr4/nginx.vim'
 Plug 'xu-cheng/brew.vim'
 Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
 Plug 'shime/vim-livedown', { 'for': 'markdown', 'do': ':!npm install -g livedown' }
+Plug 'https://git.imbue.studio/fielding/vim-scheme.git'
 
 call plug#end()
 
@@ -419,3 +420,4 @@ let g:dict_hosts = [['dict.org', ['gcide', 'wn', 'moby-thes', 'vera', 'jargon', 
 
 let g:vimfiler_as_default_explorer = 1
 
+let g:is_chicken = 1
