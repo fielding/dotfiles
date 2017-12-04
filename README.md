@@ -45,7 +45,7 @@ stow babel bash bin dircolors eslint fonts git grc iterm2 mpv neovim readline ru
 
 git submodule update --init --recursive
 
-tic ~/.termino/69/iterm.terminfo
+tic ~/.terminfo/69/iterm.terminfo
 tic ~/.terminfo/74/tmux.terminfo
 tic ~/.terminfo/74/tmux-256color.terminfo
 
