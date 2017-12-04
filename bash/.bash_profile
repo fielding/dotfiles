@@ -19,7 +19,7 @@ fi
 
 # History Settings
 export HISTCONTROL=ignoredups
-export HISTSIZE=10000
+export HISTSIZE=1000
 export HISTFILESIZE=10000
 export HISTIGNORE="ls:ls *:cd:cd -:pwd;exit:date:* --help"
 shopt -s histappend         # append to (not overwrite) the history file
