@@ -6,15 +6,15 @@ alias grep="grep --color=auto"
 # Considerations:
 #   hb vs b for homebrew. Other contendors for b alias would be?
 alias b="brew"
-alias e="nvim"
+alias e="nvr"
 alias git="hub"
 alias g="git"
 alias kb="keybase"
 alias se="sudo nvim"
 alias sv="sudo nvim"
 alias tm="tmux"
-alias v="nvim"
-alias vim="nvim"
+alias v="nvr"
+alias vim="nvr"
 alias y="yarn"
 
 
