@@ -1,0 +1,10 @@
+#!/usr/bin/env osascript -l JavaScript
+
+function run(argv) {
+  if (Application('iTerm').running()) {
+    Application('iTerm').createWindowWithDefaultProfile();
+  } else {
+    Application('iTerm').activate();
+  }
+}
+
