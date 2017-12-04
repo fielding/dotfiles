@@ -421,3 +421,26 @@ let g:dict_hosts = [['dict.org', ['gcide', 'wn', 'moby-thes', 'vera', 'jargon', 
 let g:vimfiler_as_default_explorer = 1
 
 let g:is_chicken = 1
+
+" Leaving and commenting out the following line in case I want to use an
+" external command to dynamically generate startify's fortunes
+" let g:startify_custom_header_quotes = [ {-> systemlist('fortune')} ]
+
+" function to center ascii/ansi art header
+function! s:filter_header(lines) abort
+    let longest_line   = max(map(copy(a:lines), 'strwidth(v:val)'))
+    let centered_lines = map(copy(a:lines),
+        \ 'repeat(" ", (&columns / 2) - (longest_line / 2)) . v:val')
+    return centered_lines
+  endfunction
+
+let g:sword = [
+      \ '         ▟▙',
+      \ ' ▟▒░░░░░░░▜▙▜████████████████████████████████▛',
+      \ ' ▜▒░░░░░░░▟▛▟▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▛',
+      \ '         ▜▛',
+      \ ]
+
+" let g:startify_custom_header = s:filter_header(startify#fortune#boxed()) + s:filter_header(g:sword)
+let g:startify_custom_header = s:filter_header(g:sword) + s:filter_header(startify#fortune#boxed())
+let g:startify_bookmarks = ["~/.vimrc"]
