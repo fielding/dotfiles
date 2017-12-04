@@ -136,5 +136,4 @@ case $(uname -s) in
     ;;
 esac
 
-eval "$(thefuck --alias fuck)"
 source <(npx --shell-auto-fallback bash)
