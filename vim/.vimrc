@@ -365,6 +365,7 @@ let g:jsx_ext_required = 1
 
 " let g:neomake_markdown_markdownlint_maker
 
+let g:neomake_text_enabled_makers = ['proselint', 'writegood']
 let g:neomake_markdown_enabled_makers = ['markdownlint', 'proselint', 'writegood']
 " let g:neomake_vimwiki_enabled_makers = ['proselint', 'writegood']
 let g:neomake_javascript_enabled_makers = ['eslint']
