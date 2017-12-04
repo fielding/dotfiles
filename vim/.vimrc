@@ -51,7 +51,6 @@ Plug 'mattn/webapi-vim'
 Plug 'ap/vim-css-color'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'neomake/neomake'
-Plug 'mklabs/split-term.vim'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'ternjs/tern_for_vim', { 'for': ['javascript', 'javascript.jsx'] }
@@ -251,6 +250,18 @@ omap <leader><tab> <plug>(fzf-maps-o)
 nmap <leader>p <Plug>yankstack_substitute_older_paste
 nmap <leader>P <Plug>yankstack_substitute_newer_paste
 
+" Commands for neovim's terminal
+command Term split term://$SHELL
+command VTerm vsplit term://$SHELL
+
+" Mappings for neovim's terminal
+tnoremap <Esc> <C-\><C-n>
+tnoremap <C-h> <C-\><C-n><C-w>h
+tnoremap <C-j> <C-\><C-n><C-w>j
+tnoremap <C-k> <C-\><C-n><C-w>k
+tnoremap <C-l> <C-\><C-n><C-w>l
+
+
 " autocmd {{{1
 " -----------------------------------------------------------------------------
 " Only do this part when compiled with support for autocommands.
@@ -292,7 +303,9 @@ if has('autocmd')
     autocmd BufWritePost $MYVIMRC source $MYVIMRC
   augroup END
 
-
+  " enter insert mode when switching to terminal buffer
+  autocmd BufEnter * if &buftype == "terminal" | startinsert | endif
+  
   autocmd StdinReadPre * let s:std_in=1
 
   " for now not diffing NERDTree until I get it setup properly
