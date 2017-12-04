@@ -372,7 +372,7 @@ let g:neomake_javascript_enabled_makers = ['eslint']
 
 let g:neoformat_javascript_prettier = {
             \ 'exe': nrun#Which('prettier'),
-            \ 'args': ['--stdin', '--single-quote', '--trailing-comma es5'],
+            \ 'args': ['--single-quote', '--trailing-comma es5', '--stdin', '--stdin-filepath', '%:p'],
             \ 'stdin': 1,
             \ }
 
