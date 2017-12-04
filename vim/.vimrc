@@ -51,7 +51,6 @@ Plug 'mattn/webapi-vim'
 Plug 'ap/vim-css-color'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'neomake/neomake'
-Plug 'christoomey/vim-tmux-navigator'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'ternjs/tern_for_vim', { 'for': ['javascript', 'javascript.jsx'] }
 Plug 'carlitux/deoplete-ternjs', { 'for': ['javascript', 'javascript.jsx'] }
@@ -211,12 +210,6 @@ noremap <down> <nop>
 noremap <left> <nop>
 noremap <right> <nop>
 
-" Q does formatting qith gq. Vim 5.0 style
-map Q gq
-
-" Shift or not to shift! that is the question
-map ; :
-
 " Force writing to a file with sudo
 command! Sudo :execute ':silent w !sudo tee % > /dev/null' | :edit!
 command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --hidden --follow --glob "!.git/*" --color "always" '.shellescape(<q-args>), 1, <bang>0)
@@ -343,8 +336,6 @@ if has('autocmd')
   au BufReadPre *.nfo call SetFileEncodings('cp437')
   au BufReadPost *.nfo call RestoreFileEncodings()
 
- " Set tmux pane title
-	autocmd BufEnter * call system("settitle " . expand("%:p:t"))
   " Mark the current file as recently modified
   autocmd BufRead,BufEnter * call system("fdb -i /Users/fielding/.local/share/edit.z -a " . shellescape(expand("%:p")) . " &")
 
