@@ -67,6 +67,7 @@ Plug 'maxbrunsfeld/vim-yankstack'
 " Specific language support/features
 Plug 'sheerun/vim-polyglot'
 Plug 'bigfish/vim-js-context-coloring', { 'branch': 'neovim' }
+Plug 'alampros/vim-styled-jsx'
 Plug 'davidoc/taskpaper.vim'
 Plug 'jbgutierrez/vim-babel'
 Plug 'cakebaker/scss-syntax.vim'
