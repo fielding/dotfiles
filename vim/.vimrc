@@ -365,7 +365,7 @@ highlight Conceal cterm=NONE ctermbg=NONE ctermfg=darkblue
 let g:EditorConfig_exec_path = '/usr/local/bin/editorconfig'
 let g:EditorConfig_core_mode = 'external_command'
 
-let g:jsx_ext_required = 1
+let g:jsx_ext_required = 0
 
 
 " let g:neomake_markdown_markdownlint_maker
