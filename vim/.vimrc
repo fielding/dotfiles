@@ -108,7 +108,7 @@ set showcmd                                                                     
 set incsearch                                                                   " do incremental searching
 set hlsearch                                                                    " highlight last used search pattern
 set nowrap                                                                      " don't wrap line
-set textwidth=0                                                                 " stops linewrapping at invisible margins
+set textwidth=80                                                                 " stops linewrapping at invisible margins
 set colorcolumn=80                                                              " column indicator
 set linebreak                                                                         " wrap text
 set relativenumber number                                                       " show absolute line number for current line and relative for all other lines
@@ -157,6 +157,7 @@ set foldnestmax=20                                                              
 set laststatus=2                                                                " lastwindow always has status line
 set cmdheight=1                                                                 " set 1 line limit for 'messages'
 set noshowmode                                                                  " Hide the default mode text
+set shortmess+=mwt
 
 " indenting
 set autoindent                                                                  " turns autoidenting on for new lines
@@ -276,9 +277,6 @@ if has('autocmd')
   augroup vimrcEx
   au!
 
-  " For all text files set 'textwidth' to 79 characters.:
-  autocmd FileType text setlocal textwidth=79
-
   " When editing a file, always jump to the last known cursor position.
   " Don't do it when the position is invalid or when inside an event handler
   " (happens when dropping a file on gvim).
@@ -290,11 +288,11 @@ if has('autocmd')
     \ endif
 
   augroup END
-
-  " Enabled auto sourcing when saving my vimrc
+  
   augroup resource
     autocmd!
-    autocmd BufWritePost $MYVIMRC source $MYVIMRC
+    " autocmd BufWritePost $MYVIMRC source $MYVIMRC
+    " autocmd BufWritePost .vimrc source $MYVIMRC | echom "Reloaded " . $MYVIMRC | redraw
   augroup END
 
   " enter insert mode when switching to terminal buffer
@@ -308,7 +306,7 @@ if has('autocmd')
   " autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 
   autocmd BufRead,BufNewFile,BufFilePre *.md set filetype=markdown 
-  autocmd FileType markdown setlocal textwidth=79 wrap 
+  autocmd FileType markdown setlocal textwidth=79 wrap
 
 
   autocmd FileType python setlocal sw=4 sts=4 et
