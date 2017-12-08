@@ -11,11 +11,7 @@ alias git="hub"
 alias g="git"
 alias kb="keybase"
 alias se="sudo nvim"
-alias sv="sudo nvim"
 alias tm="tmux"
-alias v="nvr"
-alias vim="nvr"
-alias y="yarn"
 
 
 # Shortcut Completion mappings
