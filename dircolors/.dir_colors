@@ -191,7 +191,8 @@ OTHER_WRITABLE          39;42     # dir that is other writable
 .conf          00;36
 .cpp           00;36
 .cs            00;36
-.css           00;36
+.css           01;31
+.scss          01;31
 .csv           00;36
 .deb           00;36
 .diff          01;33
@@ -212,12 +213,13 @@ OTHER_WRITABLE          39;42     # dir that is other writable
 .hs            01;34
 .htm           01;34
 .html          01;34
+.pug           01;34
 .htoprc        01;34
 .info          01;34
 .ini           01;34
 .java          01;34
 .jhtm          01;34
-.js            01;34
+.js            01;33
 .jsm           01;34
 .jsm           01;34
 .json          01;34
