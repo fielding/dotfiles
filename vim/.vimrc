@@ -300,11 +300,6 @@ if has('autocmd')
   
   autocmd StdinReadPre * let s:std_in=1
 
-  " for now not diffing NERDTree until I get it setup properly
-  " autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
-  " autocmd VimEnter * if !argc() | Startify | NERDTree | endif
-  " autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
-
   autocmd BufRead,BufNewFile,BufFilePre *.md set filetype=markdown 
   autocmd FileType markdown setlocal textwidth=79 wrap
 
