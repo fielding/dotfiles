@@ -1,18 +1,16 @@
 # Improved Command Options
 alias less='less -m -N -g -i -J --underline-special --SILENT'
-alias grep="grep --color=auto" 
+alias grep="grep --color=auto"
 
 # Shortcuts
 # Considerations:
 #   hb vs b for homebrew. Other contendors for b alias would be?
 alias b="brew"
-alias e="nvr"
 alias git="hub"
 alias g="git"
 alias kb="keybase"
 alias se="sudo nvim"
 alias tm="tmux"
-
 
 # Shortcut Completion mappings
 complete -F _git g
