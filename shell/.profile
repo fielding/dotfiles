@@ -20,7 +20,7 @@ PATH="$HOME/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/bin:
 export PATH
 
 # Default
-EDITOR=nvr
+EDITOR=nvim
 PAGER=less
 BROWSER=open
 LESSOPEN="| /usr/local/bin/src-hilite-lesspipe.sh %s"
