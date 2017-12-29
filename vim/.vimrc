@@ -348,11 +348,11 @@ endif
 let g:hybrid_custom_term_colors=1
 set background=dark
 colorscheme hybrid
-highlight Normal ctermbg=NONE
-highlight CursorLine ctermbg=0
-highlight Comment cterm=italic
-highlight ColorColumn ctermbg=234 guibg=234
-highlight Conceal cterm=NONE ctermbg=NONE ctermfg=darkblue
+" highlight Normal ctermbg=NONE
+" highlight CursorLine ctermbg=0
+" highlight Comment cterm=italic
+" highlight ColorColumn ctermbg=234 guibg=234
+" highlight Conceal cterm=NONE ctermbg=NONE ctermfg=darkblue
 
 " statusline {{{1
 " -----------------------------------------------------------------------------
