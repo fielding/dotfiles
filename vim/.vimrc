@@ -50,7 +50,6 @@ Plug 'tpope/vim-repeat'
 Plug 'mattn/webapi-vim'
 Plug 'ap/vim-css-color'
 Plug 'editorconfig/editorconfig-vim'
-Plug 'neomake/neomake'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'ternjs/tern_for_vim', { 'for': ['javascript', 'javascript.jsx'] }
 Plug 'carlitux/deoplete-ternjs', { 'for': ['javascript', 'javascript.jsx'] }
@@ -59,10 +58,10 @@ Plug 'ervandew/supertab'
 Plug '/usr/local/opt/fzf' | Plug 'junegunn/fzf.vim'
 Plug 'ryanoasis/vim-devicons'
 Plug 'mattn/gist-vim'
-Plug 'sbdchd/neoformat'
 Plug 'metakirby5/codi.vim'
 Plug 'vimlab/mdn.vim'
 Plug 'maxbrunsfeld/vim-yankstack'
+Plug 'w0rp/ale'
 
 " Specific language support/features
 Plug 'sheerun/vim-polyglot'
@@ -313,13 +312,6 @@ if has('autocmd')
 
   autocmd FileType javascript setlocal foldmethod=syntax foldlevelstart=1
 
-  " Have eslint check for local npm binary before falling back to global
-  autocmd BufEnter *.js let b:neomake_javascript_eslint_exe = nrun#Which('eslint')
-  autocmd BufEnter *.css let b:neomake_css_csslint_exe = nrun#Which('csslint')
-
-
-  autocmd BufWritePost * Neomake
-
   " Functions used for .nfo, eventually could be used for others
   function! SetFileEncodings(encodings)
   let b:myfileencodingsbak=&fileencodings
@@ -365,26 +357,25 @@ let g:EditorConfig_core_mode = 'external_command'
 
 let g:jsx_ext_required = 0
 
-
-" let g:neomake_markdown_markdownlint_maker
-
-let g:neomake_text_enabled_makers = ['proselint', 'writegood']
-let g:neomake_markdown_enabled_makers = ['markdownlint', 'proselint', 'writegood']
-" let g:neomake_vimwiki_enabled_makers = ['proselint', 'writegood']
-let g:neomake_javascript_enabled_makers = ['eslint']
-
-
-let g:neoformat_javascript_prettier = {
-            \ 'exe': nrun#Which('prettier'),
-            \ 'args': ['--single-quote', '--trailing-comma es5', '--stdin', '--stdin-filepath', '%:p'],
-            \ 'stdin': 1,
+" ale
+let g:ale_linters = {
+      \  'javascript': ['eslint'],
             \ }
 
-let g:neoformat_css_prettier = {
-            \ 'exe': nrun#Which('prettier'),
-            \ 'args': ['--stdin', '--parser', 'postcss'],
-            \ 'stdin': 1,
+let g:ale_fixers = {
+      \  'javascript': ['prettier', 'eslint'],
+      \  'jsx': ['prettier', 'eslint'],
+      \  'flow': ['prettier'],
+      \  'typescript': ['prettier'],
+      \  'css': ['prettier'],
+      \  'less': ['prettier'],
+      \  'scss': ['prettier'],
+      \  'json': ['prettier'],
+      \  'graphql': ['prettier'],
+      \  'markdown': ['prettier'],
             \ }
+
+let g:ale_javascript_prettier_options = '--single-quote --trailing-comma es5'
 
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_theme='raven'
