@@ -61,6 +61,7 @@ Plug 'mattn/gist-vim'
 Plug 'metakirby5/codi.vim'
 Plug 'vimlab/mdn.vim'
 Plug 'maxbrunsfeld/vim-yankstack'
+Plug 'bkad/CamelCaseMotion'
 Plug 'w0rp/ale'
 
 " Specific language support/features
