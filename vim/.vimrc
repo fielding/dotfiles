@@ -17,9 +17,6 @@ call plug#begin('~/.vim/plugged')
 " Plugin Host
 Plug 'neovim/node-host'
 
-" Current color scheme
-Plug 'w0ng/vim-hybrid'
-
 " Features
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'nathanaelkane/vim-indent-guides'
@@ -95,7 +92,7 @@ let mapleader=','
 " Testing to make sure that removing set nocompat doesn't cause any problems.
 " Neovim straight ignores it, and I had made a comment suggesting vim was
 " doing it for me, so we will see
-" set nocompatible                                                                " vim sets this automatically upon findin a vimrc file, keeping because it's my homie
+" set nocompatible                                                              " vim sets this automatically upon findin a vimrc file, keeping because it's my homie
 set fileformats=mac,unix,dos
 set autoread                                                                    " Re-read file if changed outside
 set autowrite                                                                   " Auto save before commands like :next
@@ -106,9 +103,9 @@ set showcmd                                                                     
 set incsearch                                                                   " do incremental searching
 set hlsearch                                                                    " highlight last used search pattern
 set nowrap                                                                      " don't wrap line
-set textwidth=80                                                                 " stops linewrapping at invisible margins
+set textwidth=80                                                                " stops linewrapping at invisible margins
 set colorcolumn=80                                                              " column indicator
-set linebreak                                                                         " wrap text
+set linebreak                                                                   " wrap text
 set relativenumber number                                                       " show absolute line number for current line and relative for all other lines
 set pastetoggle=<f5>                                                            " toggle paste mode
 set clipboard=unnamed                                                           " Use the OS clipboard by default
@@ -294,7 +291,7 @@ if has('autocmd')
     \ endif
 
   augroup END
-  
+
   augroup resource
     autocmd!
     " autocmd BufWritePost $MYVIMRC source $MYVIMRC
@@ -303,10 +300,10 @@ if has('autocmd')
 
   " enter insert mode when switching to terminal buffer
   autocmd BufEnter * if &buftype == "terminal" | startinsert | endif
-  
+
   autocmd StdinReadPre * let s:std_in=1
 
-  autocmd BufRead,BufNewFile,BufFilePre *.md set filetype=markdown 
+  autocmd BufRead,BufNewFile,BufFilePre *.md set filetype=markdown
   autocmd FileType markdown setlocal textwidth=79 wrap
 
 
@@ -345,9 +342,9 @@ if !exists('g:syntax_on')
   syntax enable
 endif
 
-let g:hybrid_custom_term_colors=1
 set background=dark
-colorscheme hybrid
+let g:vice_term_italic=1
+colorscheme vice
 " highlight Normal ctermbg=NONE
 " highlight CursorLine ctermbg=0
 " highlight Comment cterm=italic
@@ -367,7 +364,7 @@ let g:jsx_ext_required = 0
 " ale
 let g:ale_linters = {
       \  'javascript': ['eslint'],
-            \ }
+      \  }
 
 let g:ale_fixers = {
       \  'javascript': ['prettier', 'eslint'],
@@ -380,7 +377,7 @@ let g:ale_fixers = {
       \  'json': ['prettier'],
       \  'graphql': ['prettier'],
       \  'markdown': ['prettier'],
-            \ }
+      \}
 
 let g:ale_javascript_prettier_options = '--single-quote --trailing-comma es5'
 
