@@ -3,6 +3,8 @@ module.exports = {
   env: { browser: true, node: true },
   rules: {
     'arrow-parens': [2, 'as-needed'],
-    'no-console': 0 },
-    'react/jsx-filename-extension': [1, { 'extensions': ['.js', '.jsx', '.mjs'] }]
+    'no-console': 0,
+    'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx', '.mjs'] }],
+    'space-in-parens': 0,
+  },
 };
