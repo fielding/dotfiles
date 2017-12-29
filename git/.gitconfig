@@ -36,7 +36,7 @@
 [credential]
   helper = osxkeychain
 [github]
-  user = justfielding
+	user = fielding
 [push]
 	default = simple
 [user]
