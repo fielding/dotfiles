@@ -88,8 +88,6 @@ call plug#end()
 " Not sure if I need to keep this for vanilla vim compatability
 filetype plugin indent on
 
-syntax on
-
 let mapleader=','
 
 " set {{{1
@@ -341,6 +339,9 @@ endif " has("autocmd")
 set t_Co=256
 set t_Sf=[3%dm
 set t_Sb=[4%dm
+if !exists('g:syntax_on')
+  syntax enable
+endif
 
 let g:hybrid_custom_term_colors=1
 set background=dark
