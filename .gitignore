@@ -1,11 +1,13 @@
-bash/.bash_profile.d/extra.sh
-bash/.bash_profile.d/extra.bash
+**/extra.*
 git/.git-templates/hooks/*.sample
 terminfo/.terminfo/69/iterm.app
 terminfo/.terminfo/69/iterm
 terminfo/.terminfo/74/tmux
 terminfo/.terminfo/74/tmux-256color
 vim/.vim/autoload/*
+vim/.vim/files/backup/*
+vim/.vim/files/swap/*
+vim/.vim/files/undo/*
 vim/.vim/plugged/*
 vim/.vim/.netrwhist
 tmux/.tmux/resurrect
