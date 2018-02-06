@@ -1,10 +1,11 @@
-
+# turd files
 .DS_Store
 .AppleDouble
 .LSOverride
+.tern-port
 
 # Icon must end with two \r
-Icon
+Icon
 
 # Thumbnails
 ._*
