@@ -1,8 +1,10 @@
 #!/bin/sh
 
 # set android_home directory for android development
+JAVA_HOME=`/usr/libexec/java_home`
 ANDROID_HOME=$HOME/Library/Android/sdk
-export ANDROID_HOME
+export JAVA_HOME ANDROID_HOME
+
 
 # Attempt to keep macos system ruby seperate and not have to sudo gem install
 RBENV_ROOT="$HOME/.rbenv"
