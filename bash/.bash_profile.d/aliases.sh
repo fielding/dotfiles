@@ -15,6 +15,31 @@ alias tm="tmux"
 # Shortcut Completion mappings
 complete -F _git g
 
+# exa
+if [[ -n $(which exa) ]]; then
+  alias ls='exa'
+  alias l='exa -a -lgmH --git --time-style long-iso'
+  alias lh='l -h'
+  alias lm='l --group-directories-first --sort modified'
+else
+  alias ls='ls --color=always -hF'
+  alias l='ls -al'
+fi
+
+# grc
+if [[ $(command -v colourify) ]]; then
+  alias ps='colourify ps'
+  alias dig='colourify dig'
+  alias mount='colourify mount'
+  alias df='colourify df'
+  alias cal='colourify cal'
+  alias curl='colourify curl'
+  alias colorJSON='colourify python -m json.tool'
+fi
+
+alias chunkMode='chunkc tiling::query --desktop mode'
+
+
 alias reboot="sudo shutdown -r now"
 alias reload="exec ${SHELL} -l"
 alias shutdown="sudo shutdown -h now"
