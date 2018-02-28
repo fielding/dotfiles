@@ -17,6 +17,9 @@ if [ -d "$HOME"/.bash_profile.d ]; then
   unset -v bash_profile
 fi
 
+brew_prefix=$(brew --prefix);
+
+
 # History Settings
 export HISTCONTROL=ignoredups
 export HISTSIZE=1000
@@ -40,8 +43,8 @@ set -o vi                   # set vi-style command line editing
 ### Additional sources
 ### bash completion time!
 
-if which brew &> /dev/null && [ -f "$(brew --prefix)/share/bash-completion/bash_completion" ]; then
-  source "$(brew --prefix)/share/bash-completion/bash_completion";
+if which brew &> /dev/null && [ -f "$brew_prefix/share/bash-completion/bash_completion" ]; then
+  source "$brew_prefix/share/bash-completion/bash_completion";
 elif [ -f /usr/local/etc/bash_completion ]; then
   source /usr/local/etc/bash_completion;
 elif [ -f /etc/bash_completion ]; then
@@ -86,25 +89,16 @@ case $(uname -s) in
     export PROMPT_COMMAND='echo -ne "\033]0;${PWD/#$HOME/~}\007";[ "$PWD" -ef "$HOME" ] || fdb -a "$PWD"'
 
     # use gdircolors and gls from homebrew's coreutilities for pretty ls output
+    # might not need this, or at least need to put it inline with my EXA_COLORS
     eval $(dircolors -b ~/.dir_colors)
-
 
     # TODO: Figure out a way to incorporate the following alias/command/ifunction
     # colourify `alias ls |awk -F "'" '{print $2}'` -al ~
 
     # Generic Colourizer
-    grc_resource="$(brew --prefix)/etc/grc.bashrc"
+    grc_resource="$brew_prefix/etc/grc.bashrc"
     [[ -f $grc_resource ]] && source "$grc_resource"
 
-    if [[ $(command -v colourify) ]]; then
-      alias ps='colourify ps'
-      alias dig='colourify dig'
-      alias mount='colourify mount'
-      alias df='colourify df'
-      alias cal='colourify cal'
-      alias curl='colourify curl'
-      alias colorJSON='colourify python -m json.tool'
-    fi
     ;;
   Linux)
 
