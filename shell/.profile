@@ -5,7 +5,6 @@ JAVA_HOME=`/usr/libexec/java_home`
 ANDROID_HOME=$HOME/Library/Android/sdk
 export JAVA_HOME ANDROID_HOME
 
-
 # Attempt to keep macos system ruby seperate and not have to sudo gem install
 RBENV_ROOT="$HOME/.rbenv"
 GEM_HOME="$(brew --prefix)/opt/gems"
@@ -60,18 +59,21 @@ export SLIMERJSLAUNCHER=/Applications/Firefox52.0.2.app/Contents/MacOS/firefox
 #LSCOLORS=ExDxCxcxBxGxgxHxHxFxfx
 #Go over the commented settings
 CLICOLOR=1
+EXA_COLORS='uu=33:gu=33:ur=33:gr=33:tr=33:uw=31:gw=31:tw=31:ue=32:ux=32:gx=32:tx=32:lc=31:sn=32'
 GREP_COLORS='ms=33:mc=33:sl=37:cx=37:fn=34:ln=1;31:bn=1;35:se=1;30'
-export CLICOLOR GREP_COLORS
+export CLICOLOR EXA_COLORS GREP_COLORS
 
 # Less Colors for Man Pages
-LESS_TERMCAP_mb=$(tput bold; tput setaf 2)
-LESS_TERMCAP_md=$(tput bold; tput setaf 1)
+LESS_TERMCAP_mb=$(tput bold; tput setaf 1)
+LESS_TERMCAP_md=$(tput setaf 1)
 LESS_TERMCAP_me=$(tput sgr0)
-LESS_TERMCAP_so=$(tput bold; tput setaf 3; tput setab 4)
+LESS_TERMCAP_so=$(tput bold; tput setaf 7; tput setab 1)
 LESS_TERMCAP_se=$(tput rmso; tput sgr0)
-LESS_TERMCAP_us=$(tput smul; tput bold; tput setaf 3)
+LESS_TERMCAP_us=$(tput smul; tput setaf 3)
 LESS_TERMCAP_ue=$(tput rmul; tput sgr0)
-export LESS_TERMCAP_mb LESS_TERMCAP_md LESS_TERMCAP_me LESS_TERMCAP_se LESS_TERMCAP_so LESS_TERMCAP_ue LESS_TERMCAP_us
+LESS_TERMCAP_mr=$(tput rev)
+LESS_TERMCAP_mh=$(tput dim)
+export LESS_TERMCAP_mb LESS_TERMCAP_md LESS_TERMCAP_me LESS_TERMCAP_se LESS_TERMCAP_so LESS_TERMCAP_ue LESS_TERMCAP_us LESS_TERMCAP_mr LESS_TERMCAP_mh
 
 # Fuzzy Find
 FZF_DEFAULT_OPTS='--color fg:7,bg:0,hl:1,fg+:15,bg+:0,hl+:9
