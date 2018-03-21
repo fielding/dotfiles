@@ -48,7 +48,7 @@ alias chunkWindows='chunkc tiling::query --desktop windows'
 alias reboot="sudo shutdown -r now"
 alias reload="exec ${SHELL} -l"
 alias shutdown="sudo shutdown -h now"
-alias ip="\dig +short myip.opendns.com @resolver1.opendns.com"
+alias ip="dig +short myip.opendns.com @resolver2.opendns.com"
 alias prettyJSON='python -m json.tool'
 
 ## Show/hide hidden files in Finder
@@ -92,3 +92,4 @@ alias rot13="tr a-zA-Z n-za-mN-ZA-M"
 
 # Corporate random bullshit generator
 alias cbsg="curl -s http://cbsg.sourceforge.net/cgi-bin/live | grep -Eo '^<li>.*</li>' | sed 's/<[^>]*>//g' | shuf -n 1"
+
