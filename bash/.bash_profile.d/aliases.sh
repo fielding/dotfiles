@@ -43,7 +43,7 @@ else
 fi
 
 alias chunkMode='chunkc tiling::query --desktop mode'
-
+alias chunkWindows='chunkc tiling::query --desktop windows'
 
 alias reboot="sudo shutdown -r now"
 alias reload="exec ${SHELL} -l"
