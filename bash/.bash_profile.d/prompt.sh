@@ -34,5 +34,5 @@ function git_status() {
   fi
 }
 
-export PS1="\[$reset\]\[$line\]┌─╼ \[$bold$white\][\[$reset\]\[$white\]\w\[$bold$white\]]\[$reset$line\]\$(git_status)\n\[$reset\]\$(if [[ \$? == 0 ]]; then echo \"\[$line\]└────╼\"; else echo \"\[$line\]└╼\"; fi) \[$white$reset\]"
+PS1="\[$reset\]\[$line\]┌─╼ \[$bold$white\][\[$reset\]\[$white\]\w\[$bold$white\]]\[$reset$line\]\$(git_status)\n\[$reset\]\$(if [[ \$? == 0 ]]; then echo \"\[$line\]└────╼\"; else echo \"\[$line\]└╼\"; fi) \[$white$reset\]"
 export PS1
