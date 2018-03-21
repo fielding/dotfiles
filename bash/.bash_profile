@@ -17,9 +17,6 @@ if [ -d "$HOME"/.bash_profile.d ]; then
   unset -v bash_profile
 fi
 
-brew_prefix=$(brew --prefix);
-
-
 # History Settings
 export HISTCONTROL=ignoredups
 export HISTSIZE=1000
@@ -43,9 +40,7 @@ set -o vi                   # set vi-style command line editing
 ### Additional sources
 ### bash completion time!
 
-if which brew &> /dev/null && [ -f "$brew_prefix/share/bash-completion/bash_completion" ]; then
-  source "$brew_prefix/share/bash-completion/bash_completion";
-elif [ -f /usr/local/etc/bash_completion ]; then
+if which brew &> /dev/null && [ -f "$BREW_PREFIX/share/bash-completion/bash_completion" ]; then
   source /usr/local/etc/bash_completion;
 elif [ -f /etc/bash_completion ]; then
   source /etc/bash_completion;

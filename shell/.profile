@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# set BREW_PREFIX for one time eval and many time use through out dotfiles
+
+BREW_PREFIX="$(brew --prefix)"
+export BREW_PREFIX
+
 # set android_home directory for android development
 JAVA_HOME=`/usr/libexec/java_home`
 ANDROID_HOME=$HOME/Library/Android/sdk
@@ -7,8 +12,8 @@ export JAVA_HOME ANDROID_HOME
 
 # Attempt to keep macos system ruby seperate and not have to sudo gem install
 RBENV_ROOT="$HOME/.rbenv"
-GEM_HOME="$(brew --prefix)/opt/gems"
-GEM_PATH="$(brew --prefix)/opt/gems"
+GEM_HOME="$BREW_PREFIX/opt/gems"
+GEM_PATH="$BREW_PREFIX/opt/gems"
 export RBENV_ROOT GEM_HOME GEM_PATH
 
 # golang go get'em
