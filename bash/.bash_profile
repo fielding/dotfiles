@@ -89,11 +89,6 @@ case $(uname -s) in
 
     # TODO: Figure out a way to incorporate the following alias/command/ifunction
     # colourify `alias ls |awk -F "'" '{print $2}'` -al ~
-
-    # Generic Colourizer
-    grc_resource="$brew_prefix/etc/grc.bashrc"
-    [[ -f $grc_resource ]] && source "$grc_resource"
-
     ;;
   Linux)
 

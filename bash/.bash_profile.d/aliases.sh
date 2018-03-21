@@ -1,3 +1,19 @@
+# Generic Colourizer
+
+grc_resource="$BREW_PREFIX/etc/grc.bashrc"
+[[ -f $grc_resource ]] && source "$grc_resource"
+
+# grc
+if [[ $(command -v colourify) ]]; then
+  alias ps='colourify ps'
+  alias dig='colourify dig'
+  alias mount='colourify mount'
+  alias df='colourify df'
+  alias cal='colourify cal'
+  alias curl='colourify curl'
+  alias colorJSON='colourify python -m json.tool'
+fi
+
 # Improved Command Options
 alias less='less -m -N -g -i -J --underline-special --SILENT'
 alias grep="grep --color=auto"
@@ -24,17 +40,6 @@ if [[ -n $(which exa) ]]; then
 else
   alias ls='ls --color=always -hF'
   alias l='ls -al'
-fi
-
-# grc
-if [[ $(command -v colourify) ]]; then
-  alias ps='colourify ps'
-  alias dig='colourify dig'
-  alias mount='colourify mount'
-  alias df='colourify df'
-  alias cal='colourify cal'
-  alias curl='colourify curl'
-  alias colorJSON='colourify python -m json.tool'
 fi
 
 alias chunkMode='chunkc tiling::query --desktop mode'
