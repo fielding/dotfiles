@@ -49,7 +49,6 @@ alias reboot="sudo shutdown -r now"
 alias reload="exec ${SHELL} -l"
 alias shutdown="sudo shutdown -h now"
 alias ip="dig +short myip.opendns.com @resolver2.opendns.com"
-alias prettyJSON='python -m json.tool'
 
 ## Show/hide hidden files in Finder
 alias showHidden="defaults write com.apple.Finder AppleShowAllFiles -bool true && killall Finder"
