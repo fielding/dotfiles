@@ -375,12 +375,14 @@ let g:jsx_ext_required = 0
 " ale
 let g:ale_linters = {
       \  'bash': ['shellcheck'],
+      \  'c': ['clangtidy'],
       \  'javascript': ['eslint'],
       \  'sh': ['shellcheck'],
       \  }
 
 let g:ale_fixers = {
       \  'bash': ['shfmt'],
+      \  'c': ['clang-format'],
       \  'css': ['prettier'],
       \  'flow': ['prettier'],
       \  'graphql': ['prettier'],
