@@ -21,8 +21,16 @@ GOPATH="$HOME/.go"
 GOROOT="/usr/local/opt/go/libexec"
 export GOPATH GOROOT
 
+# ESP32 toolchain path requirement
+ESP_PATH="$HOME/esp/xtensa-esp32-elf/bin"
+IDF_PATH="$HOME/esp/esp-idf"
+export IDF_PATH
+
+# Mongoose OS
+MOS_BIN="$HOME/.mos/bin"
+
 # Path
-PATH="$HOME/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:/opt/bin:$HOME/.cabal/bin:$HOME/perl5/bin:/Library/TeX/texbin:$HOME/.cargo/bin:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:/usr/local/lib/python2.7/site-packages:/opt/metasploit-framework/bin:/usr/local/Cellar/openssl/1.0.2l/bin:$GEM_PATH/bin:$GOPATH/bin:$HOME/Library/Python/3.6/bin"
+PATH="$HOME/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:/opt/bin:$HOME/.cabal/bin:$HOME/perl5/bin:/Library/TeX/texbin:$HOME/.cargo/bin:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:/usr/local/lib/python2.7/site-packages:/opt/metasploit-framework/bin:/usr/local/Cellar/openssl/1.0.2l/bin:$GEM_PATH/bin:$GOPATH/bin:$HOME/Library/Python/3.6/bin:$ESP_PATH:/usr/local/opt/llvm/bin:$MOS_BIN:$PATH"
 export PATH
 
 # Default
