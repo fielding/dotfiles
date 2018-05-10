@@ -337,6 +337,10 @@ endif " has("autocmd")
 " colors {{{1
 " -----------------------------------------------------------------------------
 set t_Co=256
+if (has("termguicolors"))
+  set termguicolors
+endif
+
 " not sure why I was setting background and foreground this way
 " set t_Sf=[3%dm
 " set t_Sb=[4%dm
