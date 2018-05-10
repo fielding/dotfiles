@@ -397,6 +397,8 @@ let g:ale_fixers = {
       \}
 
 let g:ale_javascript_prettier_options = '--single-quote --trailing-comma es5'
+let g:ale_sh_shfmt_options = '-i 2 -ci -p'
+let g:ale_bash_shfmt_options = '-i 2 -ci'
 
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_theme='raven'
