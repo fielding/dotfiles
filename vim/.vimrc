@@ -62,7 +62,7 @@ Plug 'w0rp/ale'
 
 " Specific language support/features
 Plug 'sheerun/vim-polyglot'
-Plug 'bigfish/vim-js-context-coloring', { 'branch': 'neovim' }
+" Plug 'bigfish/vim-js-context-coloring', { 'branch': 'neovim' }
 Plug 'alampros/vim-styled-jsx'
 Plug 'davidoc/taskpaper.vim'
 Plug 'jbgutierrez/vim-babel'
@@ -74,6 +74,9 @@ Plug 'xu-cheng/brew.vim'
 Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
 Plug 'shime/vim-livedown', { 'for': 'markdown', 'do': ':!npm install -g livedown' }
 Plug 'https://git.imbue.studio/fielding/vim-scheme.git'
+" Plug 'othree/yajs.vim', { 'for': ['javascript', 'javascript.jsx'] }
+" Plug 'othree/es.next.syntax.vim', { 'for': ['javascript', 'javascript.jsx'] }
+
 
 call plug#end()
 
