@@ -308,6 +308,7 @@ if has('autocmd')
 
 
   autocmd FileType python setlocal sw=4 sts=4 et
+  autocmd FileType c,cpp setlocal shiftwidth=4 tabstop=4 expandtab
 
   autocmd FileType javascript setlocal foldmethod=syntax foldlevelstart=1
 
