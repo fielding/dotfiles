@@ -159,10 +159,7 @@ set autoindent                                                                  
 set smartindent                                                                 " does the right thing (mostly)
 set cindent                                                                     " stricter rules for C programs
 set shiftwidth=2                                                                " 2 cols for autoindenting
-
-" don't add newlines at the end of files
 set binary
-set noendofline
 
 " tabs
 set expandtab                                                                   " use spaces instead of true tabs
