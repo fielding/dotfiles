@@ -304,13 +304,12 @@ if has('autocmd')
   autocmd StdinReadPre * let s:std_in=1
 
   autocmd BufRead,BufNewFile,BufFilePre *.md set filetype=markdown
-  autocmd FileType markdown setlocal textwidth=79 wrap
 
-
-  autocmd FileType python setlocal sw=4 sts=4 et
   autocmd FileType c,cpp setlocal shiftwidth=4 tabstop=4 expandtab
+  autocmd FileType javascript,typescript setlocal foldmethod=syntax foldlevelstart=2
+  autocmd FileType markdown setlocal wrap
+  autocmd FileType python setlocal shiftwidth=4 sts=4 et
 
-  autocmd FileType javascript setlocal foldmethod=syntax foldlevelstart=1
 
   " Functions used for .nfo, eventually could be used for others
   function! SetFileEncodings(encodings)
