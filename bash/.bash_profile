@@ -41,7 +41,7 @@ set -o vi                   # set vi-style command line editing
 ### bash completion time!
 
 if which brew &> /dev/null && [ -f "$BREW_PREFIX/share/bash-completion/bash_completion" ]; then
-  source /usr/local/etc/bash_completion;
+  source /usr/local/share/bash-completion/bash_completion;
 elif [ -f /etc/bash_completion ]; then
   source /etc/bash_completion;
 fi
