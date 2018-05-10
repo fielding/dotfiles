@@ -93,6 +93,7 @@ let mapleader=','
 " doing it for me, so we will see
 " set nocompatible                                                              " vim sets this automatically upon findin a vimrc file, keeping because it's my homie
 set fileformats=mac,unix,dos
+set fileencoding=utf-8
 set autoread                                                                    " Re-read file if changed outside
 set autowrite                                                                   " Auto save before commands like :next
 set backspace=2                                                                 " full backspacing compat
