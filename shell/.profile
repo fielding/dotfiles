@@ -59,9 +59,9 @@ XDG_BIN_DIR=/bin
 XDG_TMP_DIR=/tmp
 export XDG_DOWNLOAD_DIR XDG_ETC_DIR XDG_BIN_DIR XDG_TMP_DIR
 
-CFLAGS="-I/opt/X11/include -I/usr/local/include"
+CFLAGS="-I/opt/X11/include -I/usr/local/include -I/usr/local/opt/openssl/include -I/usr/local/Cellar/glib/2.56.0/include/glib-2.0 -I/usr/local/Cellar/glib/2.56.0/lib/glib-2.0/include"
 CXXFLAGS="$CFLAGS"
-LDFLAGS="-L/opt/X11/lib -L/usr/local/lib"
+LDFLAGS="-L/opt/X11/lib -L/usr/local/lib -L/usr/local/opt/openssl/lib"
 PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig
 export CFLAGS CXXFLAGS LDFLAGS PKG_CONFIG_PATH
 
