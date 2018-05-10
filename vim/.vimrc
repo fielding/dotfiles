@@ -37,8 +37,8 @@ Plug 'mhinz/vim-startify'
 Plug 'airblade/vim-gitgutter'
 Plug 'godlygeek/csapprox'
 Plug 'godlygeek/tabular'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
+Plug 'itchyny/lightline.vim'
+Plug '~/src/hack/lightline-vice.vim'
 Plug 'vimwiki/vimwiki', { 'branch': 'dev' }
 Plug 'szw/vim-dict'
 Plug 'tpope/vim-surround'
@@ -356,6 +356,10 @@ colorscheme vice
 
 " statusline {{{1
 " -----------------------------------------------------------------------------
+
+let g:lightline = {
+      \ 'colorscheme': 'vice',
+      \ }
 
 " options {{{1
 " -----------------------------------------------------------------------------
