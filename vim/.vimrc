@@ -336,6 +336,10 @@ endif " has("autocmd")
 
 " colors {{{1
 " -----------------------------------------------------------------------------
+if !exists('g:syntax_on')
+  syntax enable
+endif
+
 set t_Co=256
 if (has("termguicolors"))
   set termguicolors
@@ -345,9 +349,6 @@ endif
 " set t_Sf=[3%dm
 " set t_Sb=[4%dm
 
-if !exists('g:syntax_on')
-  syntax enable
-endif
 
 set background=dark
 let g:vice_term_italic=1
