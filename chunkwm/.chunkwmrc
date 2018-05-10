@@ -95,15 +95,12 @@ chunkc set focused_border_skip_floating  0
 
 chunkc core::load border.so
 chunkc core::load tiling.so
-#chunkc core::load ffm.so
 
 #
 # NOTE: shell commands require escaped quotes
 #       to pass value containing a whitespace.
 #
 
-chunkc tiling::rule --owner Safari --desktop 1 --state monocle
-chunkc tiling::rule --owner FirefoxDeveloperEdition --desktop 1 --state monocle
 chunkc tiling::rule --owner Slack --desktop 4 --state monocle
 chunkc tiling::rule --owner GitKraken --desktop 4 --state monocle
 chunkc tiling::rule --owner Sketch --desktop 4 --state monocle
