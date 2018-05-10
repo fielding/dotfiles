@@ -462,3 +462,4 @@ let g:sword = [
 " let g:startify_custom_header = s:filter_header(startify#fortune#boxed()) + s:filter_header(g:sword)
 let g:startify_custom_header = s:filter_header(g:sword) + s:filter_header(startify#fortune#boxed())
 let g:startify_bookmarks = ["~/.vimrc"]
+
