@@ -378,16 +378,17 @@ let g:ale_linters = {
       \  }
 
 let g:ale_fixers = {
-      \  'javascript': ['prettier', 'eslint'],
-      \  'jsx': ['prettier', 'eslint'],
-      \  'flow': ['prettier'],
-      \  'typescript': ['prettier'],
+      \  'bash': ['shfmt'],
       \  'css': ['prettier'],
-      \  'less': ['prettier'],
-      \  'scss': ['prettier'],
-      \  'json': ['prettier'],
+      \  'flow': ['prettier'],
       \  'graphql': ['prettier'],
+      \  'javascript': ['prettier', 'eslint'],
+      \  'json': ['prettier'],
+      \  'jsx': ['prettier', 'eslint'],
+      \  'less': ['prettier'],
       \  'markdown': ['prettier'],
+      \  'scss': ['prettier'],
+      \  'typescript': ['prettier'],
       \}
 
 let g:ale_javascript_prettier_options = '--single-quote --trailing-comma es5'
