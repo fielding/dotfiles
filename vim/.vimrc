@@ -374,7 +374,9 @@ let g:jsx_ext_required = 0
 
 " ale
 let g:ale_linters = {
+      \  'bash': ['shellcheck'],
       \  'javascript': ['eslint'],
+      \  'sh': ['shellcheck'],
       \  }
 
 let g:ale_fixers = {
@@ -388,6 +390,7 @@ let g:ale_fixers = {
       \  'less': ['prettier'],
       \  'markdown': ['prettier'],
       \  'scss': ['prettier'],
+      \  'sh': ['shfmt'],
       \  'typescript': ['prettier'],
       \}
 
