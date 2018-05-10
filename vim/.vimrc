@@ -353,11 +353,6 @@ endif
 set background=dark
 let g:vice_term_italic=1
 colorscheme vice
-" highlight Normal ctermbg=NONE
-" highlight CursorLine ctermbg=0
-" highlight Comment cterm=italic
-" highlight ColorColumn ctermbg=234 guibg=234
-" highlight Conceal cterm=NONE ctermbg=NONE ctermfg=darkblue
 
 " statusline {{{1
 " -----------------------------------------------------------------------------
