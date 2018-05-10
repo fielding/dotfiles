@@ -69,7 +69,6 @@ Plug 'jbgutierrez/vim-babel'
 Plug 'cakebaker/scss-syntax.vim'
 Plug 'jaawerth/nrun.vim'
 Plug 'heavenshell/vim-jsdoc'
-Plug 'sheerun/vim-polyglot'
 Plug 'chr4/nginx.vim'
 Plug 'xu-cheng/brew.vim'
 Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
