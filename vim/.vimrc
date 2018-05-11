@@ -407,13 +407,13 @@ let g:airline_powerline_fonts=1
 
 
 
-
+" deoplete
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#omni#functions = {}
 let g:deoplete#omni#functions.javascript = [
-  \ 'tern#Complete',
-  \ 'jspc#omni'
-\]
+      \ 'tern#Complete',
+      \ 'jspc#omni'
+      \]
 
 let g:deoplete#sources = {}
 let g:deoplete#sources.javascript = ['file', 'ternjs', 'ultisnips']
@@ -443,11 +443,11 @@ let g:is_chicken = 1
 
 " function to center ascii/ansi art header
 function! s:filter_header(lines) abort
-    let longest_line   = max(map(copy(a:lines), 'strwidth(v:val)'))
-    let centered_lines = map(copy(a:lines),
+  let longest_line   = max(map(copy(a:lines), 'strwidth(v:val)'))
+  let centered_lines = map(copy(a:lines),
         \ 'repeat(" ", (&columns / 2) - (longest_line / 2)) . v:val')
-    return centered_lines
-  endfunction
+  return centered_lines
+endfunction
 
 let g:sword = [
       \ '         ▟▙',
