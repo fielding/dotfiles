@@ -70,12 +70,16 @@ swap + shift - j        :   chunkc tiling::window --warp south
 swap + shift - h        :   chunkc tiling::window --warp west
 
 # focus monitor
-swap - z  : chunkc tiling::monitor -f prev
-swap - c  : chunkc tiling::monitor -f next
+switcher - z  : chunkc tiling::monitor -f prev
+switcher - c  : chunkc tiling::monitor -f next
+switcher - 1  : chunkc tiling::monitor -f 1
+switcher - 2  : chunkc tiling::monitor -f 2
 
-# send window to monitor
-shift + swap - z : chunkc tiling::window --send-to-monitor prev;
-shift + swap - c : chunkc tiling::window --send-to-monitor next;
+# send window to monitor and follow focus
+switcher + cmd - z : chunkc tiling::window --send-to-monitor prev; chunkc tiling::monitor -f prev
+switcher + cmd - c : chunkc tiling::window --send-to-monitor next; chunkc tiling::monitor -f prev
+switcher + cmd - 1 : chunkc tiling::window --send-to-monitor 1; chunkc tiling::monitor -f prev
+switcher + cmd - 2: chunkc tiling::window --send-to-monitor 2; chunkc tiling::monitor -f prev;
 
 # mirror tree y-axis
 swap - y : chunkc tiling::desktop --mirror vertical
