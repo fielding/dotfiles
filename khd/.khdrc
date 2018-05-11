@@ -53,6 +53,8 @@ switcher + shift - 1                :   chunkc tiling::window --send-to-desktop 
 switcher + shift - 2                :   chunkc tiling::window --send-to-desktop 2
 switcher + shift - 3                :   chunkc tiling::window --send-to-desktop 3
 switcher + shift - 4                :   chunkc tiling::window --send-to-desktop 4
+switcher + shift - 5                :   chunkc tiling::window --send-to-desktop 5
+switcher + shift - 6                :   chunkc tiling::window --send-to-desktop 6
 
 # swap mode
 # swap window position
