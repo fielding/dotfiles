@@ -314,6 +314,8 @@ if has('autocmd')
   autocmd FileType markdown setlocal wrap
   autocmd FileType python setlocal shiftwidth=4 sts=4 et
 
+  " autocmd InsertLeave,WinEnter * let &l:foldmethod=g:oldfoldmethod
+  " autocmd InsertEnter,WinLeave * let g:oldfoldmethod=&l:foldmethod | setlocal foldmethod=manual
 
   " Functions used for .nfo, eventually could be used for others
   function! SetFileEncodings(encodings)
