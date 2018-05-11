@@ -123,6 +123,7 @@ set splitbelow
 set splitright
 set wildignore+=*/.git/*,*/tmp/*,*.swp
 
+" set hidden
 " working file settings and location
 set directory=~/.vim/files/swap//
 set updatecount=100
