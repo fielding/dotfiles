@@ -1,0 +1,65 @@
+#!/bin/sh
+# ------------------------------------------------------------------------------
+# externalize - f'ng <fielding@justfielding.com> - https://justfielding.com
+# ------------------------------------------------------------------------------
+# Move item from system disk to mirrored location on external and create a
+# symlink in the original location.
+#
+# example:
+#
+#   $ externalize Xcode.app
+#
+# will move Xcode.app from it's current location to the same path on an
+# external drive, and symlink to the new location at the original location. So,
+#   /Applications/Xcode.app
+# would be come
+#   /Volumes/external/Applications/Xcode.app
+# and a symlink pointing to the new location would be made like,
+#   /Applications/Xcode.app -> /Volumes/external/Applications/Xcode.app
+# ------------------------------------------------------------------------------
+
+
+EXTERNAL=/Volumes/stuff
+
+file=$1
+script="$(basename $0)"
+
+if [ ! -d $EXTERNAL ] || [ ! -w $EXTERNAL ]; then
+  printf "$script: The invalid configuration for external mount point. Please
+  edit this script to configure a valid writable directory path.\n"
+  exit 1
+fi
+
+case $file in
+  /*) original="$(dirname "$file")/$(basename "$file")" ;;
+  *) original="$(cd "$(dirname "$file")" && pwd)/$(basename "$file")" ;;
+esac
+
+if [ ! -e $original ]; then
+  printf "$script: $original does not exist\n"
+  exit 1
+fi
+
+new="$EXTERNAL$original"
+
+if [ -e $new ]; then
+  printf "$script: $new already exists!\n"
+  exit 1
+fi
+
+mkdir -p $(dirname "$new")
+
+if [ ! -d "$(dirname $new)" ]; then
+  printf "$script: Unable to mkdir -p $(dirname $new)\n"
+  exit 1
+fi
+
+mv $original $new
+ln -s $new $original
+
+if [ -L $original ] && [ $new -ef $original ]; then
+  exit 0
+else
+  printf "$script: Failed to externalize $original\n"
+  exit 1
+fi
