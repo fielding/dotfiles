@@ -45,6 +45,7 @@ fi
 alias chunkMode='chunkc tiling::query --desktop mode'
 alias chunkWindows='chunkc tiling::query --desktop windows'
 
+alias afk="/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend"
 alias reboot="sudo shutdown -r now"
 alias reload="exec ${SHELL} -l"
 alias shutdown="sudo shutdown -h now"
