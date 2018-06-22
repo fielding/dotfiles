@@ -29,7 +29,7 @@ alias se="sudo nvim"
 alias tm="tmux"
 
 # Shortcut Completion mappings
-complete -F _git g
+complete -F g __git_main
 
 # exa
 if [[ -n $(which exa) ]]; then
