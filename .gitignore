@@ -1,5 +1,6 @@
 **/extra.*
 git/.git-templates/hooks/*.sample
+karabiner/.config/karabiner/assets
 terminfo/.terminfo/69/iterm.app
 terminfo/.terminfo/69/iterm
 terminfo/.terminfo/74/tmux
