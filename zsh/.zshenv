@@ -1,0 +1,12 @@
+.  ~/.profile
+
+HISTFILE=~/.zsh_history
+HISTSIZE=1000
+SAVEHIST=10000
+export HISTFILE HISTSIZE SAVEHIST
+
+KEYTIMEOUT=1
+export KEYTIMEOUT
+
+ZPLUG_HOME=/usr/local/opt/zplug
+export ZPLUG_HOME
