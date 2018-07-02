@@ -46,6 +46,10 @@ elif [ -f /etc/bash_completion ]; then
   source /etc/bash_completion;
 fi
 
+# fzf
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+
 # For Travis gem
 [ -f /Users/fielding/.travis/travis.sh ] && source /Users/fielding/.travis/travis.sh
 

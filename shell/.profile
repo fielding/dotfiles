@@ -1,8 +1,8 @@
 #!/bin/sh
+# shell agnostic version
 
 # set BREW_PREFIX for one time eval and many time use through out dotfiles
-
-BREW_PREFIX="$(brew --prefix)"
+BREW_PREFIX=/usr/local
 export BREW_PREFIX
 
 # set android_home directory for android development
@@ -28,10 +28,6 @@ export IDF_PATH
 
 # Mongoose OS
 MOS_BIN="$HOME/.mos/bin"
-
-# Path
-PATH="$HOME/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:/opt/bin:$HOME/.cabal/bin:$HOME/perl5/bin:/Library/TeX/texbin:$HOME/.cargo/bin:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:/usr/local/lib/python2.7/site-packages:/opt/metasploit-framework/bin:/usr/local/Cellar/openssl/1.0.2l/bin:$GEM_PATH/bin:$GOPATH/bin:$HOME/Library/Python/3.6/bin:$ESP_PATH:/usr/local/opt/llvm/bin:$MOS_BIN:$PATH"
-export PATH
 
 # Default
 EDITOR=nvim
@@ -100,4 +96,7 @@ FZF_DEFAULT_OPTS='--color fg:7,bg:0,hl:1,fg+:15,bg+:0,hl+:9
 FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob="!.git/*"'
 export FZF_DEFAULT_COMMAND FZF_DEFAULT_OPTS
 
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+# Path
+# Need to go over this mess
+PATH="$HOME/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:/opt/bin:$HOME/.cabal/bin:$HOME/perl5/bin:/Library/TeX/texbin:$HOME/.cargo/bin:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:/usr/local/lib/python2.7/site-packages:/opt/metasploit-framework/bin:/usr/local/Cellar/openssl/1.0.2l/bin:$GEM_PATH/bin:$GOPATH/bin:$HOME/Library/Python/3.6/bin:$ESP_PATH:/usr/local/opt/llvm/bin:$MOS_BIN:$PATH"
+export PATH
