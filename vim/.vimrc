@@ -17,6 +17,10 @@ call plug#begin('~/.vim/plugged')
 " Plugin Host
 Plug 'neovim/node-host'
 
+" Colors
+Plug '~/src/hack/vice'
+Plug '~/src/hack/lightline-vice.vim'
+
 " Features
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'nathanaelkane/vim-indent-guides'
@@ -38,7 +42,6 @@ Plug 'airblade/vim-gitgutter'
 Plug 'godlygeek/csapprox'
 Plug 'godlygeek/tabular'
 Plug 'itchyny/lightline.vim'
-Plug '~/src/hack/lightline-vice.vim'
 Plug 'vimwiki/vimwiki', { 'branch': 'dev' }
 Plug 'szw/vim-dict'
 Plug 'tpope/vim-surround'
