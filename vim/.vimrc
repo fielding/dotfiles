@@ -85,12 +85,13 @@ Plug 'https://git.imbue.studio/fielding/vim-scheme.git'
 call plug#end()
 
 " init {{{1
+"
 " ----------------------------------------------------------------------------
 " Following line is taken care of by neovim and vim-plug
 " Not sure if I need to keep this for vanilla vim compatability
 filetype plugin indent on
 
-let mapleader=','
+let mapleader="\<Space>"
 
 " set {{{1
 " ----------------------------------------------------------------------------
@@ -219,7 +220,7 @@ command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-h
 inoremap <C-U> <C-G>u<C-U>
 
 " spacebar unhighlights search text
-:noremap <silent> <Space> :silent noh<Bar>echo<CR>
+:noremap <silent> <leader>/ :silent noh<Bar>echo<CR>
 
 :noremap <F6> :VimFilerExplorer<CR>
 nnoremap <silent> <BS> :TmuxNavigateLeft<cr>
