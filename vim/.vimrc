@@ -42,6 +42,7 @@ Plug 'airblade/vim-gitgutter'
 Plug 'godlygeek/csapprox'
 Plug 'godlygeek/tabular'
 Plug 'itchyny/lightline.vim'
+Plug 'mgee/lightline-bufferline'
 Plug 'vimwiki/vimwiki', { 'branch': 'dev' }
 Plug 'szw/vim-dict'
 Plug 'tpope/vim-surround'
@@ -264,6 +265,21 @@ sunmap b
 sunmap e
 sunmap ge
 
+nmap <Leader>1 <Plug>lightline#bufferline#go(1)
+nmap <Leader>2 <Plug>lightline#bufferline#go(2)
+nmap <Leader>3 <Plug>lightline#bufferline#go(3)
+nmap <Leader>4 <Plug>lightline#bufferline#go(4)
+nmap <Leader>5 <Plug>lightline#bufferline#go(5)
+nmap <Leader>6 <Plug>lightline#bufferline#go(6)
+nmap <Leader>7 <Plug>lightline#bufferline#go(7)
+nmap <Leader>8 <Plug>lightline#bufferline#go(8)
+nmap <Leader>9 <Plug>lightline#bufferline#go(9)
+nmap <Leader>0 <Plug>lightline#bufferline#go(10)
+nmap <Leader><Tab> :bn<CR>
+nmap <Leader><S-Tab> :bp<CR>
+
+
+
 " autocmd {{{1
 " -----------------------------------------------------------------------------
 " Only do this part when compiled with support for autocommands.
@@ -365,7 +381,15 @@ colorscheme vice
 
 let g:lightline = {
       \ 'colorscheme': 'vice',
+      \ 'tabline': {'left': [['buffers']], 'right': [[]]},
+      \ 'component_expand': {'buffers': 'lightline#bufferline#buffers'},
+      \ 'component_type': {'buffers': 'tabsel'}
       \ }
+let g:lightline#bufferline#filename_modifier = ':t'
+let g:lightline#bufferline#show_number = 2
+let g:lightline#bufferline#number_map = {
+\ 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴',
+\ 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹'}
 
 " options {{{1
 " -----------------------------------------------------------------------------
