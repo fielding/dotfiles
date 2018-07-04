@@ -113,7 +113,18 @@ extract () { # Command to use based on file extension
   fi
 }
 
+# start transitioning to these functions for cleaner conditional soruces & PATH
+source_if_exists() {
+    if [ -f "$1" ]; then
+        . "$1";:
+    fi
+}
 
+path_if_exists() {
+    if [ -d "$1" ]; then
+        export PATH="$1:$PATH"
+    fi
+}
 
 
 
