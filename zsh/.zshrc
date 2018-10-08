@@ -1,5 +1,6 @@
 . ~/.shell_aliases
 . ~/.shell_functions
+. ~/.shell_extra
 
 
 source $ZPLUG_HOME/init.zsh
