@@ -1,0 +1,128 @@
+# use # to comment
+
+:: default : chunkc border::color 0xff6f5bab
+:: switcher @ : chunkc border::color 0xfffc8617
+:: swap @ : chunkc border::color 0xff7dfdee
+:: tree @ : chunkc border::color 0xfffc3052
+:: layout @ : chunkc border::color 0xfffdec5a
+
+
+# streamline window/pane movement keybinds for vim splits and windows
+ctrl - h : if [[ "$(chunkc tiling::query --window name)" != *"VIM"* ]]; then chunkc tiling::window --focus west; fi
+ctrl - j : if [[ "$(chunkc tiling::query --window name)" != *"VIM"* ]]; then chunkc tiling::window --focus south; fi
+ctrl - k : if [[ "$(chunkc tiling::query --window name)" != *"VIM"* ]]; then chunkc tiling::window --focus north; fi
+ctrl - l : if [[ "$(chunkc tiling::query --window name)" != *"VIM"* ]]; then chunkc tiling::window --focus east; fi
+
+# switching modes
+default                       < ctrl - f      ; switcher
+switcher, swap, layout, tree   < ctrl - f      ; default
+switcher, swap, layout, tree   < escape        ; default
+
+
+# switcher mode
+
+## switch modes
+switcher < a ; swap
+switcher < s ; layout
+switcher < t ; tree
+
+## launch iterm
+switcher < return : ~/bin/iterm-create-window; skhd -k 'escape'
+
+## focus windows
+switcher < h : chunkc tiling::window --focus west
+switcher < j : chunkc tiling::window --focus south
+switcher < k : chunkc tiling::window --focus north
+switcher < l : chunkc tiling::window --focus east
+switcher < b : chunkc tiling::window --focus prev
+switcher < n : chunkc tiling::window --focus next
+
+## close window
+#switcher < w : chunkc tiling:window -close; skhd -k 'escape'
+
+## move window to desktop and follow
+switcher < shift - 1 : chunkc tiling::window --send-to-desktop 1; chunkc tiling::desktop -f 1
+switcher < shift - 2 : chunkc tiling::window --send-to-desktop 2; chunkc tiling::desktop -f 2
+switcher < shift - 3 : chunkc tiling::window --send-to-desktop 3; chunkc tiling::desktop -f 3
+switcher < shift - 4 : chunkc tiling::window --send-to-desktop 4; chunkc tiling::desktop -f 4
+switcher < shift - 5 : chunkc tiling::window --send-to-desktop 5; chunkc tiling::desktop -f 5
+switcher < shift - 6 : chunkc tiling::window --send-to-desktop 6; chunkc tiling::desktop -f 6
+
+
+## move window to desktop
+switcher < shift - 1 : chunkc tiling::window --send-to-desktop 1
+switcher < shift - 2 : chunkc tiling::window --send-to-desktop 2
+switcher < shift - 3 : chunkc tiling::window --send-to-desktop 3
+switcher < shift - 4 : chunkc tiling::window --send-to-desktop 4
+switcher < shift - 5 : chunkc tiling::window --send-to-desktop 5
+switcher < shift - 6 : chunkc tiling::window --send-to-desktop 6
+
+## focus monitor
+switcher < z : chunkc tiling::monitor -f prev
+switcher < c : chunkc tiling::monitor -f next
+switcher < 1 : chunkc tiling::monitor -f 1
+switcher < 2 : chunkc tiling::monitor -f 2
+
+## send to monitor and follow focus
+switcher < cmd - z : chunkc tiling::window --send-to-monitor prev; chunkc tiling::monitor -f prev
+switcher < cmd - c : chunkc tiling::window --send-to-monitor next; chunkc tiling::monitor -f prev
+switcher < cmd - 1 : chunkc tiling::window --send-to-monitor 1; chunkc tiling::monitor -f prev
+switcher < cmd - 2 : chunkc tiling::window --send-to-monitor 2; chunkc tiling::monitor -f prev
+
+# swap mode
+## swap window positions
+swap < h : chunkc tiling::window --swap west
+swap < j : chunkc tiling::window --swap south
+swap < k : chunkc tiling::window --swap north
+swap < l : chunkc tiling::window --swap east
+
+## move window
+swap < shift - h : chunkc tiling::window --warp west
+swap < shift - j : chunkc tiling::window --warp south
+swap < shift - k : chunkc tiling::window --warp north
+swap < shift - l : chunkc tiling::window --warp east
+
+## mirror tree y-axis
+swap < y : chunkc tiling::desktop --mirror vertical
+
+## mirror tree x-axis
+swap < x : chunkc tiling::desktop --mirror horizontal
+
+# layout mode
+## change desktop layout
+layout < a : chunkc tiling::desktop --layout bsp
+layout < s : chunkc tiling::desktop --layout monocle
+layout < d : chunkc tiling::desktop --layout float
+
+## toggle desktop offset
+layout < o : chunkc tiling::desktop --toggle offset
+
+## adjust desktop padding
+layout < p         : chunkc tiling::desktop --padding inc
+layout < shift - p : chunkc tiling::desktop --padding dec
+
+## adjust window gap
+layout < g         : chunkc tiling::desktop --gap inc
+layout < shift - g : chunkc tiling::desktop --gap dec
+
+# tree mode
+tree < f                :   chunkc tiling::window --toggle fullscreen
+tree < shift - f        :   chunkc tiling::window --toggle native-fullscreen
+tree < d                :   chunkc tiling::window --toggle parent
+tree < w                :   chunkc tiling::window --toggle float
+tree < r                :   chunkc tiling::desktop --rotate 90
+tree < s                :   chunkc tiling::window --toggle split
+
+## adjust window size
+tree < h                :   chunkc tiling::window --use-temporary-ratio 0.02 --adjust-window-edge west
+tree < j                :   chunkc tiling::window --use-temporary-ratio 0.02 --adjust-window-edge south
+tree < k                :   chunkc tiling::window --use-temporary-ratio 0.02 --adjust-window-edge north
+tree < l                :   chunkc tiling::window --use-temporary-ratio 0.02 --adjust-window-edge east
+
+tree < shift - h        :   chunkc tiling::window --use-temporary-ratio -0.02 --adjust-window-edge west
+tree < shift - j        :   chunkc tiling::window --use-temporary-ratio -0.02 --adjust-window-edge south
+tree < shift - k        :   chunkc tiling::window --use-temporary-ratio -0.02 --adjust-window-edge north
+tree < shift - l        :   chunkc tiling::window --use-temporary-ratio -0.02 --adjust-window-edge east
+
+## equalize window size
+tree < e                :   chunkc tiling::desktop --equalize
