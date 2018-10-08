@@ -76,9 +76,9 @@ chunkc set mouse_modifier                fn
 #
 
 chunkc set window_float_topmost          0
-chunkc set window_fade_inactive          0
+chunkc set window_fade_inactive          1
 chunkc set window_fade_alpha             0.85
-chunkc set window_fade_duration          0.25
+chunkc set window_fade_duration          0.05
 chunkc set window_use_cgs_move           0
 
 #
