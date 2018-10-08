@@ -9,10 +9,10 @@ khd mode space on_enter chunkc border::color 0xfffdec5a
 # cmd + shift - return : open -na /Applications/Alacritty.app
 # ctrl + cmd - g  : open -na /Applications/Google\ Chrome.app
 
-ctrl - h ->         : if [[ "$(chunkc tiling::query --window name)" != *"VIM"* ]]; then chunkc tiling::window --focus west; fi
-ctrl - j ->         : if [[ "$(chunkc tiling::query --window name)" != *"VIM"* ]]; then chunkc tiling::window --focus south; fi
-ctrl - k ->         : if [[ "$(chunkc tiling::query --window name)" != *"VIM"* ]]; then chunkc tiling::window --focus north; fi
-ctrl - l ->         : if [[ "$(chunkc tiling::query --window name)" != *"VIM"* ]]; then chunkc tiling::window --focus east; fi
+ctrl - h         : if [[ "$(chunkc tiling::query --window name)" != *"VIM"* ]]; then chunkc tiling::window --focus west; fi
+ctrl - j         : if [[ "$(chunkc tiling::query --window name)" != *"VIM"* ]]; then chunkc tiling::window --focus south; fi
+ctrl - k         : if [[ "$(chunkc tiling::query --window name)" != *"VIM"* ]]; then chunkc tiling::window --focus north; fi
+ctrl - l         : if [[ "$(chunkc tiling::query --window name)" != *"VIM"* ]]; then chunkc tiling::window --focus east; fi
 
 # toggle between modes
 ctrl - f                :   khd -e "mode activate switcher"
@@ -41,7 +41,7 @@ switcher - h            :   chunkc tiling::window --focus west
 switcher - l            :   chunkc tiling::window --focus east
 switcher - j            :   chunkc tiling::window --focus south
 switcher - k            :   chunkc tiling::window --focus north
-switcher - m            :   chunkc tiling::window --focus prev
+switcher - b            :   chunkc tiling::window --focus prev
 switcher - n            :   chunkc tiling::window --focus next
 
 # close window
@@ -49,12 +49,24 @@ switcher - w            :   chunkc tiling::window --close;\
                             khd -e "mode activate default"
 
 # move window to desktop
-switcher + shift - 1                :   chunkc tiling::window --send-to-desktop 1
-switcher + shift - 2                :   chunkc tiling::window --send-to-desktop 2
-switcher + shift - 3                :   chunkc tiling::window --send-to-desktop 3
-switcher + shift - 4                :   chunkc tiling::window --send-to-desktop 4
-switcher + shift - 5                :   chunkc tiling::window --send-to-desktop 5
-switcher + shift - 6                :   chunkc tiling::window --send-to-desktop 6
+switcher + cmd + shift - 1                :   chunkc tiling::window --send-to-desktop 1
+switcher + cmd + shift - 2                :   chunkc tiling::window --send-to-desktop 2
+switcher + cmd + shift - 3                :   chunkc tiling::window --send-to-desktop 3
+switcher + cmd + shift - 4                :   chunkc tiling::window --send-to-desktop 4
+switcher + cmd + shift - 5                :   chunkc tiling::window --send-to-desktop 5
+switcher + cmd + shift - 6                :   chunkc tiling::window --send-to-desktop 6
+
+
+# move window to desktop and follow
+switcher + shift - 1          :   chunkc tiling::window --send-to-desktop 1; chunkc tiling::desktop -f 1
+switcher + shift - 2          :   chunkc tiling::window --send-to-desktop 2; chunkc tiling::desktop -f 2
+switcher + shift - 3          :   chunkc tiling::window --send-to-desktop 3; chunkc tiling::desktop -f 3
+switcher + shift - 4          :   chunkc tiling::window --send-to-desktop 4; chunkc tiling::desktop -f 4
+switcher + shift - 5          :   chunkc tiling::window --send-to-desktop 5; chunkc tiling::desktop -f 5
+switcher + shift - 6          :   chunkc tiling::window --send-to-desktop 6; chunkc tiling::desktop -f 6
+
+
+
 
 # swap mode
 # swap window position
