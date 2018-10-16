@@ -41,13 +41,12 @@ switcher < n : chunkc tiling::window --focus next
 #switcher < w : chunkc tiling:window -close; skhd -k 'escape'
 
 ## move window to desktop and follow
-switcher < shift - 1 : chunkc tiling::window --send-to-desktop 1; chunkc tiling::desktop -f 1
-switcher < shift - 2 : chunkc tiling::window --send-to-desktop 2; chunkc tiling::desktop -f 2
-switcher < shift - 3 : chunkc tiling::window --send-to-desktop 3; chunkc tiling::desktop -f 3
-switcher < shift - 4 : chunkc tiling::window --send-to-desktop 4; chunkc tiling::desktop -f 4
-switcher < shift - 5 : chunkc tiling::window --send-to-desktop 5; chunkc tiling::desktop -f 5
-switcher < shift - 6 : chunkc tiling::window --send-to-desktop 6; chunkc tiling::desktop -f 6
-
+switcher < cmd + shift - 1 : chunkc tiling::window --send-to-desktop 1; chunkc tiling::desktop -f 1
+switcher < cmd + shift - 2 : chunkc tiling::window --send-to-desktop 2; chunkc tiling::desktop -f 2
+switcher < cmd + shift - 3 : chunkc tiling::window --send-to-desktop 3; chunkc tiling::desktop -f 3
+switcher < cmd + shift - 4 : chunkc tiling::window --send-to-desktop 4; chunkc tiling::desktop -f 4
+switcher < cmd + shift - 5 : chunkc tiling::window --send-to-desktop 5; chunkc tiling::desktop -f 5
+switcher < cmd + shift - 6 : chunkc tiling::window --send-to-desktop 6; chunkc tiling::desktop -f 6
 
 ## move window to desktop
 switcher < shift - 1 : chunkc tiling::window --send-to-desktop 1
