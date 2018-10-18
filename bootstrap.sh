@@ -1,19 +1,50 @@
-##----------------------------------------------------------------------------
-## file:          ~/.osx
-## author:        fielding johnston - http://www.justfielding.com
-## credit:        inspired by Mathias Bynens and his .osx file
-##----------------------------------------------------------------------------
+#!/usr/bin/env bash
+# ----------------------------------------------------------------------------
+# bootstrap.sh - f'ng <fielding@justfielding.com> https://justfielding.com
+#----------------------------------------------------------------------------
 
-# Remove all of whatever that is in the dock
-# Consider that this might only want to be ran after fresh install
-# defaults write com.apple.dock persistent-apps -array && killall Dock
+# Ask for the administrator password upfront
+sudo -v
+
+# Keep-alive: update existing `sudo` time stamp until script has finished
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+
+# Check for Homebrew and install it if missing
+if test ! $(which brew)
+then
+    echo "Installing Homebrew..."
+	ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+fi
+
+brew update
+brew tap homebrew/bundle
+brew bundle --file=~/etc/homebrew/.Brewfile.0
+
+tic ~/.terminfo/69/iterm.terminfo
+tic ~/.terminfo/74/tmux.terminfo
+tic ~/.terminfo/74/tmux-256color.terminfo
+
+# install neovim plugins
+npm install -g neovim
+pip install neovim
+pip3 install neovim
+gem install neovim
+
+# Set the timezone!
+sudo systemsetup -settimezone "America/Chicago" > /dev/null
+
+# Set ComputerName, HostName, and LocalHostName
+sudo scutil --set ComputerName "sage"
+sudo scutil --set HostName "sage"
+sudo scutil --set LocalHostName "sage"
+
+# Remove all of whatever that is in the dock and then restart dock
+defaults write com.apple.dock persistent-apps -array && killall Dock
 
 # Enable AirDrop over Ethernet and on unsupported Macs running Lion
-
 defaults write com.apple.NetworkBrowser BrowseAllInterfaces -bool true
 
 # Avoid creating .DS_Store files on network volumes
-
 defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 
 # Use current directory as default search scope in Finder
@@ -25,23 +56,20 @@ chflags nohidden ~/Library
 # iterm2 - scroll less output
 defaults write com.googlecode.iterm2 AlternateMouseScroll -bool true
 
-# Experimental: Overly sluggish performance after heavy useage on my macbook
-# air has resulted in exploring/tracking down the culprit.
-#
-# Spindump appears to be a major resource hog and working over time on my
-# system. I have read about issues with crash reports being generated almost
-# non stop and in turn causing more crashes and a viscious cycle.
-#
-# I need to verify, but the problem is reported to be more of an issue for
-# systems that meet one or more of the following:
-#
-# 1. running a developer beta.
-# 2. /AppleInternal folder
-# 3. an older computer.
-#
-# Currently I meet two of three of those conditions, so here goes some
-# experimenting.
-#
-# The following line turns off spindump.
-defaults write com.apple.crashreporter LogSpins -bool NO
+# Finder Fun!
+# Finder: show status bar
+defaults write com.apple.finder ShowStatusBar -bool true
 
+# Finder: show path bar
+defaults write com.apple.finder ShowPathbar -bool true
+
+# Finder: show full POSIX path in title bar
+defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
+
+# Finder: show hidden files by default
+defaults write com.apple.finder AppleShowAllFiles -bool true
+
+# Restart Finder
+killall Finder
+
+sudo dscl . -create /Users/$USER UserShell /usr/local/bin/zsh
