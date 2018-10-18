@@ -237,9 +237,9 @@ vnoremap <leader>d "_d
 nnoremap <silent> <expr> <Leader><Leader> (expand('%') =~ 'NERD_tree' ? "\<c-w>\<c-w>" : '').":Files\<cr>"
 nnoremap <silent> <Leader><Enter> :Buffers<CR>
 
-nmap <leader><tab> <plug>(fzf-maps-n)
-xmap <leader><tab> <plug>(fzf-maps-x)
-omap <leader><tab> <plug>(fzf-maps-o)
+" nmap <leader><tab> <plug>(fzf-maps-n)
+" xmap <leader><tab> <plug>(fzf-maps-x)
+" omap <leader><tab> <plug>(fzf-maps-o)
 
 " Mappings for yankstack
 nmap <leader>p <Plug>yankstack_substitute_older_paste
@@ -466,7 +466,7 @@ let g:tern#arguments = ['--persistent']
 let g:polyglot_disabled = ['markdown']
 let g:vim_markdown_folding_style_pythonic = 1
 
-let g:vimwiki_list = [{'path': '~/cloud/Dropbox/notes/', 'path_html': '~/Documents/wiki', 'syntax': 'markdown', 'ext': '.md', 'folding': 'expr'}]
+let g:vimwiki_list = [{'path': '~/notes/', 'path_html': '~/Documents/wiki', 'syntax': 'markdown', 'ext': '.md', 'folding': 'expr'}]
 
 let g:vimwiki_global_ext = 0
 
