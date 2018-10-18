@@ -363,9 +363,29 @@ if !exists('g:syntax_on')
 endif
 
 set t_Co=256
-if (has("termguicolors"))
-  set termguicolors
-endif
+
+" 24-bit true color: neovim 0.1.5+ / vim 7.4.1799+
+" enable ONLY if TERM is set valid and it is NOT under mosh
+function! s:is_mosh()
+  let output = system("is_mosh -v")
+  if v:shell_error
+    return 0
+  endif
+  return !empty(l:output)
+endfunction
+
+function s:auto_termguicolors()
+  if !(has("termguicolors"))
+    return
+  endif
+
+  if (&term == 'xterm-256color' || &term == 'nvim') && !s:is_mosh()
+    set termguicolors
+  else
+    set notermguicolors
+  endif
+endfunction
+call s:auto_termguicolors()
 
 " not sure why I was setting background and foreground this way
 " set t_Sf=[3%dm
