@@ -19,7 +19,7 @@ Plug 'neovim/node-host'
 
 " Colors
 Plug '~/src/hack/vice'
-Plug '~/src/hack/lightline-vice.vim'
+Plug 'fielding/lightline-vice.vim'
 
 " Features
 Plug 'bronson/vim-trailing-whitespace'
