@@ -31,7 +31,10 @@ fi
 
 brew update
 brew tap homebrew/bundle
-brew bundle --file=~/etc/homebrew/.Brewfile.0
+brew "zsh"
+brew "stow"
+brew "mas"
+brew 'python3'
 
 tic ~/.terminfo/69/iterm.terminfo
 tic ~/.terminfo/74/tmux.terminfo
@@ -79,3 +82,5 @@ killall Finder
 
 # set default shell to zsh
 sudo dscl . -create /Users/$USER UserShell /usr/local/bin/zsh
+
+brew bundle --file=~/etc/homebrew/.Brewfile
