@@ -31,7 +31,7 @@ fi
 
 brew update
 brew tap homebrew/bundle
-brew install zsh stow mas python3 node
+brew install zsh stow mas python3 node rbenv ruby-build
 
 tic ~/.terminfo/69/iterm.terminfo
 tic ~/.terminfo/74/tmux.terminfo
