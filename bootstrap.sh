@@ -86,3 +86,19 @@ sudo dscl . -create /Users/$USER UserShell /usr/local/bin/zsh
 
 brew bundle --file=./homebrew/.Brewfile
 
+
+
+## ACTIONS NEEDED
+### zsh plugins not installed, zplug will warn about it at shell startup and
+### ask to install them. I would like to explicitly invoke this after zplug is
+### installed from the .Brewfile.
+### The following might do this. Test and confirm.
+zplug install
+
+# ADD MESSAGE ABOUT ACCESSIBILITY API and restarting the services below
+brew services start crisidev/chunkwm/chunkwm
+brew services start koekeishiya/formulae/skhd
+
+## initialize locate database
+sudo launchctrl load -w /System/Library/LaunchDaemons/com.apple.locate.plist
+
