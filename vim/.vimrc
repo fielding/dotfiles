@@ -18,7 +18,7 @@ call plug#begin('~/.vim/plugged')
 Plug 'neovim/node-host'
 
 " Colors
-Plug '~/src/hack/vice'
+Plug 'fielding/vice'
 Plug 'fielding/lightline-vice.vim'
 
 " Features
