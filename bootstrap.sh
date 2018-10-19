@@ -94,6 +94,7 @@ brew bundle --file=./homebrew/.Brewfile
 ### installed from the .Brewfile.
 ### The following might do this. Test and confirm.
 zplug install
+nvim +PlugInstall +qall
 
 # ADD MESSAGE ABOUT ACCESSIBILITY API and restarting the services below
 brew services start crisidev/chunkwm/chunkwm
@@ -102,3 +103,6 @@ brew services start koekeishiya/formulae/skhd
 ## initialize locate database
 sudo launchctrl load -w /System/Library/LaunchDaemons/com.apple.locate.plist
 
+# set iterm2 color profile
+open ~/.vim/plugged/vice/vice.itermcolors
+echo -e "\033]50;SetProfile=vice\a"
