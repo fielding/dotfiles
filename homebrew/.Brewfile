@@ -154,7 +154,7 @@ cask "font-roboto-slab"
 cask "font-sorts-mill-goudy"
 cask "font-titan-one"
 cask "font-titillium-web"
-cask "font-wendy-one
+cask "font-wendy-one"
 mas "bmGlyph", id: 490499048
 mas "LastPass", id: 926036361
 mas "Slack", id: 803453959
