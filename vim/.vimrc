@@ -63,6 +63,7 @@ Plug 'maxbrunsfeld/vim-yankstack'
 Plug 'bkad/CamelCaseMotion'
 Plug 'w0rp/ale'
 Plug 'cocopon/pgmnt.vim'
+Plug 'wakatime/vim-wakatime'
 
 " Specific language support/features
 Plug 'sheerun/vim-polyglot'
