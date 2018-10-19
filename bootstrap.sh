@@ -9,6 +9,19 @@ sudo -v
 # Keep-alive: update existing `sudo` time stamp until script has finished
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
+# Set the timezone!
+sudo systemsetup -settimezone "America/Chicago" > /dev/null
+
+default_hostname=$(hostname)
+read -p "Hostname (default: $default_hostname): " hostname
+hostname=${hostname:-$default_hostname}
+
+# Set ComputerName, HostName, and LocalHostName
+sudo scutil --set ComputerName "$hostname"
+sudo scutil --set HostName "$hostname"
+sudo scutil --set LocalHostName "$hostname"
+sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "$hostname"
+
 # Check for Homebrew and install it if missing
 if test ! $(which brew)
 then
@@ -29,14 +42,6 @@ npm install -g neovim
 pip install neovim
 pip3 install neovim
 gem install neovim
-
-# Set the timezone!
-sudo systemsetup -settimezone "America/Chicago" > /dev/null
-
-# Set ComputerName, HostName, and LocalHostName
-sudo scutil --set ComputerName "sage"
-sudo scutil --set HostName "sage"
-sudo scutil --set LocalHostName "sage"
 
 # Remove all of whatever that is in the dock and then restart dock
 defaults write com.apple.dock persistent-apps -array && killall Dock
@@ -72,4 +77,5 @@ defaults write com.apple.finder AppleShowAllFiles -bool true
 # Restart Finder
 killall Finder
 
+# set default shell to zsh
 sudo dscl . -create /Users/$USER UserShell /usr/local/bin/zsh
