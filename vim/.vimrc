@@ -154,6 +154,7 @@ set t_vb=
 set foldignore=                                                                 " don't ignore anything when folding
 set foldmethod=marker                                                           " collapse code using indent levels
 set foldnestmax=20                                                              " limit max folds for indent and syntax methods
+  set nofoldenable
 
 " status bar info and appearance
 " set statusline=\ \%f%m%r%h%w\ ::\ %y\ [%{&ff}]\%=\ [%p%%:\ %l/%L]\            " content for statusline
