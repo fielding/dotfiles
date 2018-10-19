@@ -33,6 +33,10 @@ brew update
 brew tap homebrew/bundle
 brew install zsh stow mas python3 node rbenv ruby-build
 
+latest_ruby=$(rbenv install -l | grep -v - | tail -1)
+rbenv install $latest_ruby
+rbenv global $latest_ruby
+rbenv rehash
 tic ~/.terminfo/69/iterm.terminfo
 tic ~/.terminfo/74/tmux.terminfo
 tic ~/.terminfo/74/tmux-256color.terminfo

@@ -43,6 +43,11 @@ compinit
 
 . /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
+# rbenv
+[[ -d ~/.rbenv ]] && \
+  export PATH=${HOME}/.rbenv/bin:${PATH} && \
+  eval "$(rbenv init -)"
+
 # not sure if this is needed yet
 # fpath=(/usr/local/share/zsh-completions $fpath)
 
