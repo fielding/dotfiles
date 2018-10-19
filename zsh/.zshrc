@@ -37,7 +37,7 @@ zstyle ':completion:*' matcher-list 'm:{[:lower:]}={[:upper:]}' 'm:{[:lower:][:u
 zstyle :compinstall filename '/Users/fielding/.zshrc'
 
 autoload -Uz compinit
-compinit
+compinit -i -u
 # End of lines added by compinstall
 
 
