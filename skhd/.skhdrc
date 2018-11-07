@@ -8,10 +8,10 @@
 
 
 # streamline window/pane movement keybinds for vim splits and windows
-ctrl - h : if [[ "$(chunkc tiling::query --window name)" != *"VIM"* ]]; then chunkc tiling::window --focus west; fi
-ctrl - j : if [[ "$(chunkc tiling::query --window name)" != *"VIM"* ]]; then chunkc tiling::window --focus south; fi
-ctrl - k : if [[ "$(chunkc tiling::query --window name)" != *"VIM"* ]]; then chunkc tiling::window --focus north; fi
-ctrl - l : if [[ "$(chunkc tiling::query --window name)" != *"VIM"* ]]; then chunkc tiling::window --focus east; fi
+ctrl - h -> : if [[ "$(chunkc tiling::query --window name)" != *"VIM"* ]]; then chunkc tiling::window --focus west; fi
+ctrl - j -> : if [[ "$(chunkc tiling::query --window name)" != *"VIM"* ]]; then chunkc tiling::window --focus south; fi
+ctrl - k -> : if [[ "$(chunkc tiling::query --window name)" != *"VIM"* ]]; then chunkc tiling::window --focus north; fi
+ctrl - l -> : if [[ "$(chunkc tiling::query --window name)" != *"VIM"* ]]; then chunkc tiling::window --focus east; fi
 
 # switching modes
 default                       < ctrl - f      ; switcher
