@@ -1,8 +1,9 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 for file in "$@"
 do
   fdb -i "$XDG_DATA_HOME"/edit.z -a "$(realpath "$file" 2> /dev/null)"
 done
 
-exec $EDITOR "$@"
+exec "$EDITOR" "$@"
+
