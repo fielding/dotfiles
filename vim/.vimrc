@@ -31,8 +31,8 @@ Plug 'shougo/vimfiler.vim'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'fs111/pydoc.vim'
 Plug 'christoomey/vim-tmux-navigator'
-Plug 'fielding/vim-chunkwm-navigator'
-" Plug '~/src/hack/vim-chunkwm-navigator'
+" Plug 'fielding/vim-chunkwm-navigator'
+Plug '~/src/hack/vim-chunkwm-navigator'
 Plug 'sjl/vitality.vim'
 Plug 'mrtazz/simplenote.vim'
 Plug 'junegunn/goyo.vim'
@@ -65,6 +65,7 @@ Plug 'bkad/CamelCaseMotion'
 Plug 'w0rp/ale'
 Plug 'cocopon/pgmnt.vim'
 Plug 'wakatime/vim-wakatime'
+Plug 'autozimu/LanguageClient-neovim', { 'branch': 'next', 'do': 'bash install.sh'}
 
 " Specific language support/features
 Plug 'sheerun/vim-polyglot'
@@ -72,7 +73,6 @@ Plug 'sheerun/vim-polyglot'
 Plug 'alampros/vim-styled-jsx'
 Plug 'davidoc/taskpaper.vim'
 Plug 'jbgutierrez/vim-babel'
-Plug 'cakebaker/scss-syntax.vim'
 Plug 'jaawerth/nrun.vim'
 Plug 'heavenshell/vim-jsdoc'
 Plug 'chr4/nginx.vim'
@@ -80,7 +80,10 @@ Plug 'xu-cheng/brew.vim'
 Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
 Plug 'shime/vim-livedown', { 'for': 'markdown', 'do': ':!npm install -g livedown' }
 Plug 'https://git.imbue.studio/fielding/vim-scheme.git'
-" Plug 'othree/yajs.vim', { 'for': ['javascript', 'javascript.jsx'] }
+Plug 'othree/yajs.vim', { 'for': ['javascript', 'javascript.jsx'] }
+Plug 'othree/jsdoc-syntax.vim', { 'for' : ['javascript', 'javasript.jsx'] }
+Plug 'MaxMEllon/vim-jsx-pretty'
+
 " Plug 'othree/es.next.syntax.vim', { 'for': ['javascript', 'javascript.jsx'] }
 
 
@@ -339,6 +342,8 @@ if has('autocmd')
   " autocmd InsertLeave,WinEnter * let &l:foldmethod=g:oldfoldmethod
   " autocmd InsertEnter,WinLeave * let g:oldfoldmethod=&l:foldmethod | setlocal foldmethod=manual
 
+
+
   " Functions used for .nfo, eventually could be used for others
   function! SetFileEncodings(encodings)
   let b:myfileencodingsbak=&fileencodings
@@ -419,7 +424,7 @@ let g:lightline#bufferline#number_map = {
 let g:EditorConfig_exec_path = '/usr/local/bin/editorconfig'
 let g:EditorConfig_core_mode = 'external_command'
 
-let g:jsx_ext_required = 0
+let g:jsx_ext_required = 1
 
 " ale
 let g:ale_linters = {
@@ -466,7 +471,7 @@ let g:tern#arguments = ['--persistent']
 
 
 
-let g:polyglot_disabled = ['markdown']
+let g:polyglot_disabled = ['markdown', 'jsx']
 let g:vim_markdown_folding_style_pythonic = 1
 
 let g:vimwiki_list = [{'path': '~/notes/', 'path_html': '~/Documents/wiki', 'syntax': 'markdown', 'ext': '.md', 'folding': 'expr'}]
@@ -502,3 +507,17 @@ let g:sword = [
 let g:startify_custom_header = s:filter_header(g:sword) + s:filter_header(startify#fortune#boxed())
 let g:startify_bookmarks = ["~/.vimrc"]
 
+let g:LanguageClient_serverCommands = {
+            \ 'javascript': ['tcp://127.0.0.1:2089'],
+            \ 'javascript.jsx': ['tcp://127.0.0.1:2089'],
+            \}
+
+function! LanguageClientMaps()
+    if has_key(g:LanguageClient_serverCommands, &filetype)
+        nnoremap <buffer> <silent> K :call LanguageClient#textDocument_hover()<cr>
+        nnoremap <buffer> <silent> gd :call LanguageClient#textDocument_definition()<CR>
+        nnoremap <buffer> <silent> <F2> :call LanguageClient#textDocument_rename()<CR>
+    endif
+endfunction
+
+autocmd FileType * call LanguageClientMaps()
