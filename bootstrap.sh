@@ -86,8 +86,6 @@ sudo dscl . -create /Users/$USER UserShell /usr/local/bin/zsh
 
 brew bundle --file=./homebrew/.Brewfile
 
-
-
 ## ACTIONS NEEDED
 ### zsh plugins not installed, zplug will warn about it at shell startup and
 ### ask to install them. I would like to explicitly invoke this after zplug is
@@ -97,8 +95,8 @@ zplug install
 nvim +PlugInstall +qall
 
 # ADD MESSAGE ABOUT ACCESSIBILITY API and restarting the services below
-brew services start crisidev/chunkwm/chunkwm
 brew services start koekeishiya/formulae/skhd
+brew services start koekeishiya/formulae/yabai
 
 ## initialize locate database
 sudo launchctrl load -w /System/Library/LaunchDaemons/com.apple.locate.plist
