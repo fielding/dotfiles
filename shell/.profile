@@ -29,6 +29,10 @@ export IDF_PATH
 # Mongoose OS
 MOS_BIN="$HOME/.mos/bin"
 
+# Google Cloud SDK
+CLOUDSDK_PYTHON=python2.7
+export CLOUDSDK_PYTHON
+
 # Default
 EDITOR=nvim
 PAGER=less

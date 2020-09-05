@@ -67,3 +67,9 @@ bindkey -r "^L"
 
 # autoload -Uz promptinit
 # promptinit
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/fielding/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/fielding/Downloads/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/fielding/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/fielding/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
