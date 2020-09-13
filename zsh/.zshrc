@@ -68,6 +68,9 @@ bindkey -r "^L"
 # autoload -Uz promptinit
 # promptinit
 
+# The next line updates PATH for Netlify's Git Credential Helper.
+if [ -f '/Users/fielding/.netlify/helper/path.zsh.inc' ]; then source '/Users/fielding/.netlify/helper/path.zsh.inc'; fi
+
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/fielding/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/fielding/Downloads/google-cloud-sdk/path.zsh.inc'; fi
 
