@@ -85,7 +85,8 @@ eval $(luarocks path --bin)
 
 case $(uname -s) in
   Darwin|FreeBSD)
-    export PROMPT_COMMAND='echo -ne "\033]0;${PWD/#$HOME/~}\007";[ "$PWD" -ef "$HOME" ] || fdb -a "$PWD"'
+    # export PROMPT_COMMAND='echo -ne "\033]0;${PWD/#$HOME/~}\007";[ "$PWD" -ef "$HOME" ] || fdb -a "$PWD"'
+    export PROMPT_COMMAND='echo -ne "\033]0;${PWD/#$HOME/~}\007";[ "$PWD" -ef "$HOME" ]' 
 
     # use gdircolors and gls from homebrew's coreutilities for pretty ls output
     # might not need this, or at least need to put it inline with my EXA_COLORS
