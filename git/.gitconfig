@@ -64,3 +64,7 @@
 	allowed = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 [url "git@github.com:"]
 	insteadOf = https://github.com/
+
+# This next lines include Netlify's Git Credential Helper configuration in your Git configuration.
+[include]
+  path = /Users/fielding/.netlify/helper/git-config
