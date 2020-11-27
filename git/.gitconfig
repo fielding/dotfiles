@@ -53,7 +53,7 @@
 	diff = diff-so-fancy | less --tabs=4 -RFX
   show = diff-so-fancy | less --tabs=4 -RFX
 [commit]
-  gpgsign = true
+  gpgsign = false
 	template = /Users/fielding/.git-commit-template
 [secrets]
 	providers = git secrets --aws-provider
