@@ -4,9 +4,6 @@
 .LSOverride
 .tern-port
 
-# Icon must end with two \r
-# Icon
-
 # Thumbnails
 ._*
 Thumbs.db
