@@ -1,9 +1,9 @@
 #!/bin/sh
 # shell agnostic version
 
-# set BREW_PREFIX for one time eval and many time use through out dotfiles
-BREW_PREFIX=/usr/local
-export BREW_PREFIX
+# set BREW_PATH for one time eval and many time use through out dotfiles
+BREW_PATH=/opt/homebrew
+export BREW_PATH
 
 # set android_home directory for android development
 JAVA_HOME=`/usr/libexec/java_home`
@@ -12,8 +12,8 @@ export JAVA_HOME ANDROID_HOME
 
 # Attempt to keep macos system ruby seperate and not have to sudo gem install
 RBENV_ROOT="$HOME/.rbenv"
-GEM_HOME="$BREW_PREFIX/opt/gems"
-GEM_PATH="$BREW_PREFIX/opt/gems"
+GEM_HOME="$BREW_PATH/opt/gems"
+GEM_PATH="$BREW_PATH/opt/gems"
 export RBENV_ROOT GEM_HOME GEM_PATH
 
 # golang go get'em
@@ -102,5 +102,5 @@ export FZF_DEFAULT_COMMAND FZF_DEFAULT_OPTS
 
 # Path
 # Need to go over this mess
-PATH="$HOME/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:/opt/bin:$HOME/.cabal/bin:$HOME/perl5/bin:/Library/TeX/texbin:$HOME/.cargo/bin:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:/usr/local/lib/python2.7/site-packages:/opt/metasploit-framework/bin:/usr/local/Cellar/openssl/1.0.2l/bin:$GEM_PATH/bin:$GOPATH/bin:$HOME/Library/Python/3.6/bin:$ESP_PATH:/usr/local/opt/llvm/bin:$MOS_BIN:$HOME/Library/Application Support/itch/apps/butler:$PATH"
+PATH="$HOME/bin:$BREW_PATH/bin:$BREW_PATH/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:/opt/bin:$HOME/.cabal/bin:$HOME/perl5/bin:/Library/TeX/texbin:$HOME/.cargo/bin:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:/usr/local/lib/python2.7/site-packages:/opt/metasploit-framework/bin:$BREW_PATH/Cellar/openssl/1.0.2l/bin:$GEM_PATH/bin:$GOPATH/bin:$HOME/Library/Python/3.6/bin:$ESP_PATH:$BREW_PATH/opt/llvm/bin:$MOS_BIN:$HOME/Library/Application Support/itch/apps/butler:$PATH"
 export PATH

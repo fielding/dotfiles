@@ -8,5 +8,5 @@ export HISTFILE HISTSIZE SAVEHIST
 KEYTIMEOUT=1
 export KEYTIMEOUT
 
-ZPLUG_HOME=/usr/local/opt/zplug
+ZPLUG_HOME=$BREW_PATH/opt/zplug
 export ZPLUG_HOME

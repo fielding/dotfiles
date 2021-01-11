@@ -41,7 +41,7 @@ compinit -i -u
 # End of lines added by compinstall
 
 
-. /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+. $BREW_PATH/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # only show commands matching up to cursor in history
 autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
