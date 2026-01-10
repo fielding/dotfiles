@@ -46,8 +46,13 @@ elif [ -f /etc/bash_completion ]; then
   source /etc/bash_completion;
 fi
 
-# fzf
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+# fzf - source directly from homebrew
+if [[ -d "$BREW_PATH/opt/fzf" ]]; then
+  # Key bindings (Ctrl-R for history, Ctrl-T for files, Alt-C for cd)
+  [[ -f "$BREW_PATH/opt/fzf/shell/key-bindings.bash" ]] && source "$BREW_PATH/opt/fzf/shell/key-bindings.bash"
+  # Completion (** trigger)
+  [[ -f "$BREW_PATH/opt/fzf/shell/completion.bash" ]] && source "$BREW_PATH/opt/fzf/shell/completion.bash"
+fi
 
 
 # For Travis gem
