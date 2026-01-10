@@ -13,6 +13,15 @@ timecap () {
   i=$filenumber; while [ true ];do screencapture -t jpg -x $scdir$i.jpg; echo "Capturing to $i.jpg";let i++;sleep $delay; done
 }
 
+get_pr_comments() {
+   if [ -n "$1" ]; then
+     pr_number="$1"
+   else
+     read -p "Enter pull request number: " pr_number
+   fi
+   gh api repos/:owner/:repo/pulls/$pr_number/comments | jq '[ .[] | select(.user.type == "User" and .user.login == "$GH_USER") | { diff_hunk, line, start_line, body } ]'
+}
+
 define(){
   if [[ $# -ge 2 ]]; then
     echo "getdef: too many arguments" >&2
@@ -128,6 +137,9 @@ path_if_exists() {
 
 
 
+fpr() {
+    open "https://pr${1}.secure.getfreed.app/"
+}
 
 
 
@@ -146,5 +158,10 @@ path_if_exists() {
 #     echo "No Geo-Data Available"
 #   fi
 # }
+
+# load secrets from 1password
+load_secrets() {
+  eval "$(op inject -i "$HOME/etc/shell/.secrets.env.tpl")"
+}
 
 # vim: ft=sh
