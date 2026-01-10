@@ -10,8 +10,8 @@ alias less='less -m -N -g -i -J --underline-special --SILENT'
 
 # exa
 if [[ -n $(which exa) ]]; then
-  alias ls='exa'
-  alias l='exa -a -lgmH --git --time-style long-iso'
+  alias ls='eza'
+  alias l='eza -a -lgmH --git --time-style long-iso'
   alias lh='l -h'
   alias lm='l --group-directories-first --sort modified'
 else
