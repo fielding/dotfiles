@@ -13,3 +13,9 @@ vim/.vim/plugged/*
 vim/.vim/.netrwhist
 tmux/.tmux/resurrect
 tmux/.tmux/plugins/*
+
+# macOS app bundles
+*.app/
+
+# Compiled binaries (keep scripts only)
+bin/bin/box

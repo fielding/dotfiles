@@ -1,0 +1,955 @@
+#!/usr/bin/env bash
+
+# ░█░█░█▀█░█▀▄░█░█░▀█▀░█▀▄░█▀▀░█▀▀░█▀▀
+# ░█▄█░█░█░█▀▄░█▀▄░░█░░█▀▄░█▀▀░█▀▀░▀▀█
+# ░▀░▀░▀▀▀░▀░▀░▀░▀░░▀░░▀░▀░▀▀▀░▀▀▀░▀▀▀
+
+set -euo pipefail
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# UI HELPERS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+subheader() {
+    local text="$1"
+    if command -v gum >/dev/null 2>&1; then
+        gum style --foreground 105 --bold --underline "$text"
+    else
+        echo "--- $text ---"
+    fi
+}
+
+success() {
+    local text="$1"
+    if command -v gum >/dev/null 2>&1; then
+        gum log --level info --prefix "✅" --structured "$text"
+    else
+        echo "✅ $text"
+    fi
+}
+
+warning() {
+    local text="$1"
+    if command -v gum >/dev/null 2>&1; then
+        gum log --level warn --prefix "⚠️" --structured "$text"
+    else
+        echo "⚠️  $text"
+    fi
+}
+
+error() {
+    local text="$1"
+    if command -v gum >/dev/null 2>&1; then
+        gum log --level error --prefix "❌" --structured "$text"
+    else
+        echo "❌ $text" >&2
+    fi
+}
+
+info() {
+    local text="$1"
+    if command -v gum >/dev/null 2>&1; then
+        gum log --level info --prefix "ℹ️" --structured "$text"
+    else
+        echo "ℹ️  $text"
+    fi
+}
+
+error_box() {
+    local message="$1"
+    if command -v gum >/dev/null 2>&1; then
+        local term_width
+        term_width=$(tput cols 2>/dev/null || echo 80)
+        local box_width=80
+        local horiz_margin=$(((term_width - box_width) / 2))
+        if (( horiz_margin < 0 )); then horiz_margin=0; fi
+        echo
+        gum style --foreground 196 --bold --border-foreground 196 --border rounded --padding "1 2" --width 80 --margin "1 ${horiz_margin}" "$message"
+        echo
+    else
+        echo
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
+        echo "  ❌ ERROR: $message" >&2
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
+        echo
+    fi
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# CONFIGURATION
+# ═══════════════════════════════════════════════════════════════════════════════
+
+MAIN_REPO_PATH="$(pwd)"
+WORKTREES_DIR="${WORKTREES_DIR:-../worktrees}"
+BATCH_SIZE="${BATCH_SIZE:-4}"
+STAGGER_DELAY="${STAGGER_DELAY:-0.5}"
+BATCH_PAUSE="${BATCH_PAUSE:-2}"
+WORKTREE_COMMAND="${WORKTREE_COMMAND:-}"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# DEPENDENCY INSTALLATION
+# ═══════════════════════════════════════════════════════════════════════════════
+
+install_gum() {
+    local os=$(uname -s)
+    case "$os" in
+        Darwin)
+            if command -v brew >/dev/null 2>&1; then
+                echo "Installing gum via Homebrew..."
+                brew install gum
+            else
+                echo "Homebrew not found. Please install Homebrew first:" >&2
+                echo "/bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"" >&2
+                exit 1
+            fi
+            ;;
+        Linux)
+            local arch=$(uname -m)
+            local gum_url="https://github.com/charmbracelet/gum/releases/latest/download/gum_${os,,}_${arch}.tar.gz"
+            echo "Installing gum via binary download..."
+            curl -fsSL "$gum_url" | tar -xzf - gum
+            sudo mv gum /usr/local/bin/ 2>/dev/null || sudo mv gum /bin/
+            rm -f gum
+            ;;
+        *)
+            echo "Unsupported OS: $os. Please install gum manually (see https://github.com/charmbracelet/gum)." >&2
+            exit 1
+            ;;
+    esac
+    echo "gum installed successfully."
+}
+
+if ! command -v jq &> /dev/null; then
+    echo "jq is required for JSON parsing. Install it (e.g., brew install jq)." >&2
+    exit 1
+fi
+
+if ! command -v gum &> /dev/null; then
+    echo "gum not found. Attempting automatic installation..."
+    install_gum
+fi
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# GIT VALIDATION
+# ═══════════════════════════════════════════════════════════════════════════════
+
+validate_branch_name() {
+    local branch_name="$1"
+    if [[ -z "${branch_name}" ]]; then
+        echo "Empty branch name provided." >&2
+        return 1
+    fi
+    
+    if [[ "${branch_name}" =~ [^a-zA-Z0-9._/-] ]]; then
+        echo "Invalid branch name '${branch_name}': contains invalid characters." >&2
+        return 1
+    fi
+    
+    if [[ "${branch_name}" =~ ^(\.|\.\.)$ ]]; then
+        echo "Invalid branch name '${branch_name}': reserved name." >&2
+        return 1
+    fi
+    
+    return 0
+}
+
+if ! git rev-parse --git-dir >/dev/null 2>&1; then
+    echo "Error: Not in a Git repository. Please run from the root of your Git repository." >&2
+    exit 1
+fi
+
+if ! git rev-parse HEAD >/dev/null 2>&1; then
+    echo "Error: This repository has no commits yet. Please make an initial commit before using worktrees." >&2
+    echo "Example: git add . && git commit -m 'Initial commit'" >&2
+    exit 1
+fi
+
+detect_default_branch() {
+    local default_branch
+    default_branch=$(git branch --show-current 2>/dev/null || echo "")
+
+    if [[ -z "${default_branch}" ]]; then
+        default_branch=$(git symbolic-ref --short HEAD 2>/dev/null || echo "")
+    fi
+
+    if [[ -z "${default_branch}" ]]; then
+        for branch in main master; do
+            if git show-ref --verify --quiet "refs/heads/${branch}"; then
+                default_branch="${branch}"
+                break
+            fi
+        done
+    fi
+
+    if [[ -z "${default_branch}" ]]; then
+        default_branch=$(git branch --format='%(refname:short)' | head -1)
+    fi
+
+    echo "${default_branch}"
+}
+
+BASE_BRANCH=$(detect_default_branch)
+
+if [[ -z "${BASE_BRANCH}" ]]; then
+    echo "Error: Could not detect default branch. Please set BASE_BRANCH environment variable." >&2
+    exit 1
+fi
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# WORKTREE OPERATIONS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+process_batch() {
+    local -a branches=("$@")
+    local -a pids=()
+    local -a valid_branches=()
+
+    # Ensure all branches exist (sequential to avoid race conditions)
+    for branch in "${branches[@]}"; do
+        local branch_exists
+        branch_exists=$(git branch --list "${branch}" 2>/dev/null || echo "")
+        if [[ -z "${branch_exists}" ]]; then
+            if ! git branch "${branch}" "${BASE_BRANCH}" >/dev/null 2>&1; then
+                error "Failed to create branch '${branch}' from ${BASE_BRANCH}."
+                continue
+            fi
+        fi
+        valid_branches+=("${branch}")
+    done
+
+    # Create worktrees in parallel (only for valid branches)
+    if [[ ${#valid_branches[@]} -gt 0 ]]; then
+        for branch in "${valid_branches[@]}"; do
+            setup_worktree_parallel "${branch}" &
+            pids+=($!)
+            sleep "${STAGGER_DELAY}"
+        done
+
+        for pid in "${pids[@]}"; do
+            wait "${pid}"
+        done
+
+        return 0
+    else
+        warning "No valid branches to process in this batch."
+        return 1
+    fi
+}
+
+setup_worktree_parallel() {
+    local branch_name="$1"
+    local worktree_path="${MAIN_REPO_PATH}/${WORKTREES_DIR}/${branch_name}"
+
+    if ! validate_branch_name "${branch_name}"; then
+        warning "Skipping invalid branch '${branch_name}'."
+        return 1
+    fi
+
+    mkdir -p "${MAIN_REPO_PATH}/${WORKTREES_DIR}"
+
+    if [[ ! -d "${worktree_path}" ]]; then
+        if ! git worktree add "${worktree_path}" "${branch_name}" >/dev/null 2>&1; then
+            error "Failed to create worktree for '${branch_name}'."
+            return 1
+        fi
+        success "Created worktree: ${branch_name}"
+    fi
+
+    local command_found=false
+
+    if [[ ! -d "${worktree_path}" ]]; then
+        error "Worktree directory does not exist: ${worktree_path}"
+        return 1
+    fi
+
+    info "Worktree path verified: ${worktree_path}"
+
+    if [[ -n "${WORKTREE_COMMAND:-}" ]]; then
+        local final_command="${WORKTREE_COMMAND//\%PATH\%/${worktree_path}}"
+        info "Running configured command: ${final_command}"
+        eval "${final_command}" &
+        local cmd_pid=$!
+        if [[ $cmd_pid -gt 0 ]]; then
+            sleep 0.5
+            if kill -0 $cmd_pid 2>/dev/null; then
+                info "Command launched successfully (PID: $cmd_pid)"
+                command_found=true
+            else
+                warning "Configured command exited immediately"
+            fi
+        else
+            warning "Command launch failed - no PID returned"
+        fi
+    else
+        info "Attempting to launch editor..."
+        local editor_found=false
+
+    if command -v cursor &> /dev/null; then
+        editor_cmd="cursor"
+        info "Found Cursor, attempting to launch: cursor editor \"${worktree_path}\""
+        cursor editor "${worktree_path}" &
+        local cursor_pid=$!
+        if [[ $cursor_pid -gt 0 ]]; then
+            sleep 0.5
+            if kill -0 $cursor_pid 2>/dev/null; then
+                info "Cursor launched successfully with 'cursor editor' (PID: $cursor_pid)"
+                editor_found=true
+            else
+                warning "Cursor 'editor' command exited immediately, trying fallback..."
+                cursor "${worktree_path}" &
+                cursor_pid=$!
+                if [[ $cursor_pid -gt 0 ]]; then
+                    sleep 0.5
+                    if kill -0 $cursor_pid 2>/dev/null; then
+                        info "Cursor launched successfully with fallback (PID: $cursor_pid)"
+                        editor_found=true
+                    else
+                        warning "Cursor fallback also exited immediately"
+                    fi
+                else
+                    warning "Cursor fallback launch failed"
+                fi
+            fi
+        else
+            warning "Cursor 'editor' launch failed - no PID returned"
+        fi
+    elif command -v code &> /dev/null; then
+        editor_cmd="code"
+        info "Found VS Code, attempting to launch: code \"${worktree_path}\""
+        code "${worktree_path}" &
+        local code_pid=$!
+        if [[ $code_pid -gt 0 ]]; then
+            sleep 0.5
+            if kill -0 $code_pid 2>/dev/null; then
+                info "VS Code launched successfully (PID: $code_pid)"
+                editor_found=true
+            else
+                warning "VS Code process exited immediately"
+            fi
+        else
+            warning "VS Code launch failed - no PID returned"
+        fi
+    elif command -v codium &> /dev/null; then
+        editor_cmd="codium"
+        info "Found VSCodium, attempting to launch: codium \"${worktree_path}\""
+        codium "${worktree_path}" &
+        local codium_pid=$!
+        if [[ $codium_pid -gt 0 ]]; then
+            sleep 0.5
+            if kill -0 $codium_pid 2>/dev/null; then
+                info "VSCodium launched successfully (PID: $codium_pid)"
+                editor_found=true
+            else
+                warning "VSCodium process exited immediately"
+            fi
+        else
+            warning "VSCodium launch failed - no PID returned"
+        fi
+    else
+        warning "No supported editor found (cursor/code/codium)"
+        for possible_editor in "code" "cursor" "codium" "vim" "nano" "emacs"; do
+            if command -v "$possible_editor" &> /dev/null; then
+                info "Found alternative editor: $possible_editor"
+                break
+            fi
+        done
+    fi
+
+        if [[ "$editor_found" == false ]]; then
+            warning "No supported editor found (cursor/code/codium)"
+            for possible_editor in "code" "cursor" "codium" "vim" "nano" "emacs"; do
+                if command -v "$possible_editor" &> /dev/null; then
+                    info "Found alternative editor: $possible_editor"
+                    break
+                fi
+            done
+        fi
+    fi
+
+    if [[ "$command_found" == false ]]; then
+        warning "No command launched successfully"
+    fi
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# CLICKUP INTEGRATION (WIP - requires CLICKUP_TOKEN)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+fetch_and_select_clickup_tasks() {
+    local token="$CLICKUP_TOKEN"
+
+    if [[ -z "${token}" ]]; then
+        echo "ClickUp integration skipped: Set CLICKUP_TOKEN environment variable." >&2
+        return 1
+    fi
+
+    local user_id="${USER_ID:-}"
+    if [[ -z "${user_id}" ]]; then
+        echo "Fetching your User ID..."
+        user_id=$(curl -s "https://api.clickup.com/api/v2/user" \
+                        -H "Authorization: ${token}" | \
+                        jq -r '.user.id // empty')
+        if [[ -z "${user_id}" || "${user_id}" == "null" ]]; then
+            echo "Failed to parse User ID from response. Check your token." >&2
+            return 1
+        fi
+        echo "User ID fetched: ${user_id}"
+    fi
+
+    local team_id="${TEAM_ID:-}"
+    if [[ -z "${team_id}" ]]; then
+        echo "Fetching available teams..."
+        local teams_response
+        teams_response=$(curl -s -w "%{http_code}" "https://api.clickup.com/api/v2/team" \
+                          -H "Authorization: ${token}")
+        local http_code="${teams_response: -3}"
+        local teams_json="${teams_response%???}"
+        
+        if [[ "${http_code}" != "200" ]]; then
+            echo "Failed to fetch teams. HTTP ${http_code}. Check your token and permissions." >&2
+            return 1
+        fi
+
+        local num_teams
+        num_teams=$(echo "${teams_json}" | jq '.teams | length // 0')
+        if [[ ${num_teams} -eq 0 ]]; then
+            echo "No teams found." >&2
+            return 1
+        fi
+
+        local team_name="${TEAM_NAME:-}"
+        if [[ -n "${team_name}" ]]; then
+            echo "Matching team by name: '${team_name}'..."
+            local matching_teams
+            matching_teams=$(echo "${teams_json}" | jq --arg team_name "${team_name}" '.teams // [] | [.[] | select(.name == $team_name)]')
+            local num_matching
+            num_matching=$(echo "${matching_teams}" | jq length)
+            if [[ ${num_matching} -eq 1 ]]; then
+                team_id=$(echo "${matching_teams}" | jq -r '.[0].id')
+                echo "Matched team ID: ${team_id}"
+            elif [[ ${num_matching} -gt 1 ]]; then
+                echo "Multiple teams match '${team_name}'. Select one:"
+                local selected_team
+                if command -v gum >/dev/null 2>&1; then
+                    selected_team=$(echo "${matching_teams}" | \
+                                    jq -r '.[] | .name + ": " + (.id | tostring)' | \
+                                    gum choose --header "Select Matching Team")
+                else
+                    echo "Available teams:" >&2
+                    echo "${matching_teams}" | jq -r '.[] | .name + " (ID: " + (.id | tostring) + ")"' >&2
+                    echo "Enter team name: " >&2
+                    read -r team_input
+                    selected_team=$(echo "${matching_teams}" | jq -r ".[] | select(.name == \"$team_input\") | .name + \": \" + (.id | tostring)")
+                fi
+                if [[ -z "${selected_team}" ]]; then
+                    echo "No team selected. Exiting." >&2
+                    exit 0
+                fi
+                team_id=$(echo "${selected_team}" | cut -d':' -f2 | xargs)
+                echo "Selected team ID: ${team_id}"
+            else
+                echo "No team matches '${team_name}'. Falling back to selection."
+                team_name=""
+            fi
+        fi
+
+        if [[ -z "${team_id}" ]]; then
+            if [[ ${num_teams} -eq 1 ]]; then
+                team_id=$(echo "${teams_json}" | jq -r '.teams[0].id // empty')
+                echo "Using single team ID: ${team_id}"
+            else
+                local parsed_teams
+                parsed_teams=$(echo "${teams_json}" | jq '.teams // []')
+                echo "Multiple teams found. Select one:"
+                local selected_team
+                if command -v gum >/dev/null 2>&1; then
+                    selected_team=$(echo "${parsed_teams}" | \
+                                    jq -r '.[].name + ": " + (.id | tostring)' | \
+                                    gum choose --header "Select a Team")
+                else
+                    echo "Available teams:" >&2
+                    echo "${parsed_teams}" | jq -r '.[].name + " (ID: " + (.id | tostring) + ")"' >&2
+                    echo "Enter team name: " >&2
+                    read -r team_input
+                    selected_team=$(echo "${parsed_teams}" | jq -r ".[] | select(.name == \"$team_input\") | .name + \": \" + (.id | tostring)")
+                fi
+                if [[ -z "${selected_team}" ]]; then
+                    echo "No team selected. Exiting." >&2
+                    exit 0
+                fi
+                team_id=$(echo "${selected_team}" | cut -d':' -f2 | xargs)
+                echo "Selected team ID: ${team_id}"
+            fi
+        fi
+    fi
+
+    # Validate team_id - reject obviously invalid values
+    if [[ "${team_id}" == "0" || -z "${team_id}" || "${team_id}" =~ ^[0-9]+$ ]]; then
+        echo "Invalid TEAM_ID detected (${team_id}). This may indicate a token scope issue or default Workspace." >&2
+        echo "Manual override: Enter a valid Workspace ID (fetch via curl 'https://api.clickup.com/api/v2/team -H \"Authorization: ${token}\" | jq '.teams[0].id'):" >&2
+        if command -v gum >/dev/null 2>&1; then
+            team_id=$(gum input --placeholder "Enter TEAM_ID" --value "${team_id}")
+        else
+            echo "Enter TEAM_ID [${team_id}]: " >&2
+            read -r input_team_id
+            team_id=${input_team_id:-$team_id}
+        fi
+        if [[ -z "${team_id}" || "${team_id}" == "0" ]]; then
+            echo "Valid TEAM_ID required. Exiting." >&2
+            exit 1
+        fi
+        echo "Using manual TEAM_ID: ${team_id}"
+    fi
+
+    echo "Fetching all tasks assigned to user ${user_id} from Team ${team_id}..."
+    local all_tasks_json=""
+    local page=0
+    local has_more=true
+
+    while [[ $has_more == true ]]; do
+        local tasks_response
+        tasks_response=$(curl -s -w "%{http_code}" "https://api.clickup.com/api/v2/team/${team_id}/task?assignees[]=${user_id}&subtasks=true&include_closed=false&page=${page}" \
+                          -H "Authorization: ${token}")
+        local http_code="${tasks_response: -3}"
+        local tasks_json="${tasks_response%???}"
+
+        if [[ "${http_code}" != "200" ]]; then
+            echo "Failed to fetch tasks from ClickUp on page ${page}. HTTP ${http_code}. Check credentials and IDs." >&2
+            return 1
+        fi
+        
+        if [[ -z "${tasks_json}" ]]; then
+            echo "Empty response from ClickUp on page ${page}." >&2
+            return 1
+        fi
+
+        if [[ -n "${all_tasks_json}" ]]; then
+            all_tasks_json=$(printf '%s\n%s\n' "${all_tasks_json}" "${tasks_json}" | jq -s '.[0].tasks += .[1].tasks | .[0]')
+        else
+            all_tasks_json="${tasks_json}"
+        fi
+
+        local task_count=$(echo "${tasks_json}" | jq '.tasks | length // 0')
+        if [[ $task_count -lt 100 ]]; then
+            has_more=false
+        fi
+        ((page++))
+    done
+
+    local -a task_options=()
+    echo "${all_tasks_json}" | jq -r '.tasks // [] | .[]? | select(.name != null and .name != "") | "feature-task-\(.id) | \(.name)"' | grep -v '^$' | while IFS= read -r line; do
+        task_options+=("$line")
+    done
+
+    if [[ ${#task_options[@]} -eq 0 ]]; then
+        echo "No tasks assigned to you found in the Team." >&2
+        return 1
+    fi
+
+    echo "Select tasks to create branches for (use Tab/Ctrl+Space to multi-select, Enter to confirm):"
+    local selected_choices
+    
+    if [[ ! -t 0 || -n "${CI:-}" || -n "${NONINTERACTIVE:-}" ]]; then
+        echo "Non-interactive mode detected. Selecting first task automatically."
+        selected_choices=$(printf '%s\n' "${task_options[@]}" | head -1)
+    else
+        local -a display_options=()
+        for task in "${task_options[@]}"; do
+            local task_name="${task##* | }"
+            display_options+=("${task_name}")
+        done
+        if command -v gum >/dev/null 2>&1; then
+            selected_choices=$(printf '%s\n' "${display_options[@]}" | gum choose --no-limit --header "ClickUp Tasks")
+        else
+            echo "Available tasks:" >&2
+            for i in "${!display_options[@]}"; do
+                echo "$((i+1)). ${display_options[i]}" >&2
+            done
+            echo "Enter task numbers (comma-separated): " >&2
+            read -r selections
+            selected_choices=""
+            IFS=',' read -ra sel_array <<< "$selections"
+            for sel in "${sel_array[@]}"; do
+                sel=$((sel-1))
+                if [[ $sel -ge 0 && $sel -lt ${#display_options[@]} ]]; then
+                    selected_choices+="${display_options[sel]}\n"
+                fi
+            done
+        fi
+    fi
+
+    if [[ -z "${selected_choices}" ]]; then
+        echo "No branches selected. Exiting." >&2
+        exit 0
+    fi
+
+    while IFS= read -r line; do
+        if [[ -n "$line" ]]; then
+            for task in "${task_options[@]}"; do
+                local task_name="${task##* | }"
+                if [[ "$task_name" == "$line" ]]; then
+                    local branch_name="${task%% | *}"
+                    printf '%s\n' "${branch_name}"
+                    break
+                fi
+            done
+        fi
+    done <<< "${selected_choices}"
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# WORKTREE CLEANUP
+# ═══════════════════════════════════════════════════════════════════════════════
+
+cleanup_worktrees() {
+    local -a branches=("$@")
+
+    if [[ ${#branches[@]} -eq 0 ]]; then
+        subheader "Cleanup Worktrees"
+
+        local -a worktree_info=()
+        local current_worktree=""
+        local current_branch=""
+
+        while IFS= read -r line; do
+            if [[ $line =~ ^worktree\ (.*) ]]; then
+                current_worktree="${BASH_REMATCH[1]}"
+                current_branch=""
+            elif [[ $line =~ ^branch\ (.*) && -n "$current_worktree" ]]; then
+                current_branch="${BASH_REMATCH[1]}"
+                current_branch="${current_branch#refs/heads/}"
+                local resolved_worktree
+                resolved_worktree=$(cd "$current_worktree" 2>/dev/null && pwd 2>/dev/null || echo "$current_worktree")
+                local resolved_main
+                resolved_main=$(pwd -P 2>/dev/null || pwd)
+
+                if [[ "$resolved_worktree" != "$resolved_main" && -n "$current_branch" ]]; then
+                    worktree_info+=("$current_worktree:$current_branch")
+                fi
+            fi
+        done < <(git worktree list --porcelain 2>/dev/null || echo "")
+
+        if [[ ${#worktree_info[@]} -eq 0 ]]; then
+            info "No worktrees found to clean up."
+            return 0
+        fi
+
+        local -a display_options=()
+        local -a branch_names=()
+        for info in "${worktree_info[@]}"; do
+            local worktree_path="${info%%:*}"
+            local branch="${info#*:}"
+            branch="${branch#refs/heads/}"
+            branch_names+=("$branch")
+            local relative_path="${worktree_path#$MAIN_REPO_PATH/}"
+            display_options+=("$relative_path ($branch)")
+        done
+
+        info "Select worktrees to remove (use Tab/Ctrl+Space to multi-select, Enter to confirm):"
+        local selected_choices
+
+        if [[ ! -t 0 || -n "${CI:-}" || -n "${NONINTERACTIVE:-}" ]]; then
+            warning "Non-interactive mode detected. Use: wt --cleanup <branch1> <branch2> ..."
+            return 0
+        else
+            if command -v gum >/dev/null 2>&1; then
+                selected_choices=$(printf '%s\n' "${display_options[@]}" | gum choose --no-limit --header "Worktrees to Clean Up")
+            else
+                echo "Available worktrees:" >&2
+                for i in "${!display_options[@]}"; do
+                    echo "$((i+1)). ${display_options[i]}" >&2
+                done
+                echo "Enter worktree numbers (comma-separated): " >&2
+                read -r selections
+                selected_choices=""
+                IFS=',' read -ra sel_array <<< "$selections"
+                for sel in "${sel_array[@]}"; do
+                    sel=$((sel-1))
+                    if [[ $sel -ge 0 && $sel -lt ${#display_options[@]} ]]; then
+                        selected_choices+="${display_options[sel]}\n"
+                    fi
+                done
+            fi
+        fi
+
+        if [[ -z "${selected_choices}" ]]; then
+            info "No worktrees selected for cleanup."
+            return 0
+        fi
+
+        branches=()
+        while IFS= read -r line; do
+            if [[ -n "$line" ]]; then
+                for i in "${!display_options[@]}"; do
+                    if [[ "${display_options[i]}" == "$line" ]]; then
+                        branches+=("${branch_names[i]}")
+                        break
+                    fi
+                done
+            fi
+        done <<< "${selected_choices}"
+    fi
+
+    if [[ ${#branches[@]} -eq 0 ]]; then
+        info "No worktrees to clean up."
+        return 0
+    fi
+
+    info "Cleaning up ${#branches[@]} worktree(s)..."
+
+    for branch in "${branches[@]}"; do
+        local worktree_path="${MAIN_REPO_PATH}/${WORKTREES_DIR}/${branch}"
+
+        if [[ -d "${worktree_path}" ]]; then
+            if git worktree remove "${worktree_path}" 2>/dev/null; then
+                success "Removed worktree for '${branch}'."
+            else
+                warning "Failed to remove worktree for '${branch}'."
+            fi
+        else
+            warning "Worktree for '${branch}' not found."
+        fi
+    done
+
+    success "Cleanup completed!"
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# HELP TEXT
+# ═══════════════════════════════════════════════════════════════════════════════
+
+show_usage_header() {
+    if command -v gum >/dev/null 2>&1; then
+        local term_width
+        term_width=$(tput cols 2>/dev/null || echo 80)
+        local box_width=80
+        local horiz_margin=$(((term_width - box_width) / 2))
+        if (( horiz_margin < 0 )); then horiz_margin=0; fi
+        gum style --foreground 39 --bold --border-foreground 39 --border double --align center --width 80 --margin "1 ${horiz_margin}" "░█░█░█▀█░█▀▄░█░█░▀█▀░█▀▄░█▀▀░█▀▀░█▀▀
+░█▄█░█░█░█▀▄░█▀▄░░█░░█▀▄░█▀▀░█▀▀░▀▀█
+░▀░▀░▀▀▀░▀░▀░▀░▀░░▀░░▀░▀░▀▀▀░▀▀▀░▀▀▀
+
+🌲 Forest Generator 🌲"
+
+        echo
+        gum style --foreground 105 --bold "USAGE"
+        gum style --foreground 7 "$(basename "$0") [OPTIONS] [branch1] [branch2] ..."
+
+        echo
+        gum style --foreground 105 --bold "OPTIONS"
+        cat << 'EOF'
+  (-h, --help)          Show extended help (environment variables and examples)
+  (-c, --cleanup)       Clean up worktrees (interactive selection)
+EOF
+    else
+        cat << EOF
+░█░█░█▀█░█▀▄░█░█░▀█▀░█▀▄░█▀▀░█▀▀░█▀▀
+░█▄█░█░█░█▀▄░█▀▄░░█░░█▀▄░█▀▀░█▀▀░▀▀█
+░▀░▀░▀▀▀░▀░▀░▀░▀░░▀░░▀░▀░▀▀▀░▀▀▀░▀▀▀
+
+     🌲 Forest Generator 🌲
+
+Usage: $(basename "$0") [OPTIONS] [branch1] [branch2] ...]
+
+OPTIONS:
+    -h, --help          Show extended help (environment variables and examples)
+    -c, --cleanup       Clean up worktrees (interactive selection)
+EOF
+    fi
+}
+
+show_usage_short() {
+    show_usage_header
+}
+
+show_usage() {
+    show_usage_header
+
+    if command -v gum >/dev/null 2>&1; then
+        echo
+        gum style --foreground 105 --bold "ENVIRONMENT VARIABLES"
+        cat << 'EOF'
+  CLICKUP_TOKEN       ClickUp API token for task integration
+  USER_ID             ClickUp user ID (auto-fetched if not set)
+  TEAM_ID             ClickUp team ID (auto-detected if not set)
+  TEAM_NAME           ClickUp team name for auto-matching
+  WORKTREES_DIR       Directory for worktrees (default: ../worktrees)
+  BATCH_SIZE          Number of concurrent operations (default: 4)
+  BASE_BRANCH         Base branch for new branches (default: main)
+  WORKTREE_COMMAND    Command to run after creating worktree (default: auto-detect editor)
+EOF
+
+        echo
+        gum style --foreground 105 --bold "EXAMPLES"
+        local cmd="$(basename "$0")"
+        cat << EOF
+  $cmd feature-1 feature-2
+  $cmd
+  $cmd --cleanup
+
+  WORKTREE_COMMAND="code %PATH%" $cmd
+  WORKTREE_COMMAND="zed %PATH%" $cmd
+  WORKTREE_COMMAND='session=\$(basename "%PATH%"); tmux n -d -s "\$session" -c "%PATH%" "claude"' $cmd
+EOF
+
+        echo
+        gum style --foreground 7 --faint "For ClickUp integration, set CLICKUP_TOKEN in your environment."
+    else
+        cat << EOF
+
+ENVIRONMENT VARIABLES:
+    CLICKUP_TOKEN       ClickUp API token for task integration
+    USER_ID             ClickUp user ID (auto-fetched if not set)
+    TEAM_ID             ClickUp team ID (auto-detected if not set)
+    TEAM_NAME           ClickUp team name for auto-matching
+    WORKTREES_DIR       Directory for worktrees (default: ../worktrees)
+    BATCH_SIZE          Number of concurrent operations (default: 4)
+    BASE_BRANCH         Base branch for new branches (default: main)
+    WORKTREE_COMMAND    Command to run after creating worktree (default: auto-detect editor)
+
+EXAMPLES:
+    $(basename "$0") feature-1 feature-2
+    $(basename "$0")
+    $(basename "$0") --cleanup
+
+    WORKTREE_COMMAND="code %PATH%" $(basename "$0")
+    WORKTREE_COMMAND="zed %PATH%" $(basename "$0")
+    WORKTREE_COMMAND='session=\$(basename "%PATH%"); tmux n -d -s "\$session" -c "%PATH%" "claude"' $(basename "$0")
+
+For ClickUp integration, set CLICKUP_TOKEN in your environment.
+EOF
+    fi
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# MAIN ENTRY POINT
+# ═══════════════════════════════════════════════════════════════════════════════
+
+main() {
+    local branches=()
+    local cleanup_mode=false
+
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -h|--help)
+                show_usage
+                exit 0
+                ;;
+            -c|--cleanup)
+                cleanup_mode=true
+                shift
+                ;;
+            -*)
+                show_usage_short
+                error_box "Unknown option: $1"
+                exit 1
+                ;;
+            *)
+                branches+=("$1")
+                shift
+                ;;
+        esac
+    done
+
+    if [[ "$cleanup_mode" == true ]]; then
+        if [[ ${#branches[@]} -gt 0 ]]; then
+            cleanup_worktrees "${branches[@]}"
+        else
+            cleanup_worktrees
+        fi
+        return
+    fi
+
+    # Interactive mode: no branches specified
+    if [[ ${#branches[@]} -eq 0 ]]; then
+        # Check if CLICKUP_TOKEN is set
+        if [[ -z "${CLICKUP_TOKEN:-}" ]]; then
+            show_usage_short
+            error_box "CLICKUP_TOKEN is not set.
+
+This tool requires a ClickUp API key to fetch and select tasks."
+            echo
+            if command -v gum >/dev/null 2>&1; then
+                gum style --foreground 105 --bold "TO CONTINUE DEVELOPMENT"
+                cat << EOF
+  1. Set CLICKUP_TOKEN in your environment
+  2. Optionally set USER_ID, TEAM_ID, or TEAM_NAME
+  3. Run: $0
+
+EOF
+                gum style --foreground 105 --bold "OR USE MANUAL MODE"
+                echo "  $0 branch-name-1 branch-name-2"
+            else
+                echo "TO CONTINUE DEVELOPMENT:"
+                cat << EOF
+  1. Set CLICKUP_TOKEN in your environment
+  2. Optionally set USER_ID, TEAM_ID, or TEAM_NAME
+  3. Run: $0
+
+EOF
+                echo "OR USE MANUAL MODE:"
+                echo "  $0 branch-name-1 branch-name-2"
+            fi
+            echo
+            exit 1
+        fi
+
+        local clickup_output
+        clickup_output=$(fetch_and_select_clickup_tasks)
+        if [[ $? -ne 0 ]]; then
+            error_box "ClickUp integration failed."
+            echo
+            if command -v gum >/dev/null 2>&1; then
+                gum style --foreground 105 --bold "TROUBLESHOOTING"
+                cat << EOF
+  • Verify CLICKUP_TOKEN is valid
+  • Check you have access to tasks in the team
+  • Ensure network connection is working
+
+EOF
+                gum style --foreground 105 --bold "TO CONTINUE DEVELOPMENT"
+                cat << EOF
+  Set the API key and try again, or use manual mode:
+    $0 branch-name-1 branch-name-2
+EOF
+            else
+                echo "TROUBLESHOOTING:"
+                cat << EOF
+  • Verify CLICKUP_TOKEN is valid
+  • Check you have access to tasks in the team
+  • Ensure network connection is working
+
+TO CONTINUE DEVELOPMENT:
+  Set the API key and try again, or use manual mode:
+    $0 branch-name-1 branch-name-2
+EOF
+            fi
+            echo
+            exit 1
+        fi
+        while IFS= read -r line; do
+            if [[ -n "$line" ]]; then
+                branches+=("$line")
+            fi
+        done <<< "${clickup_output}"
+    fi
+
+    if [[ ${#branches[@]} -eq 0 ]]; then
+        show_usage_short
+        error_box "No valid branches to process."
+        exit 1
+    fi
+
+    for ((i=0; i<${#branches[@]}; i+=BATCH_SIZE)); do
+        local -a batch=("${branches[@]:i:BATCH_SIZE}")
+        info "Processing batch ${batch[*]}"
+        process_batch "${batch[@]}"
+        if (( i + BATCH_SIZE < ${#branches[@]} )); then
+            sleep "${BATCH_PAUSE}"
+        fi
+    done
+
+    success "Processed ${#branches[@]} worktree(s)"
+}
+
+main "$@"
