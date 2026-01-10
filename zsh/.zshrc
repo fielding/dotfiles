@@ -10,6 +10,7 @@ if [ -n "${ZPLUG_HOME:-}" ] \
   source "$ZPLUG_HOME/init.zsh"
 
   zplug mafredri/zsh-async, from:github
+  zplug fielding/zsh-brew-switcher, from:github, at:main
   zplug DFurnes/purer, use:pure.zsh, from:github, as:theme
 
   # Install plugins that haven't been installed
@@ -41,8 +42,11 @@ zstyle ':completion:*' completer _complete _ignored _correct _approximate
 zstyle ':completion:*' matcher-list 'm:{[:lower:]}={[:upper:]}' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'l:|=* r:|=*'
 zstyle :compinstall filename '/Users/fielding/.zshrc'
 
-autoload -Uz compinit
-compinit -i -u
+if type brew &> /dev/null; then
+  FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
+  autoload -Uz compinit
+  compinit -i -u
+fi
 # End of lines added by compinstall
 
 
@@ -66,39 +70,89 @@ bindkey -r "^L"
   export PATH=${HOME}/.rbenv/bin:${PATH} && \
   eval "$(rbenv init -)"
 
-# not sure if this is needed yet
-# fpath=(/usr/local/share/zsh-completions $fpath)
-
-
-# autoload -Uz promptinit
-# promptinit
+autoload -Uz promptinit
+promptinit
 
 # The next line updates PATH for Netlify's Git Credential Helper.
 if [ -f '/Users/fielding/.netlify/helper/path.zsh.inc' ]; then source '/Users/fielding/.netlify/helper/path.zsh.inc'; fi
-
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/fielding/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/fielding/Downloads/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/fielding/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/fielding/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
 [ -f "/Users/fielding/.ghcup/env" ] && source "/Users/fielding/.ghcup/env" # ghcup-env
 # tabtab source for packages
 # uninstall by removing these lines
 [[ -f ~/.config/tabtab/zsh/__tabtab.zsh ]] && . ~/.config/tabtab/zsh/__tabtab.zsh || true
 
+# pipx local bin
+export PATH="$PATH:/Users/fielding/.local/bin"
 
+# Node
 export PATH="/opt/homebrew/opt/node@22/bin:$PATH"
-. "$HOME/.local/share/../bin/env"
-
-# Added by Antigravity
-export PATH="/Users/fielding/.antigravity/antigravity/bin:$PATH"
 export PATH="/opt/homebrew/opt/node@24/bin:$PATH"
+
+# Antigravity
+export PATH="/Users/fielding/.antigravity/antigravity/bin:$PATH"
 
 # Go configuration
 export GOROOT=/opt/homebrew/opt/go/libexec
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 
+# direnv
 eval "$(direnv hook zsh)"
 
-. "$HOME/.langflow/uv/env"
+# Google Cloud SDK
+if [ -f '/Users/fielding/src/warez/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/fielding/src/warez/google-cloud-sdk/path.zsh.inc'; fi
+if [ -f '/Users/fielding/src/warez/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/fielding/src/warez/google-cloud-sdk/completion.zsh.inc'; fi
+
+# kiex (elixir)
+test -s "$HOME/.kiex/scripts/kiex" && source "$HOME/.kiex/scripts/kiex"
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/opt/homebrew/Caskroom/miniconda/base/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh" ]; then
+        . "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh"
+    else
+        export PATH="/opt/homebrew/Caskroom/miniconda/base/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
+# asdf
+[ -f /opt/homebrew/opt/asdf/libexec/asdf.sh ] && . /opt/homebrew/opt/asdf/libexec/asdf.sh
+
+# session-wise fix
+ulimit -n 4096
+export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
+
+# bun
+[ -s "/Users/fielding/.bun/_bun" ] && source "/Users/fielding/.bun/_bun"
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# fzf
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# uv completions
+command -v uv >/dev/null && eval "$(uv generate-shell-completion zsh)"
+command -v uvx >/dev/null && eval "$(uvx --generate-shell-completion zsh)"
+
+# langflow
+[ -f "$HOME/.langflow/uv/env" ] && . "$HOME/.langflow/uv/env"
+
+# opam
+[[ ! -r '/Users/fielding/.opam/opam-init/init.zsh' ]] || source '/Users/fielding/.opam/opam-init/init.zsh' > /dev/null 2> /dev/null
+
+# pnpm
+export PNPM_HOME="/Users/fielding/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+
+# nvm
+export NVM_DIR="$HOME/.config/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"

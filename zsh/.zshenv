@@ -17,4 +17,5 @@ if [ -z "${ZPLUG_HOME:-}" ]; then
 fi
 
 [ -n "${ZPLUG_HOME:-}" ] && export ZPLUG_HOME
-. "$HOME/.aftman/env"
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+[ -f "$HOME/.aftman/env" ] && . "$HOME/.aftman/env"

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if pgrep -x "Ghostty" > /dev/null; then
+  ghostty --new-window
+else
+  open -a Ghostty
+fi

@@ -30,7 +30,7 @@ switcher < s ; layout
 switcher < t ; tree
 
 ## launch iterm
-switcher < return : ~/bin/iterm-create-window; skhd -k 'escape'
+switcher < return : ~/bin/ghostty-create-window; skhd -k 'escape'
 
 ## move window to desktop and follow
 switcher < cmd + shift - 1 : yabai -m window --space  1; yabai -m space --focus 1
@@ -43,15 +43,15 @@ switcher < cmd + shift - 6 : yabai -m window --space  6; yabai -m space --focus 
 
 ## move window to desktop
 switcher < shift - 1 : yabai -m window --space  1
-switcher < shift - 2 : yabai -m window --space  2 
-switcher < shift - 3 : yabai -m window --space  3 
+switcher < shift - 2 : yabai -m window --space  2
+switcher < shift - 3 : yabai -m window --space  3
 switcher < shift - 4 : yabai -m window --space  4
-switcher < shift - 5 : yabai -m window --space  5  
+switcher < shift - 5 : yabai -m window --space  5
 switcher < shift - 6 : yabai -m window --space  6
 
 ## focus monitor
 switcher < x : yabai -m display --focus last
-switcher < z : yabai -m display --focus prev 
+switcher < z : yabai -m display --focus prev
 switcher < c : yabai -m display --focus next
 switcher < 1 : yabai -m display --focus 1
 switcher < 2 : yabai -m display --focus 2

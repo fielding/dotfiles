@@ -1,5 +1,5 @@
 alias b='brew'
-# alias git='hub'
+alias git='hub'
 alias g='hub'
 alias kb='keybase'
 alias se='sudo nvim'
@@ -7,9 +7,12 @@ alias tm='tmux'
 alias irc='weechat'
 alias vlc='/Applications/VLC.app/Contents/MacOS/VLC'
 alias less='less -m -N -g -i -J --underline-special --SILENT'
+alias code='code-insiders'
+alias tsm='transmission-remote'
+alias yrs='yabai --restart-service'
 
-# exa
-if [[ -n $(which exa) ]]; then
+# eza (formerly exa)
+if command -v eza >/dev/null 2>&1; then
   alias ls='eza'
   alias l='eza -a -lgmH --git --time-style long-iso'
   alias lh='l -h'
@@ -56,6 +59,9 @@ alias update="sudo softwareupdate -i -a; brew update; brew upgrade --all; brew c
 alias rot13="tr a-zA-Z n-za-mN-ZA-M"
 
 # Corporate random bullshit generator
-alias cbsg="curl -s http://cbsg.sourceforge.net/cgi-bin/live | grep -Eo '^<li>.*</li>' | sed 's/<[^>]*>//g' | shuf -n 1"
+alias cbsg="curl -s http://pasta.phyrama.com:8083/cgi-bin/live.exe | grep -Eo '^<li>.*</li>' | sed 's/<[^>]*>//g' | shuf -n 1"
+
+
+alias ks="ps aux | grep sense.main | awk 'NR==2 {print $2}' | xargs kill -9"
 
 # vim: ft=sh

@@ -42,8 +42,8 @@
 	default = simple
 [user]
 	name = Fielding Johnston
-  email = fielding@justfielding.com
-	signingkey = 4F3FB9DB
+	email = fielding@justfielding.com
+	signingKey = ""
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
@@ -55,7 +55,7 @@
 	# diff = diff-so-fancy | less --tabs=4 -RFX
   # show = diff-so-fancy | less --tabs=4 -RFX
 [commit]
-  gpgsign = false
+	gpgSign = false
 	template = /Users/fielding/.git-commit-template
 [secrets]
 	providers = git secrets --aws-provider
@@ -70,3 +70,15 @@
 # This next lines include Netlify's Git Credential Helper configuration in your Git configuration.
 [include]
   path = /Users/fielding/.netlify/helper/git-config
+[tag]
+	forceSignAnnotated = false
+[hub]
+	protocol = https
+[merge]
+tool = unityyamlmerge
+
+[mergetool "unityyamlmerge"]
+trustExitCode = false
+cmd = '/Applications/Unity/Unity.app/Contents/Tools/UnityYAMLMerge' merge -p "$BASE" "$REMOTE" "$LOCAL" "$MERGED"
+[gpg]
+	format = ssh

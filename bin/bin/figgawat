@@ -33,7 +33,7 @@ done
 # ▌ ▖▌ ▌▌ ▌▜▀ ▐ ▚▄▌
 # ▝▀ ▝▀ ▘ ▘▐  ▀▘▗▄▘
 #
-# readonly FIGLET_FONT_PATH="/usr/local/Cellar/figlet/2.2.5/share/figlet/fonts"
+# readonly FIGLET_FONT_PATH="/usr/local/share/figlet/fonts"
 #
 # readonly legiblelist=("Nancyj-Improved" "bigmono12" "bigmono9" "mono12" "pagga"
 #                       "rebel" "DOS Rebel" "smblock" "smmono12" "ANSI SHADOW"
