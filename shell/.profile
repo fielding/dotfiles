@@ -6,9 +6,14 @@ BREW_PATH=/opt/homebrew
 export BREW_PATH
 
 # set android_home directory for android development
-JAVA_HOME=`/usr/libexec/java_home`
+if [ -x /usr/libexec/java_home ]; then
+  JAVA_HOME=$(/usr/libexec/java_home 2>/dev/null)
+  if [ -n "$JAVA_HOME" ]; then
+    export JAVA_HOME
+  fi
+fi
 ANDROID_HOME=$HOME/Library/Android/sdk
-export JAVA_HOME ANDROID_HOME
+export ANDROID_HOME
 
 # Attempt to keep macos system ruby seperate and not have to sudo gem install
 RBENV_ROOT="$HOME/.rbenv"
@@ -34,7 +39,8 @@ CLOUDSDK_PYTHON=python2.7
 export CLOUDSDK_PYTHON
 
 # Default
-EDITOR=nvim
+# EDITOR=nvim
+EDITOR=vim
 PAGER=less
 BROWSER=open
 LESSOPEN="| /usr/local/bin/src-hilite-lesspipe.sh %s"
@@ -76,17 +82,17 @@ EXA_COLORS='uu=33:gu=33:ur=33:gr=33:tr=33:uw=31:gw=31:tw=31:ue=32:ux=32:gx=32:tx
 GREP_COLORS='ms=33:mc=33:sl=37:cx=37:fn=34:ln=1;31:bn=1;35:se=1;30'
 export CLICOLOR EXA_COLORS GREP_COLORS
 
-# Less Colors for Man Pages
-LESS_TERMCAP_mb=$(tput bold; tput setaf 1)
-LESS_TERMCAP_md=$(tput setaf 1)
-LESS_TERMCAP_me=$(tput sgr0)
-LESS_TERMCAP_so=$(tput bold; tput setaf 7; tput setab 1)
-LESS_TERMCAP_se=$(tput rmso; tput sgr0)
-LESS_TERMCAP_us=$(tput smul; tput setaf 3)
-LESS_TERMCAP_ue=$(tput rmul; tput sgr0)
-LESS_TERMCAP_mr=$(tput rev)
-LESS_TERMCAP_mh=$(tput dim)
-export LESS_TERMCAP_mb LESS_TERMCAP_md LESS_TERMCAP_me LESS_TERMCAP_se LESS_TERMCAP_so LESS_TERMCAP_ue LESS_TERMCAP_us LESS_TERMCAP_mr LESS_TERMCAP_mh
+# # Less Colors for Man Pages
+# LESS_TERMCAP_mb=$(tput bold; tput setaf 1)
+# LESS_TERMCAP_md=$(tput setaf 1)
+# LESS_TERMCAP_me=$(tput sgr0)
+# LESS_TERMCAP_so=$(tput bold; tput setaf 7; tput setab 1)
+# LESS_TERMCAP_se=$(tput rmso; tput sgr0)
+# LESS_TERMCAP_us=$(tput smul; tput setaf 3)
+# LESS_TERMCAP_ue=$(tput rmul; tput sgr0)
+# LESS_TERMCAP_mr=$(tput rev)
+# LESS_TERMCAP_mh=$(tput dim)
+# export LESS_TERMCAP_mb LESS_TERMCAP_md LESS_TERMCAP_me LESS_TERMCAP_se LESS_TERMCAP_so LESS_TERMCAP_ue LESS_TERMCAP_us LESS_TERMCAP_mr LESS_TERMCAP_mh
 
 # Fuzzy Find
 FZF_DEFAULT_OPTS='--color fg:7,bg:0,hl:1,fg+:15,bg+:0,hl+:9
@@ -104,3 +110,8 @@ export FZF_DEFAULT_COMMAND FZF_DEFAULT_OPTS
 # Need to go over this mess
 PATH="$HOME/bin:$BREW_PATH/bin:$BREW_PATH/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:/opt/bin:$HOME/.cabal/bin:$HOME/perl5/bin:/Library/TeX/texbin:$HOME/.cargo/bin:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:/usr/local/lib/python2.7/site-packages:/opt/metasploit-framework/bin:$BREW_PATH/Cellar/openssl/1.0.2l/bin:$GEM_PATH/bin:$GOPATH/bin:$HOME/Library/Python/3.6/bin:$ESP_PATH:$BREW_PATH/opt/llvm/bin:$MOS_BIN:$HOME/Library/Application Support/itch/apps/butler:$PATH"
 export PATH
+
+. "$HOME/.local/share/../bin/env"
+. "$HOME/.aftman/env"
+
+. "$HOME/.langflow/uv/env"

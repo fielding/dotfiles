@@ -1,22 +1,27 @@
-. ~/.shell_aliases
-. ~/.shell_functions
-. ~/.shell_extra
+[ -f "$HOME/.shell_aliases" ] && . "$HOME/.shell_aliases"
+[ -f "$HOME/.shell_functions" ] && . "$HOME/.shell_functions"
+[ -f "$HOME/.shell_extra" ] && . "$HOME/.shell_extra"
 
 
-source $ZPLUG_HOME/init.zsh
+if [ -n "${ZPLUG_HOME:-}" ] \
+   && [ -r "$ZPLUG_HOME/init.zsh" ] \
+   && [ -d "$ZPLUG_HOME/log" ] && [ -w "$ZPLUG_HOME/log" ] \
+   && [ -d "$ZPLUG_HOME/cache" ] && [ -w "$ZPLUG_HOME/cache" ]; then
+  source "$ZPLUG_HOME/init.zsh"
 
-zplug mafredri/zsh-async, from:github
-zplug DFurnes/purer, use:pure.zsh, from:github, as:theme
+  zplug mafredri/zsh-async, from:github
+  zplug DFurnes/purer, use:pure.zsh, from:github, as:theme
 
-# Install plugins that haven't been installed
-if ! zplug check --verbose; then
-    printf "Install? [y/N]: "
-    if read -q; then
-        echo; zplug install
-    fi
+  # Install plugins that haven't been installed
+  if ! zplug check --verbose; then
+      printf "Install? [y/N]: "
+      if read -q; then
+          echo; zplug install
+      fi
+  fi
+
+  zplug load
 fi
-
-zplug load
 
 PURE_PROMPT_SYMBOL_COLOR=red
 export PURE_PROMPT_SYMBOL_COLOR
@@ -80,3 +85,20 @@ if [ -f '/Users/fielding/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then 
 # tabtab source for packages
 # uninstall by removing these lines
 [[ -f ~/.config/tabtab/zsh/__tabtab.zsh ]] && . ~/.config/tabtab/zsh/__tabtab.zsh || true
+
+
+export PATH="/opt/homebrew/opt/node@22/bin:$PATH"
+. "$HOME/.local/share/../bin/env"
+
+# Added by Antigravity
+export PATH="/Users/fielding/.antigravity/antigravity/bin:$PATH"
+export PATH="/opt/homebrew/opt/node@24/bin:$PATH"
+
+# Go configuration
+export GOROOT=/opt/homebrew/opt/go/libexec
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+
+eval "$(direnv hook zsh)"
+
+. "$HOME/.langflow/uv/env"

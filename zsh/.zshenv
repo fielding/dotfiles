@@ -8,5 +8,13 @@ export HISTFILE HISTSIZE SAVEHIST
 KEYTIMEOUT=1
 export KEYTIMEOUT
 
-ZPLUG_HOME=$BREW_PATH/opt/zplug
-export ZPLUG_HOME
+if [ -z "${ZPLUG_HOME:-}" ]; then
+  if [ -d "$BREW_PATH/opt/zplug" ]; then
+    ZPLUG_HOME="$BREW_PATH/opt/zplug"
+  elif [ -d "$HOME/.zplug" ]; then
+    ZPLUG_HOME="$HOME/.zplug"
+  fi
+fi
+
+[ -n "${ZPLUG_HOME:-}" ] && export ZPLUG_HOME
+. "$HOME/.aftman/env"
