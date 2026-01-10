@@ -33,6 +33,7 @@
 [core]
   excludesfile = ~/.gitignore.global
   whitespace = space-before-tab,-indent-with-non-tab,trailing-space
+	pager = 
 [credential]
   helper = osxkeychain
 [github]
@@ -47,11 +48,12 @@
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 	required = true
+	process = git-lfs filter-process
 [init]
 	templatedir = ~/.git-templates
 [pager]
-	diff = diff-so-fancy | less --tabs=4 -RFX
-  show = diff-so-fancy | less --tabs=4 -RFX
+	# diff = diff-so-fancy | less --tabs=4 -RFX
+  # show = diff-so-fancy | less --tabs=4 -RFX
 [commit]
   gpgsign = false
 	template = /Users/fielding/.git-commit-template
