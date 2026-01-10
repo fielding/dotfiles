@@ -1,25 +1,39 @@
 #!/bin/sh
 # shell agnostic version
 
+HOSTNAME=$(hostname)
+
+export HOSTNAME
 # set BREW_PATH for one time eval and many time use through out dotfiles
 BREW_PATH=/opt/homebrew
 export BREW_PATH
 
+# GPG
+GPG_TTY=$(tty)
+export GPG_TTY
+
 # set android_home directory for android development
-JAVA_HOME=`/usr/libexec/java_home`
-ANDROID_HOME=$HOME/Library/Android/sdk
-export JAVA_HOME ANDROID_HOME
+# JAVA_HOME=`/usr/libexec/java_home`
+# ANDROID_HOME=$HOME/Library/Android/sdk
+ANDROID_HOME=/Users/$USER/Library/Android/sdk
+ANDROID_SDK_ROOT=$ANDROID_HOME
+export ANDROID_HOME ANDROID_SDK_ROOT
 
 # Attempt to keep macos system ruby seperate and not have to sudo gem install
 RBENV_ROOT="$HOME/.rbenv"
 GEM_HOME="$BREW_PATH/opt/gems"
-GEM_PATH="$BREW_PATH/opt/gems"
+# GEM_PATH="$BREW_PATH/opt/gems"
+GEM_PATH="$BREW_PATH/lib/ruby/gems/2.7.0/bin"
 export RBENV_ROOT GEM_HOME GEM_PATH
 
-# golang go get'em
-GOPATH="$HOME/.go"
-GOROOT="/usr/local/opt/go/libexec"
-export GOPATH GOROOT
+GOROOT=/opt/homebrew/Cellar/go/1.22.3/libexec
+GOPATH=$HOME/golang
+GOPROXY=https://goproxy.cn 
+export GOPATH GOROOT GOPROXY
+
+
+#GOPROXY setup, this is qiniu proxy
+
 
 # ESP32 toolchain path requirement
 ESP_PATH="$HOME/esp/xtensa-esp32-elf/bin"
@@ -30,11 +44,11 @@ export IDF_PATH
 MOS_BIN="$HOME/.mos/bin"
 
 # Google Cloud SDK
-CLOUDSDK_PYTHON=python2.7
-export CLOUDSDK_PYTHON
+# CLOUDSDK_PYTHON=python2.7
+# export CLOUDSDK_PYTHON
 
 # Default
-EDITOR=nvim
+EDITOR=vim
 PAGER=less
 BROWSER=open
 LESSOPEN="| /usr/local/bin/src-hilite-lesspipe.sh %s"
@@ -88,19 +102,31 @@ LESS_TERMCAP_mr=$(tput rev)
 LESS_TERMCAP_mh=$(tput dim)
 export LESS_TERMCAP_mb LESS_TERMCAP_md LESS_TERMCAP_me LESS_TERMCAP_se LESS_TERMCAP_so LESS_TERMCAP_ue LESS_TERMCAP_us LESS_TERMCAP_mr LESS_TERMCAP_mh
 
+
 # Fuzzy Find
+# FZF_DEFAULT_OPTS='--color fg:7,bg:0,hl:1,fg+:15,bg+:0,hl+:9
+#   --color info:10,prompt:12,spinner:13,pointer:14,marker:5
+#   --preview "[[ $(file --mime {}) =~ binary ]] &&
+#    echo {} is a binary file ||
+#    (highlight -O xterm256 -s molokai -l {} ||
+#     coderay {} ||
+#     rougify {} ||
+#     cat {}) 2> /dev/null | head -500"'
+# Fuzzy Find
+
 FZF_DEFAULT_OPTS='--color fg:7,bg:0,hl:1,fg+:15,bg+:0,hl+:9
-  --color info:10,prompt:12,spinner:13,pointer:14,marker:5
-  --preview "[[ $(file --mime {}) =~ binary ]] &&
-   echo {} is a binary file ||
-   (highlight -O xterm256 -s molokai -l {} ||
-    coderay {} ||
-    rougify {} ||
-    cat {}) 2> /dev/null | head -500"'
+  --color info:10,prompt:12,spinner:13,pointer:14,marker:5'
+
 FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob="!.git/*"'
 export FZF_DEFAULT_COMMAND FZF_DEFAULT_OPTS
 
+
+export AIR_HOME="$HOME/src/sdk/air"
+
 # Path
 # Need to go over this mess
-PATH="$HOME/bin:$BREW_PATH/bin:$BREW_PATH/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:/opt/bin:$HOME/.cabal/bin:$HOME/perl5/bin:/Library/TeX/texbin:$HOME/.cargo/bin:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:/usr/local/lib/python2.7/site-packages:/opt/metasploit-framework/bin:$BREW_PATH/Cellar/openssl/1.0.2l/bin:$GEM_PATH/bin:$GOPATH/bin:$HOME/Library/Python/3.6/bin:$ESP_PATH:$BREW_PATH/opt/llvm/bin:$MOS_BIN:$HOME/Library/Application Support/itch/apps/butler:$PATH"
+PATH="$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools"
+PATH=$PATH:$GOROOT/bin
+PATH=$PATH:$GOPATH/bin
+PATH="$HOME/bin:$BREW_PATH/bin:$BREW_PATH/opt/coreutils/libexec/gnubin:/usr/local/bin:/opt/homebrew/opt/gems:$GEM_PATH:${AIR_HOME}/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:/opt/bin:$HOME/.cabal/bin:$HOME/perl5/bin:/Library/TeX/texbin:$HOME/.cargo/env:$ANDROID_HOME/tools:$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:/usr/local/lib/python2.7/site-packages:/opt/metasploit-framework/bin:$BREW_PATH/Cellar/openssl/1.0.2l/bin:$GOPATH/bin:$HOME/Library/Python/3.6/bin:$ESP_PATH:$BREW_PATH/opt/llvm/bin:$MOS_BIN:$HOME/Library/Application Support/itch/apps/butler:$PATH"
 export PATH

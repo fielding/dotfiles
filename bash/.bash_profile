@@ -19,7 +19,7 @@ fi
 
 # History Settings
 export HISTCONTROL=ignoredups
-export HISTSIZE=1000
+export HISTSIZE=10000
 export HISTFILESIZE=10000
 export HISTIGNORE="ls:ls *:cd:cd -:pwd;exit:date:* --help"
 shopt -s histappend         # append to (not overwrite) the history file
@@ -117,3 +117,20 @@ case $(uname -s) in
 esac
 
 source <(npx --shell-auto-fallback bash)
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/opt/homebrew/Caskroom/miniconda/base/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh" ]; then
+        . "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh"
+    else
+        export PATH="/opt/homebrew/Caskroom/miniconda/base/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
+. "$HOME/.cargo/env"

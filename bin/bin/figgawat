@@ -15,7 +15,8 @@
 #          script to help me pick from some of my favorite figlet fonts
 #                 recommended usage: `figgawat text2figga | less`
 
-for file in ${TOILET_FONT_PATH:=/usr/local/Cellar/figlet/2.2.5/share/figlet/fonts}/*.*lf
+# for file in ${TOILET_FONT_PATH:=/usr/local/Cellar/figlet/2.2.5/share/figlet/fonts}/*.*lf
+for file in ${TOILET_FONT_PATH:=/opt/homebrew/Cellar/figlet/2.2.5/share/figlet/fonts}/*.*lf
 do name=${file##*/}
   echo ""
   echo "╓───── "$name
@@ -33,7 +34,7 @@ done
 # ▌ ▖▌ ▌▌ ▌▜▀ ▐ ▚▄▌
 # ▝▀ ▝▀ ▘ ▘▐  ▀▘▗▄▘
 #
-# readonly FIGLET_FONT_PATH="/usr/local/Cellar/figlet/2.2.5/share/figlet/fonts"
+# readonly FIGLET_FONT_PATH="/usr/local/share/figlet/fonts"
 #
 # readonly legiblelist=("Nancyj-Improved" "bigmono12" "bigmono9" "mono12" "pagga"
 #                       "rebel" "DOS Rebel" "smblock" "smmono12" "ANSI SHADOW"

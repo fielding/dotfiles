@@ -10,3 +10,5 @@ export KEYTIMEOUT
 
 ZPLUG_HOME=$BREW_PATH/opt/zplug
 export ZPLUG_HOME
+
+. "$HOME/.cargo/env"
