@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# JankyBorders config - mirrors skhd mode colors from old yabai setup
+borders active_color=0xffff0074 \
+        inactive_color=0x00000000 \
+        width=8.0 \
+        style=square \
+        hidpi=on

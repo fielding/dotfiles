@@ -1,0 +1,88 @@
+#!/bin/bash
+
+# ┌──────────────────────────────────────────────────────────────────────────┐
+# │ Sketchybar Config                                                        │
+# │ Minimal, sleek bar matching JankyBorders/skhd color scheme               │
+# └──────────────────────────────────────────────────────────────────────────┘
+
+PLUGIN_DIR="$CONFIG_DIR/plugins"
+ITEM_DIR="$CONFIG_DIR/items"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Color Palette (matches skhd modes)
+# ─────────────────────────────────────────────────────────────────────────────
+export COLOR_BG=0xff1a1a2e
+export COLOR_BG_LIGHT=0xff252542
+export COLOR_FG=0xfff8f8f2
+export COLOR_FG_DIM=0xff6272a4
+export COLOR_ACCENT=0xffff0074       # default/pink
+export COLOR_MINT=0xff6bffb8         # switcher
+export COLOR_CYAN=0xff5ce1ff         # swap
+export COLOR_ORANGE=0xffffb86c       # tree
+export COLOR_PURPLE=0xffbd93f9       # layout
+export COLOR_RED=0xffff5555          # meet
+export COLOR_TRANSPARENT=0x00000000
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Bar Appearance
+# ─────────────────────────────────────────────────────────────────────────────
+bar=(
+  height=36
+  color=$COLOR_BG
+  border_width=0
+  shadow=off
+  position=top
+  sticky=on
+  padding_right=8
+  padding_left=8
+  y_offset=4
+  margin=8
+  corner_radius=10
+  blur_radius=20
+  notch_width=200
+)
+sketchybar --bar "${bar[@]}"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Default Item Styling
+# ─────────────────────────────────────────────────────────────────────────────
+defaults=(
+  icon.font="SF Pro:Semibold:14.0"
+  icon.color=$COLOR_FG
+  icon.padding_left=8
+  icon.padding_right=4
+  label.font="SF Mono:Medium:12.0"
+  label.color=$COLOR_FG
+  label.padding_left=4
+  label.padding_right=8
+  background.color=$COLOR_BG_LIGHT
+  background.corner_radius=6
+  background.height=26
+  background.padding_left=4
+  background.padding_right=4
+)
+sketchybar --default "${defaults[@]}"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Events
+# ─────────────────────────────────────────────────────────────────────────────
+sketchybar --add event mode_change
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Items
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Left side
+source "$ITEM_DIR/spaces.sh"
+source "$ITEM_DIR/front_app.sh"
+
+# Right side (order: rightmost first)
+source "$ITEM_DIR/battery.sh"
+source "$ITEM_DIR/clock.sh"
+source "$ITEM_DIR/calendar.sh"
+source "$ITEM_DIR/mode.sh"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Finalize
+# ─────────────────────────────────────────────────────────────────────────────
+sketchybar --update

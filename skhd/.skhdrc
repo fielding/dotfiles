@@ -1,12 +1,25 @@
 # use # to comment
 
-:: default : yabai -m config active_window_border_color 0xff6f5bab
-:: switcher @ : yabai -m config active_window_border_color 0xfffc8617
-:: swap @ : yabai -m config active_window_border_color 0xff7dfdee
-:: tree @ : yabai -m config active_window_border_color 0xfffc3052
-:: layout @ : yabai -m config active_window_border_color 0xfffdec5a
+# Mode definitions with JankyBorders color feedback + Sketchybar mode indicator
+:: default : borders active_color=0xffff0074; sketchybar --trigger mode_change MODE=default
+:: switcher @ : borders active_color=0xff6bffb8; sketchybar --trigger mode_change MODE=switcher
+:: swap @ : borders active_color=0xff5ce1ff; sketchybar --trigger mode_change MODE=swap
+:: tree @ : borders active_color=0xffffb86c; sketchybar --trigger mode_change MODE=tree
+:: layout @ : borders active_color=0xffbd93f9; sketchybar --trigger mode_change MODE=layout
+:: meet @ : borders active_color=0xffff5555; sketchybar --trigger mode_change MODE=meet
 
 
+# =====================================================
+# QUICK ACTIONS (no mode required)
+# =====================================================
+alt - e : yabai -m space --balance                # equalize/balance windows
+alt - r : yabai -m space --rotate 90              # rotate layout
+alt - f : yabai -m window --toggle zoom-fullscreen
+alt - t : yabai -m window --toggle float; yabai -m window --grid 4:4:1:1:2:2
+
+# =====================================================
+# NAVIGATION
+# =====================================================
 # streamline window/pane movement keybinds for vim splits and windows
 ctrl - h -> : if [[ "$(yabai -m query --windows --window)" != *"VIM"* ]]; then yabai -m window --focus west; fi
 ctrl - j -> : if [[ "$(yabai -m query --windows --window)" != *"VIM"* ]]; then yabai -m window --focus south; fi
@@ -21,13 +34,19 @@ default                        < ctrl - f      ; switcher
 switcher, swap, layout, tree   < ctrl - f      ; default
 switcher, swap, layout, tree   < escape        ; default
 
+# meet mode - ctrl+m to enter/exit
+default                              < ctrl - m      ; meet
+meet                                 < ctrl - m      ; default
+meet                                 < escape        ; default
+
 
 # switcher mode
 
-## switch modes
-switcher < a ; swap
-switcher < s ; layout
-switcher < t ; tree
+## switch modes (mnemonic keys)
+switcher < m ; swap      # m = Move
+switcher < l ; layout    # l = Layout
+switcher < s ; tree      # s = Size
+switcher < g ; meet      # g = Google Meet
 
 ## launch iterm
 switcher < return : ~/bin/ghostty-create-window; skhd -k 'escape'
@@ -48,6 +67,11 @@ switcher < shift - 3 : yabai -m window --space  3
 switcher < shift - 4 : yabai -m window --space  4
 switcher < shift - 5 : yabai -m window --space  5
 switcher < shift - 6 : yabai -m window --space  6
+
+## scatter windows across spaces (for spreading out tiled windows)
+switcher < d : for win in $(yabai -m query --windows --space | jq '.[].id'); do \
+    yabai -m window "$win" --space $((RANDOM % 6 + 1)); done; \
+    skhd -k 'escape'
 
 ## focus monitor
 switcher < x : yabai -m display --focus last
@@ -82,6 +106,11 @@ swap < y : yabai -m space --mirror y-axis
 ## mirror tree x-axis
 swap < x : yabai -m space --mirror x-axis
 
+## stack operations
+swap < s : yabai -m window --stack next
+swap < tab : yabai -m window --focus stack.next || yabai -m window --focus stack.first
+swap < shift - s : yabai -m window --toggle stack
+
 # layout mode
 ## change desktop layout
 layout < a : yabai -m space --layout bsp
@@ -113,6 +142,9 @@ tree < shift - l        :   yabai -m window --resize right:-20:0
 
 ## balance size of windows
 tree < e                :   yabai -m space --balance
+
+## pip-style window (top right corner)
+tree < p                :   yabai -m window --toggle float; yabai -m window --grid 5:5:3:0:2:2
 
 
 ### Not sure of the yabai version of these
@@ -148,3 +180,23 @@ shift + alt - right  : yabai -m window --grid 1:2:1:0:1:1
 
 # destroy desktop
 #cmd + alt - w : yabai -m space --destroy
+
+# meet mode - Google Meet controls
+## d: toggle mic (sends Cmd+D to Chrome/browser)
+meet < d : osascript -e 'tell application "System Events" to keystroke "d" using command down'
+
+## e: toggle camera (sends Cmd+E)
+meet < e : osascript -e 'tell application "System Events" to keystroke "e" using command down'
+
+## q: leave call (sends Cmd+Shift+B for "leave")
+meet < q : osascript -e 'tell application "System Events" to keystroke "b" using {command down, shift down}'
+
+# quick meet shortcuts (no mode required)
+## hyper + d: quick mic toggle
+cmd + shift + alt + ctrl - d : osascript -e 'tell application "System Events" to keystroke "d" using command down'
+
+# quick ghostty - cmd+shift+return to open new ghostty window
+cmd + shift - return : ~/bin/ghostty-create-window
+
+# toggle keybind cheatsheet popup
+ctrl - 0x2C : sketchybar --set mode popup.drawing=toggle

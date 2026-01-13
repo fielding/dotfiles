@@ -17,11 +17,12 @@ yabai -m config focus_follows_mouse          off
 yabai -m config window_topmost               off
 yabai -m config window_opacity               off
 yabai -m config window_shadow                on
-yabai -m config window_border                on
-yabai -m config window_border_width          4
-yabai -m config active_window_border_color   0xff6f5bab
-yabai -m config normal_window_border_color   0xff6f5bab
-yabai -m config insert_window_border_color   0xff7dfdee
+# Borders now handled by JankyBorders (see ~/etc/borders/bordersrc)
+yabai -m config window_border                off
+# yabai -m config window_border_width          4
+# yabai -m config active_window_border_color   0xff6f5bab
+# yabai -m config normal_window_border_color   0xff6f5bab
+# yabai -m config insert_window_border_color   0xff7dfdee
 yabai -m config active_window_opacity        1.0
 yabai -m config normal_window_opacity        0.90
 yabai -m config split_ratio                  0.50
@@ -37,5 +38,59 @@ yabai -m config bottom_padding               20
 yabai -m config left_padding                 20
 yabai -m config right_padding                20
 yabai -m config window_gap                   10
+
+# =====================================================
+# FLOAT RULES
+# =====================================================
+# System/utility windows
+yabai -m rule --add app="^System Preferences$" manage=off
+yabai -m rule --add app="^System Settings$" manage=off
+yabai -m rule --add app="^Calculator$" manage=off
+yabai -m rule --add app="^Karabiner" manage=off
+yabai -m rule --add app="^Archive Utility$" manage=off
+yabai -m rule --add app="^Activity Monitor$" manage=off
+yabai -m rule --add app="^Finder$" title="(Copy|Trash|Bin|Info)" manage=off
+
+# GIMP - float toolboxes/dialogs, tile main image windows
+yabai -m rule --add app="^GIMP" title="^Toolbox" manage=off
+yabai -m rule --add app="^GIMP" title="^Tool Options" manage=off
+yabai -m rule --add app="^GIMP" title="^Layers" manage=off
+yabai -m rule --add app="^GIMP" title="^Brushes" manage=off
+yabai -m rule --add app="^GIMP" title="^Patterns" manage=off
+yabai -m rule --add app="^GIMP" title="^Gradients" manage=off
+yabai -m rule --add app="^GIMP" title="^FG/BG" manage=off
+yabai -m rule --add app="^GIMP" title="^Colors" manage=off
+yabai -m rule --add app="^GIMP" title="^Navigation" manage=off
+yabai -m rule --add app="^GIMP" title="^Undo History" manage=off
+yabai -m rule --add app="^GIMP" title="^Fonts" manage=off
+yabai -m rule --add app="^GIMP" title="^Document History" manage=off
+yabai -m rule --add app="^GIMP" title="^Pointer" manage=off
+yabai -m rule --add app="^GIMP" title="^Export" manage=off
+yabai -m rule --add app="^GIMP" title="^Save" manage=off
+yabai -m rule --add app="^GIMP" title="^Open" manage=off
+yabai -m rule --add app="^GIMP" title="^Preferences" manage=off
+
+# Inkscape (similar X11/GTK app)
+yabai -m rule --add app="^Inkscape" title!="^Inkscape$" manage=off
+
+# Blender popups
+yabai -m rule --add app="^Blender" title="^Blender Preferences" manage=off
+yabai -m rule --add app="^Blender" title="^Blender File" manage=off
+
+# VLC popups
+yabai -m rule --add app="^VLC" title!="^VLC" manage=off
+
+# LibreOffice dialogs
+yabai -m rule --add app="^LibreOffice" title="(Options|Preferences|About|Export|Save|Open)" manage=off
+
+# Generic dialog/popup patterns (catches most cross-platform apps)
+yabai -m rule --add title="^Preferences$" manage=off
+yabai -m rule --add title="^Settings$" manage=off
+yabai -m rule --add title="^About " manage=off
+yabai -m rule --add title="^Open$" manage=off
+yabai -m rule --add title="^Save" manage=off
+yabai -m rule --add title="^Export" manage=off
+yabai -m rule --add title="^Import" manage=off
+yabai -m rule --add title="^Print" manage=off
 
 echo "yabai configuration loaded.."
