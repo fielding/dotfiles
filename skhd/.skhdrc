@@ -1,6 +1,6 @@
 # use # to comment
 
-# Mode definitions with JankyBorders color feedback + Sketchybar mode indicator
+# Mode definitions with JankyBorders color feedback + Sketchybar
 :: default : borders active_color=0xffff0074; sketchybar --trigger mode_change MODE=default
 :: switcher @ : borders active_color=0xff6bffb8; sketchybar --trigger mode_change MODE=switcher
 :: swap @ : borders active_color=0xff5ce1ff; sketchybar --trigger mode_change MODE=swap
