@@ -6,13 +6,13 @@
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Colors (must match sketchybarrc)
-COLOR_BG=0xff1a1a2e
-COLOR_ACCENT=0xffff0074       # default/pink
-COLOR_MINT=0xff6bffb8         # switcher
-COLOR_CYAN=0xff5ce1ff         # swap
-COLOR_ORANGE=0xffffb86c       # tree
-COLOR_PURPLE=0xffbd93f9       # layout
-COLOR_RED=0xffff5555          # meet
+COLOR_BG=0xff2d2a2e
+COLOR_ACCENT=0xffff0074       # hot pink - default
+COLOR_MINT=0xff6bffb8         # mint - switcher
+COLOR_CYAN=0xff5ce1ff         # electric blue - swap
+COLOR_ORANGE=0xffffb86c       # amber - tree
+COLOR_PURPLE=0xffbd93f9       # lavender - layout
+COLOR_RED=0xffff5555          # red - meet
 
 # Read mode from trigger or file fallback
 MODE="${MODE:-default}"

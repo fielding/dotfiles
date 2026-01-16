@@ -7,8 +7,8 @@
 CLICK="$1"
 MEETING_LINK_FILE="/tmp/sketchybar_meeting_link"
 
-# Colors
-COLOR_FG_DIM=0xff6272a4
+# Colors (Monokai base + vibrant accents)
+COLOR_FG_DIM=0xff727072
 COLOR_ORANGE=0xffffb86c
 COLOR_RED=0xffff5555
 COLOR_MINT=0xff6bffb8
@@ -24,33 +24,31 @@ if [ "$CLICK" = "--click" ]; then
   exit 0
 fi
 
-# Get next event within the next 12 hours
-NEXT_EVENT=$(icalBuddy -n -li 1 -nc -nrd -ea -ec "Birthdays,US Holidays" -ps "| : |" -po "datetime,title,notes,location" -df "%s" -tf "%s" eventsToday+1 2>/dev/null | head -1)
+# Get next event - simpler format
+EVENT_INFO=$(icalBuddy -n -li 1 -nc -nrd -npn -ea -ec "Birthdays,US Holidays" -iep "title,datetime,notes,location" -b "" eventsToday+1 2>/dev/null)
 
-if [ -z "$NEXT_EVENT" ] || [ "$NEXT_EVENT" = "" ]; then
+if [ -z "$EVENT_INFO" ]; then
   sketchybar --set $NAME label="No meetings" icon.color=$COLOR_FG_DIM
   rm -f "$MEETING_LINK_FILE"
   exit 0
 fi
 
-# Parse event - format is "datetime : title : notes : location"
-IFS='|' read -r DATETIME TITLE NOTES LOCATION <<< "$NEXT_EVENT"
-DATETIME=$(echo "$DATETIME" | xargs)
-TITLE=$(echo "$TITLE" | xargs)
-NOTES=$(echo "$NOTES" | xargs)
-LOCATION=$(echo "$LOCATION" | xargs)
+# Extract title (first line, before any "location:" or "notes:")
+TITLE=$(echo "$EVENT_INFO" | head -1 | sed 's/^[[:space:]]*//')
 
-# Extract meeting link from notes, location, or title
+# Extract time from the datetime line
+TIME_LINE=$(echo "$EVENT_INFO" | grep -E "^[[:space:]]*(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)" | head -1)
+if [ -z "$TIME_LINE" ]; then
+  TIME_LINE=$(echo "$EVENT_INFO" | grep -E "[0-9]+:[0-9]+" | head -1)
+fi
+
+# Extract meeting link from full output
 MEETING_LINK=""
-for field in "$NOTES" "$LOCATION" "$TITLE"; do
-  if [[ "$field" =~ (https://meet\.google\.com/[a-z-]+) ]]; then
-    MEETING_LINK="${BASH_REMATCH[1]}"
-    break
-  elif [[ "$field" =~ (https://[a-z]+\.zoom\.us/j/[0-9]+[^[:space:]]*) ]]; then
-    MEETING_LINK="${BASH_REMATCH[1]}"
-    break
-  fi
-done
+if [[ "$EVENT_INFO" =~ (https://meet\.google\.com/[a-z-]+) ]]; then
+  MEETING_LINK="${BASH_REMATCH[1]}"
+elif [[ "$EVENT_INFO" =~ (https://[a-z]+\.zoom\.us/j/[0-9]+) ]]; then
+  MEETING_LINK="${BASH_REMATCH[1]}"
+fi
 
 # Save meeting link for click handler
 if [ -n "$MEETING_LINK" ]; then
@@ -59,27 +57,38 @@ else
   rm -f "$MEETING_LINK_FILE"
 fi
 
-# Calculate time until meeting
+# Parse start time
 NOW=$(date +%s)
-# Try to parse the datetime
-EVENT_TIME=$(date -j -f "%s" "$DATETIME" +%s 2>/dev/null)
+if [[ "$TIME_LINE" =~ ([A-Za-z]+)[[:space:]]+([0-9]+).*at[[:space:]]+([0-9]+):([0-9]+)[[:space:]]*(AM|PM)? ]]; then
+  MONTH="${BASH_REMATCH[1]}"
+  DAY="${BASH_REMATCH[2]}"
+  HOUR="${BASH_REMATCH[3]}"
+  MIN="${BASH_REMATCH[4]}"
+  AMPM="${BASH_REMATCH[5]}"
 
-if [ -z "$EVENT_TIME" ]; then
-  # Fallback - try to get from icalBuddy with different format
-  EVENT_TIME=$(icalBuddy -n -li 1 -nc -nrd -ea -ps "|||" -po "datetime" -df "" -tf "%H:%M" eventsToday+1 2>/dev/null | head -1)
-  if [[ "$EVENT_TIME" =~ ([0-9]+):([0-9]+) ]]; then
-    HOUR="${BASH_REMATCH[1]}"
-    MIN="${BASH_REMATCH[2]}"
-    EVENT_TIME=$(date -j -v${HOUR}H -v${MIN}M -v0S +%s)
-  else
-    EVENT_TIME=$NOW
+  # Convert to 24h if needed
+  if [ "$AMPM" = "PM" ] && [ "$HOUR" -ne 12 ]; then
+    HOUR=$((HOUR + 12))
+  elif [ "$AMPM" = "AM" ] && [ "$HOUR" -eq 12 ]; then
+    HOUR=0
   fi
+
+  # Get event timestamp
+  YEAR=$(date +%Y)
+  EVENT_TIME=$(date -j -f "%b %d %Y %H:%M" "$MONTH $DAY $YEAR $HOUR:$MIN" +%s 2>/dev/null)
+else
+  # Fallback - assume it's happening now
+  EVENT_TIME=$NOW
 fi
 
 DIFF=$((EVENT_TIME - NOW))
 
 # Format countdown
-if [ $DIFF -lt 0 ]; then
+if [ $DIFF -lt -3600 ]; then
+  # Event ended more than an hour ago, skip
+  sketchybar --set $NAME label="No meetings" icon.color=$COLOR_FG_DIM
+  exit 0
+elif [ $DIFF -lt 0 ]; then
   # Meeting in progress
   COUNTDOWN="NOW"
   ICON_COLOR=$COLOR_RED
@@ -107,8 +116,8 @@ else
 fi
 
 # Truncate title
-if [ ${#TITLE} -gt 20 ]; then
-  TITLE="${TITLE:0:18}.."
+if [ ${#TITLE} -gt 25 ]; then
+  TITLE="${TITLE:0:23}.."
 fi
 
 # Update sketchybar

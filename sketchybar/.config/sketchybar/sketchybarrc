@@ -9,18 +9,18 @@ PLUGIN_DIR="$CONFIG_DIR/plugins"
 ITEM_DIR="$CONFIG_DIR/items"
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Color Palette (matches skhd modes)
+# Color Palette (Monokai Pro base + vibrant border accents)
 # ─────────────────────────────────────────────────────────────────────────────
-export COLOR_BG=0xff1a1a2e
-export COLOR_BG_LIGHT=0xff252542
-export COLOR_FG=0xfff8f8f2
-export COLOR_FG_DIM=0xff6272a4
-export COLOR_ACCENT=0xffff0074       # default/pink
-export COLOR_MINT=0xff6bffb8         # switcher
-export COLOR_CYAN=0xff5ce1ff         # swap
-export COLOR_ORANGE=0xffffb86c       # tree
-export COLOR_PURPLE=0xffbd93f9       # layout
-export COLOR_RED=0xffff5555          # meet
+export COLOR_BG=0xff2d2a2e           # monokai bg
+export COLOR_BG_LIGHT=0xff3a383a     # monokai-ish pill bg
+export COLOR_FG=0xfffcfcfa           # monokai fg
+export COLOR_FG_DIM=0xff727072       # monokai comment
+export COLOR_ACCENT=0xffff0074       # hot pink - default (replaces monokai red)
+export COLOR_MINT=0xff6bffb8         # mint - switcher (replaces monokai green)
+export COLOR_CYAN=0xff5ce1ff         # electric blue - swap (replaces monokai cyan)
+export COLOR_ORANGE=0xffffb86c       # amber - tree (replaces monokai yellow)
+export COLOR_PURPLE=0xffbd93f9       # lavender - layout (replaces monokai magenta)
+export COLOR_RED=0xffff5555          # red - meet
 export COLOR_TRANSPARENT=0x00000000
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -67,6 +67,7 @@ sketchybar --default "${defaults[@]}"
 # Events
 # ─────────────────────────────────────────────────────────────────────────────
 sketchybar --add event mode_change
+sketchybar --add event volume_change
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Items
@@ -76,9 +77,14 @@ sketchybar --add event mode_change
 source "$ITEM_DIR/spaces.sh"
 source "$ITEM_DIR/front_app.sh"
 
-# Right side (order: rightmost first)
-source "$ITEM_DIR/battery.sh"
+# Right side (order: rightmost first, like macOS menubar)
 source "$ITEM_DIR/clock.sh"
+source "$ITEM_DIR/battery.sh"
+source "$ITEM_DIR/wifi.sh"
+source "$ITEM_DIR/bluetooth.sh"
+source "$ITEM_DIR/volume.sh"
+source "$ITEM_DIR/mic.sh"
+source "$ITEM_DIR/weather.sh"
 source "$ITEM_DIR/calendar.sh"
 source "$ITEM_DIR/mode.sh"
 
