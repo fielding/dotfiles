@@ -1,0 +1,14 @@
+model = "gpt-5-codex"
+approval_policy = "never"
+sandbox_mode = "danger-full-access"
+model_reasoning_effort = "high"
+model_reasoning_summary_format = "experimental"
+
+[sandbox_workspace_write]
+network_access = true
+
+[features]
+web_search_request = true
+
+[shell_environment_policy]
+inherit = "core"
