@@ -50,13 +50,13 @@ case "$MODE" in
     CHIPS=("^F|switch|$COLOR_MINT" "^M|meet|$COLOR_RED" "^hjkl|focus|$COLOR_ACCENT" "⌘⇧↩|term|$COLOR_ACCENT")
     ;;
   switcher)
-    CHIPS=("a|move|$COLOR_CYAN" "s|layout|$COLOR_PURPLE" "t|size|$COLOR_ORANGE" "↩|term|$COLOR_MINT" "1-6|space|$COLOR_MINT" "⇧1-6|send|$COLOR_MINT" "zxc|mon|$COLOR_MINT")
+    CHIPS=("m|move|$COLOR_CYAN" "l|layout|$COLOR_PURPLE" "s|size|$COLOR_ORANGE" "g|meet|$COLOR_RED" "↩|term|$COLOR_MINT" "d|scatter|$COLOR_MINT" "⇧1-6|send|$COLOR_MINT" "zxc|mon|$COLOR_MINT")
     ;;
   swap)
     CHIPS=("hjkl|swap|$COLOR_CYAN" "⇧hjkl|warp|$COLOR_CYAN" "y|flip-y|$COLOR_CYAN" "x|flip-x|$COLOR_CYAN" "s|stack|$COLOR_CYAN" "⇥|next|$COLOR_CYAN")
     ;;
   tree)
-    CHIPS=("f|full|$COLOR_ORANGE" "⇧F|native|$COLOR_ORANGE" "d|parent|$COLOR_ORANGE" "w|float|$COLOR_ORANGE" "r|rotate|$COLOR_ORANGE" "hjkl|grow|$COLOR_ORANGE" "e|balance|$COLOR_ORANGE" "p|pip|$COLOR_ORANGE")
+    CHIPS=("f|full|$COLOR_ORANGE" "⇧F|native|$COLOR_ORANGE" "d|parent|$COLOR_ORANGE" "w|float|$COLOR_ORANGE" "r|rotate|$COLOR_ORANGE" "s|split|$COLOR_ORANGE" "hjkl|size|$COLOR_ORANGE" "e|bal|$COLOR_ORANGE")
     ;;
   layout)
     CHIPS=("a|bsp|$COLOR_PURPLE" "s|monocle|$COLOR_PURPLE" "d|float|$COLOR_PURPLE" "o|padding|$COLOR_PURPLE")
