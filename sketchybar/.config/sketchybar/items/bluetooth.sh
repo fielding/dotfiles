@@ -6,7 +6,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 
 sketchybar --add item bluetooth right \
-           --set bluetooth icon.font="Hack Nerd Font:Regular:14.0" \
+           --set bluetooth icon.font="Hack Nerd Font:Bold:16.0" \
                            icon.color=$COLOR_FG_DIM \
                            label.drawing=off \
                            background.color=$COLOR_BG_LIGHT \

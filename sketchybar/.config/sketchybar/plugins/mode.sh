@@ -32,9 +32,9 @@ esac
 
 # Build batched command for all updates
 ARGS=(
-  --set mode icon.color=$COLOR
+  --set mode background.color=$COLOR
              label="$LABEL"
-             label.color=$COLOR
+             label.color=$COLOR_BG
              popup.background.border_color=$COLOR
              popup.drawing=$([ "$MODE" = "default" ] && echo "off" || echo "on")
 )

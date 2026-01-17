@@ -8,12 +8,14 @@ for i in "${!SPACE_ICONS[@]}"; do
   sketchybar --add space space.$sid left \
              --set space.$sid space=$sid \
                               icon="${SPACE_ICONS[i]}" \
-                              icon.font="SF Mono:Bold:11.0" \
+                              icon.font="Helvetica Neue:Condensed Black:16.0" \
                               icon.color=$COLOR_FG_DIM \
-                              icon.highlight_color=$COLOR_ACCENT \
+                              icon.highlight_color=$COLOR_BG \
                               icon.padding_left=8 \
                               icon.padding_right=8 \
-                              background.color=$COLOR_TRANSPARENT \
+                              background.color=$COLOR_ACCENT \
+                              background.corner_radius=0 \
+                              background.height=32 \
                               background.drawing=off \
                               label.drawing=off \
                               script="$PLUGIN_DIR/space.sh" \

@@ -1,9 +1,9 @@
 #!/bin/bash
 
 sketchybar --add item battery right \
-           --set battery icon.font="Hack Nerd Font:Regular:14.0" \
+           --set battery icon.font="Hack Nerd Font:Bold:16.0" \
                          icon.color=$COLOR_FG_DIM \
-                         label.font="SF Mono:Medium:12.0" \
+                         label.font="Helvetica Neue:Condensed Black:14.0" \
                          label.color=$COLOR_FG \
                          background.color=$COLOR_BG_LIGHT \
                          update_freq=120 \

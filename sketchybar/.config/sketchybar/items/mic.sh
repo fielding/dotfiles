@@ -6,7 +6,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 
 sketchybar --add item mic right \
-           --set mic icon.font="Hack Nerd Font:Regular:14.0" \
+           --set mic icon.font="Hack Nerd Font:Bold:16.0" \
                      icon.color=$COLOR_FG_DIM \
                      label.drawing=off \
                      background.color=$COLOR_BG_LIGHT \

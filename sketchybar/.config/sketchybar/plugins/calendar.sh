@@ -28,7 +28,7 @@ fi
 EVENT_INFO=$(icalBuddy -n -li 1 -nc -nrd -npn -ea -ec "Birthdays,US Holidays" -iep "title,datetime,notes,location" -b "" eventsToday+1 2>/dev/null)
 
 if [ -z "$EVENT_INFO" ]; then
-  sketchybar --set $NAME label="No meetings" icon.color=$COLOR_FG_DIM
+  sketchybar --set $NAME icon="—" label="No meetings" icon.color=$COLOR_FG_DIM label.color=$COLOR_FG_DIM
   rm -f "$MEETING_LINK_FILE"
   exit 0
 fi
@@ -83,10 +83,13 @@ fi
 
 DIFF=$((EVENT_TIME - NOW))
 
+# Colors for label
+COLOR_FG=0xfffcfcfa
+
 # Format countdown
 if [ $DIFF -lt -3600 ]; then
   # Event ended more than an hour ago, skip
-  sketchybar --set $NAME label="No meetings" icon.color=$COLOR_FG_DIM
+  sketchybar --set $NAME icon="—" label="No meetings" icon.color=$COLOR_FG_DIM label.color=$COLOR_FG_DIM
   exit 0
 elif [ $DIFF -lt 0 ]; then
   # Meeting in progress
@@ -112,13 +115,13 @@ else
   HOURS=$((DIFF / 3600))
   MINS=$(((DIFF % 3600) / 60))
   COUNTDOWN="${HOURS}h${MINS}m"
-  ICON_COLOR=$COLOR_FG_DIM
+  ICON_COLOR=$COLOR_MINT
 fi
 
 # Truncate title
-if [ ${#TITLE} -gt 25 ]; then
-  TITLE="${TITLE:0:23}.."
+if [ ${#TITLE} -gt 20 ]; then
+  TITLE="${TITLE:0:18}.."
 fi
 
-# Update sketchybar
-sketchybar --set $NAME label="${COUNTDOWN} ${TITLE}" icon.color=$ICON_COLOR
+# Update sketchybar - icon is countdown (emphasized), label is meeting title
+sketchybar --set $NAME icon="$COUNTDOWN" label="$TITLE" icon.color=$COLOR_FG label.color=$COLOR_FG_DIM

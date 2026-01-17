@@ -6,7 +6,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 
 sketchybar --add item volume right \
-           --set volume icon.font="Hack Nerd Font:Regular:14.0" \
+           --set volume icon.font="Hack Nerd Font:Bold:16.0" \
                         icon.color=$COLOR_FG_DIM \
                         label.font="SF Mono:Medium:11.0" \
                         label.color=$COLOR_FG \
