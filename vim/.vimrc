@@ -32,7 +32,7 @@ Plug 'terryma/vim-multiple-cursors'
 Plug 'fs111/pydoc.vim'
 Plug 'christoomey/vim-tmux-navigator'
 " Plug 'fielding/vim-chunkwm-navigator'
-Plug '~/src/hack/vim-chunkwm-navigator'
+" Plug '~/src/hack/vim-chunkwm-navigator'  " local path doesn't exist
 Plug 'sjl/vitality.vim'
 Plug 'mrtazz/simplenote.vim'
 Plug 'junegunn/goyo.vim'
@@ -56,7 +56,7 @@ Plug 'ternjs/tern_for_vim', { 'for': ['javascript', 'javascript.jsx'] }
 Plug 'carlitux/deoplete-ternjs', { 'for': ['javascript', 'javascript.jsx'] }
 Plug 'othree/jspc.vim', { 'for': ['javascript', 'javascript.jsx'] }
 Plug 'ervandew/supertab'
-Plug '/usr/local/opt/fzf' | Plug 'junegunn/fzf.vim'
+Plug '/opt/homebrew/opt/fzf' | Plug 'junegunn/fzf.vim'
 Plug 'ryanoasis/vim-devicons'
 Plug 'mattn/gist-vim'
 Plug 'vimlab/mdn.vim'
@@ -81,7 +81,7 @@ Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
 Plug 'shime/vim-livedown', { 'for': 'markdown', 'do': ':!npm install -g livedown' }
 Plug 'https://git.imbue.studio/fielding/vim-scheme.git'
 Plug 'othree/yajs.vim', { 'for': ['javascript', 'javascript.jsx'] }
-Plug 'othree/jsdoc-syntax.vim', { 'for' : ['javascript', 'javasript.jsx'] }
+Plug 'othree/jsdoc-syntax.vim', { 'for' : ['javascript', 'javascript.jsx'] }
 Plug 'MaxMEllon/vim-jsx-pretty'
 
 " Plug 'othree/es.next.syntax.vim', { 'for': ['javascript', 'javascript.jsx'] }
@@ -204,8 +204,8 @@ let g:indent_guides_guide_size = 1
 " Set bash as the default shell type/syntax
 let g:is_bash = 1
 
-let g:python_host_prog = '/usr/local/bin/python'
-let g:python3_host_prog = '/usr/local/bin/python3'
+" Python 2 is deprecated in neovim, only set python3
+let g:python3_host_prog = '/opt/homebrew/bin/python3'
 
 
 au FocusLost * :silent! wall
@@ -421,8 +421,8 @@ let g:lightline#bufferline#number_map = {
 
 " options {{{1
 " -----------------------------------------------------------------------------
-let g:EditorConfig_exec_path = '/usr/local/bin/editorconfig'
-let g:EditorConfig_core_mode = 'external_command'
+" Use vim's internal EditorConfig support (no external binary needed)
+let g:EditorConfig_core_mode = 'vim_core'
 
 let g:jsx_ext_required = 1
 
