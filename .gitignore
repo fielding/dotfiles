@@ -20,3 +20,10 @@ tmux/.tmux/plugins/*
 # Compiled binaries (keep scripts only)
 bin/bin/box
 .claude/
+
+# Symlinks to local builds
+bin/bin/do
+bin/bin/hold
+bin/bin/mon
+bin/bin/tix
+bin/bin/vent
