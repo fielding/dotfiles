@@ -1,0 +1,70 @@
+[alias]
+  # Show the diff between the latest commit and the current state
+  d = !"git diff-index --quiet HEAD -- || clear; git --no-pager diff --patch-with-stat"
+  # `git di $number` shows the diff between the state `$number` revisions ago and the current state
+  di = !"d() { git diff --patch-with-stat HEAD~$1; }; git diff-index --quiet HEAD -- || clear; d"
+  # remove branches that have already been merged
+  dm = "!git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
+  l = log --pretty=oneline --graph --abbrev-commit --decorate
+  ll = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat
+  s = status -s
+  c = commit
+  co = checkout
+	quick-stats = ! /usr/local/bin/git-quick-stats
+[apply]
+  whitespace = fix
+[branch]
+  autosetupmerge = true
+[color]
+  ui = auto
+[color "branch"]
+  current = yellow reverse
+  local = yellow
+  remote = green
+[color "diff"]
+  meta = yellow
+  frag = blue
+  old = red
+  new = green
+[color "status"]
+  added = yellow
+  changed = green
+  untracked = cyan
+[core]
+  excludesfile = ~/.gitignore.global
+  whitespace = space-before-tab,-indent-with-non-tab,trailing-space
+[credential]
+  helper = osxkeychain
+[github]
+	user = fielding
+[push]
+	default = simple
+[user]
+	name = Fielding Johnston
+  email = fielding@justfielding.com
+	signingkey = 4F3FB9DB
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	required = true
+[init]
+	templatedir = ~/.git-templates
+[pager]
+	diff = diff-so-fancy | less --tabs=4 -RFX
+  show = diff-so-fancy | less --tabs=4 -RFX
+[commit]
+  gpgsign = false
+	template = /Users/fielding/.git-commit-template
+[secrets]
+	providers = git secrets --aws-provider
+	patterns = [A-Z0-9]{20}
+	patterns = (\"|')?(AWS|aws|Aws)?_?(SECRET|secret|Secret)?_?(ACCESS|access|Access)?_?(KEY|key|Key)(\"|')?\\s*(:|=>|=)\\s*(\"|')?[A-Za-z0-9/\\+=]{40}(\"|')?
+	patterns = (\"|')?(AWS|aws|Aws)?_?(ACCOUNT|account|Account)_?(ID|id|Id)?(\"|')?\\s*(:|=>|=)\\s*(\"|')?[0-9]{4}\\-?[0-9]{4}\\-?[0-9]{4}(\"|')?
+	allowed = AKIAIOSFODNN7EXAMPLE
+	allowed = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+[url "git@github.com:"]
+	insteadOf = https://github.com/
+
+# This next lines include Netlify's Git Credential Helper configuration in your Git configuration.
+[include]
+  path = /Users/fielding/.netlify/helper/git-config
