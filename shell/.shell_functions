@@ -159,9 +159,17 @@ fpr() {
 #   fi
 # }
 
-# load secrets from 1password
+# Sync secrets from 1Password to macOS Keychain (run when keys rotate)
 load_secrets() {
-  eval "$(op inject -i "$HOME/etc/shell/.secrets.env.tpl")"
+  echo "Syncing secrets from 1Password to Keychain..."
+  for key in ANTHROPIC_API_KEY OPENAI_API_KEY; do
+    security delete-generic-password -s "$key" 2>/dev/null
+  done
+  security add-generic-password -a "$USER" -s "ANTHROPIC_API_KEY" -w "$(op read 'op://Employee/anthropic api/credential')"
+  security add-generic-password -a "$USER" -s "OPENAI_API_KEY" -w "$(op read 'op://Employee/openai api/credential')"
+  export ANTHROPIC_API_KEY=$(security find-generic-password -s "ANTHROPIC_API_KEY" -w)
+  export OPENAI_API_KEY=$(security find-generic-password -s "OPENAI_API_KEY" -w)
+  echo "Done. Keys synced to Keychain and loaded."
 }
 
 # vim: ft=sh

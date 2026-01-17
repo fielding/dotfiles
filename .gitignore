@@ -19,3 +19,4 @@ tmux/.tmux/plugins/*
 
 # Compiled binaries (keep scripts only)
 bin/bin/box
+.claude/

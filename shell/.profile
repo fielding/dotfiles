@@ -139,3 +139,7 @@ export PATH
 . "$HOME/.aftman/env"
 
 . "$HOME/.langflow/uv/env"
+
+# Load secrets from macOS Keychain (no auth after login)
+export ANTHROPIC_API_KEY=$(security find-generic-password -s "ANTHROPIC_API_KEY" -w 2>/dev/null)
+export OPENAI_API_KEY=$(security find-generic-password -s "OPENAI_API_KEY" -w 2>/dev/null)
