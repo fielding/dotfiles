@@ -9,19 +9,11 @@ PLUGIN_DIR="$CONFIG_DIR/plugins"
 ITEM_DIR="$CONFIG_DIR/items"
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Color Palette (Monokai Pro base + vibrant border accents)
+# Color Palette - sourced from external theme file
+# Use theme-switch to change themes: ~/src/hack/colors/theme-switch <theme>
 # ─────────────────────────────────────────────────────────────────────────────
-export COLOR_BG=0xff2d2a2e           # monokai bg
-export COLOR_BG_LIGHT=0xff3a383a     # monokai-ish pill bg
-export COLOR_FG=0xfffcfcfa           # monokai fg
-export COLOR_FG_DIM=0xff727072       # monokai comment
-export COLOR_ACCENT=0xffff0074       # hot pink - default (replaces monokai red)
-export COLOR_MINT=0xff6bffb8         # mint - switcher (replaces monokai green)
-export COLOR_CYAN=0xff5ce1ff         # electric blue - swap (replaces monokai cyan)
-export COLOR_ORANGE=0xffffb86c       # amber - tree (replaces monokai yellow)
-export COLOR_PURPLE=0xffbd93f9       # lavender - layout (replaces monokai magenta)
-export COLOR_RED=0xffff5555          # red - meet
-export COLOR_TRANSPARENT=0x00000000
+source "$CONFIG_DIR/colors.sh"
+sketchybar --load-font "$HOME/Library/Fonts/sketchybar-app-font.ttf"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Bar Appearance
@@ -69,6 +61,7 @@ sketchybar --default "${defaults[@]}"
 # ─────────────────────────────────────────────────────────────────────────────
 sketchybar --add event mode_change
 sketchybar --add event volume_change
+sketchybar --add event keybind_flash
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Items
@@ -88,12 +81,14 @@ source "$ITEM_DIR/wifi.sh"
 source "$ITEM_DIR/bluetooth.sh"
 source "$ITEM_DIR/weather.sh"
 source "$ITEM_DIR/calendar.sh"
+source "$ITEM_DIR/thinktax.sh"
 source "$ITEM_DIR/mode.sh"
+source "$ITEM_DIR/flash.sh"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Tray Bracket - Unified background for right side items
 # ─────────────────────────────────────────────────────────────────────────────
-sketchybar --add bracket tray mode calendar weather bluetooth wifi mic volume battery clock \
+sketchybar --add bracket tray mode thinktax calendar weather bluetooth wifi mic volume battery clock \
            --set tray background.color=$COLOR_BG_LIGHT \
                       background.corner_radius=0 \
                       background.height=32

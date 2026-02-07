@@ -1,8 +1,11 @@
 #!/bin/bash
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Mode Indicator - Shows current skhd mode with color feedback
-# Clicking opens the keybind cheatsheet popup (horizontal)
+# Mode Indicator - Shows current skhd mode with instant show/hide keybinds
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Main mode indicator (anchor - created first, chips appear to LEFT)
 # ─────────────────────────────────────────────────────────────────────────────
 
 sketchybar --add item mode right \
@@ -13,48 +16,44 @@ sketchybar --add item mode right \
                       label.color=$COLOR_BG \
                       label.padding_left=10 \
                       label.padding_right=10 \
+                      width=80 \
                       background.color=$COLOR_ACCENT \
                       background.corner_radius=0 \
                       background.height=32 \
-                      click_script="sketchybar --set mode popup.drawing=toggle" \
+                      click_script="$PLUGIN_DIR/mode.sh toggle" \
                       script="$PLUGIN_DIR/mode.sh" \
            --subscribe mode mode_change
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Mode Popup - Horizontal keybind chips
+# Keybind chips - start hidden
 # ─────────────────────────────────────────────────────────────────────────────
 
-sketchybar --set mode popup.background.color=$COLOR_BG \
-                      popup.background.corner_radius=0 \
-                      popup.background.border_width=3 \
-                      popup.background.border_color=$COLOR_ACCENT \
-                      popup.horizontal=on \
-                      popup.align=right \
-                      popup.height=30
-
-# Dynamic keybind chips (updated by mode.sh plugin)
 for i in {1..8}; do
-  sketchybar --add item mode.key$i popup.mode \
-             --set mode.key$i icon.font="SF Mono:Heavy:11.0" \
+  sketchybar --add item mode.key$i right \
+             --set mode.key$i icon.font="Helvetica Neue:Condensed Black:22.0" \
                               icon.color=$COLOR_BG \
-                              icon.padding_left=8 \
-                              icon.padding_right=4 \
-                              label.font="SF Mono:Bold:10.0" \
-                              label.color=$COLOR_FG \
-                              label.padding_right=8 \
+                              icon.padding_left=10 \
+                              icon.padding_right=0 \
+                              label.font="Helvetica Neue:Condensed Black:12.0" \
+                              label.color=$COLOR_BG \
+                              label.padding_left=6 \
+                              label.padding_right=10 \
                               background.color=$COLOR_CYAN \
                               background.corner_radius=0 \
-                              background.height=22 \
-                              background.drawing=on \
-                              drawing=off
+                              background.height=32 \
+                              drawing=off \
+                              width=0
 done
 
-# Escape hint at the end
-sketchybar --add item mode.esc popup.mode \
+# Escape hint (leftmost when expanded)
+sketchybar --add item mode.esc right \
            --set mode.esc icon="ESC" \
-                          icon.font="SF Mono:Heavy:10.0" \
-                          icon.color=$COLOR_FG_DIM \
+                          icon.font="Helvetica Neue:Condensed Black:16.0" \
+                          icon.color=$COLOR_BG \
                           icon.padding_left=10 \
                           icon.padding_right=10 \
                           label.drawing=off \
-                          background.drawing=off
+                          background.color=$COLOR_FG_DIM \
+                          background.height=32 \
+                          drawing=off \
+                          width=0
