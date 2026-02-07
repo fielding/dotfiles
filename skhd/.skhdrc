@@ -52,31 +52,37 @@ switcher < g ; meet      # g = Google Meet
 switcher < return : ~/bin/ghostty-create-window; skhd -k 'escape'
 
 ## move window to desktop and follow
-switcher < cmd + shift - 1 : yabai -m window --space  1; yabai -m space --focus 1
-switcher < cmd + shift - 2 : yabai -m window --space  2; yabai -m space --focus 2
-switcher < cmd + shift - 3 : yabai -m window --space  3; yabai -m space --focus 3
-switcher < cmd + shift - 4 : yabai -m window --space  4; yabai -m space --focus 4
-switcher < cmd + shift - 5 : yabai -m window --space  5; yabai -m space --focus 5
-switcher < cmd + shift - 6 : yabai -m window --space  6; yabai -m space --focus 6
+switcher < cmd + shift - 1 : yabai -m window --space 1; yabai -m space --focus 1
+switcher < cmd + shift - 2 : yabai -m window --space 2; yabai -m space --focus 2
+switcher < cmd + shift - 3 : yabai -m window --space 3; yabai -m space --focus 3
+switcher < cmd + shift - 4 : yabai -m window --space 4; yabai -m space --focus 4
+switcher < cmd + shift - 5 : yabai -m window --space 5; yabai -m space --focus 5
+switcher < cmd + shift - 6 : yabai -m window --space 6; yabai -m space --focus 6
+switcher < cmd + shift - 7 : yabai -m window --space 7; yabai -m space --focus 7
+switcher < cmd + shift - 8 : yabai -m window --space 8; yabai -m space --focus 8
+switcher < cmd + shift - 9 : yabai -m window --space 9; yabai -m space --focus 9
 
 
 ## move window to desktop
-switcher < shift - 1 : yabai -m window --space  1
-switcher < shift - 2 : yabai -m window --space  2
-switcher < shift - 3 : yabai -m window --space  3
-switcher < shift - 4 : yabai -m window --space  4
-switcher < shift - 5 : yabai -m window --space  5
-switcher < shift - 6 : yabai -m window --space  6
+switcher < shift - 1 : yabai -m window --space 1; sketchybar --trigger keybind_flash ACTION="→ 1"
+switcher < shift - 2 : yabai -m window --space 2; sketchybar --trigger keybind_flash ACTION="→ 2"
+switcher < shift - 3 : yabai -m window --space 3; sketchybar --trigger keybind_flash ACTION="→ 3"
+switcher < shift - 4 : yabai -m window --space 4; sketchybar --trigger keybind_flash ACTION="→ 4"
+switcher < shift - 5 : yabai -m window --space 5; sketchybar --trigger keybind_flash ACTION="→ 5"
+switcher < shift - 6 : yabai -m window --space 6; sketchybar --trigger keybind_flash ACTION="→ 6"
+switcher < shift - 7 : yabai -m window --space 7; sketchybar --trigger keybind_flash ACTION="→ 7"
+switcher < shift - 8 : yabai -m window --space 8; sketchybar --trigger keybind_flash ACTION="→ 8"
+switcher < shift - 9 : yabai -m window --space 9; sketchybar --trigger keybind_flash ACTION="→ 9"
 
 ## scatter windows across spaces (for spreading out tiled windows)
 switcher < d : for win in $(yabai -m query --windows --space | jq '.[].id'); do \
-    yabai -m window "$win" --space $((RANDOM % 6 + 1)); done; \
-    skhd -k 'escape'
+    yabai -m window "$win" --space $((RANDOM % 9 + 1)); done; \
+    sketchybar --trigger keybind_flash ACTION="scatter"; skhd -k 'escape'
 
 ## focus monitor
-switcher < x : yabai -m display --focus last
-switcher < z : yabai -m display --focus prev
-switcher < c : yabai -m display --focus next
+switcher < x : yabai -m display --focus last; sketchybar --trigger keybind_flash ACTION="mon last"
+switcher < z : yabai -m display --focus prev; sketchybar --trigger keybind_flash ACTION="mon prev"
+switcher < c : yabai -m display --focus next; sketchybar --trigger keybind_flash ACTION="mon next"
 switcher < 1 : yabai -m display --focus 1
 switcher < 2 : yabai -m display --focus 2
 

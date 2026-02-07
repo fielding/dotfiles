@@ -33,7 +33,11 @@ yabai -m config mouse_action2                resize
 
 # general space settings
 yabai -m config layout                       bsp
-yabai -m config top_padding                  20
+
+# Reserve space for sketchybar (height=40 + y_offset=4 + margin=6 ≈ 50px)
+yabai -m config external_bar                 all:50:0
+
+yabai -m config top_padding                  4
 yabai -m config bottom_padding               20
 yabai -m config left_padding                 20
 yabai -m config right_padding                20
