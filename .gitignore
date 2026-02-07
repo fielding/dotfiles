@@ -19,7 +19,15 @@ tmux/.tmux/plugins/*
 
 # Compiled binaries (keep scripts only)
 bin/bin/box
-.claude/
+
+# Repo-local Claude Code settings (not stow-managed)
+/.claude/
+
+# Local issue tracker
+.tix/
+
+# Auto-generated sketchybar helpers (duplicate of icon_map.sh)
+sketchybar/.config/sketchybar/helpers/
 
 # Symlinks to local builds
 bin/bin/do
