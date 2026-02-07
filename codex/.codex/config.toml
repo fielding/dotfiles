@@ -1,8 +1,9 @@
-model = "gpt-5-codex"
+model = "gpt-5.2-codex"
 approval_policy = "never"
 sandbox_mode = "danger-full-access"
 model_reasoning_effort = "high"
 model_reasoning_summary_format = "experimental"
+personality = "pragmatic"
 
 [sandbox_workspace_write]
 network_access = true
@@ -12,3 +13,7 @@ web_search_request = true
 
 [shell_environment_policy]
 inherit = "core"
+
+[notice.model_migrations]
+"gpt-5.2" = "gpt-5.2-codex"
+"gpt-5.1" = "gpt-5.2-codex"

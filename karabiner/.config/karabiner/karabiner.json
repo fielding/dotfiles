@@ -1012,7 +1012,7 @@
                         "key_code": "escape"
                     },
                     "to": {
-                        "key_code": "vk_none"
+                        "key_code": "grave_accent_and_tilde"
                     }
                 },
                 {
