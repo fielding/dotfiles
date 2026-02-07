@@ -1,26 +1,29 @@
-# Fielding Johnston
+# Task Tracking with tix
 
-## Environment
+Use `tix` for issue tracking in any repo. Stores live in `.tix/` directories.
+Check `tix ready` before starting work to see what's unblocked.
 
-- macOS on Apple Silicon
-- Shell: zsh (with shared .profile, .shell_aliases, .shell_functions)
-- Terminal: Ghostty
-- Multiplexer: tmux (prefix: C-Space)
-- Window manager: yabai (BSP tiling) + skhd (modal keybindings) + JankyBorders
-- Status bar: SketchyBar
-- Editor: vim
-- Theme: Human++ (custom Base24 palette applied across all tools)
+## Quick Reference
 
-## Dotfiles
+```
+tix init [--prefix name]                    # create .tix/ in current dir
+tix add "title" [-p 1-5] [-a who] [-t tag]  # create issue (1=highest pri)
+tix list [--status open] [--assignee x]      # list issues
+tix ready [--assignee x]                     # unblocked issues only
+tix show <id>                                # full details + comments
+tix status <id> open|in_progress|closed      # change status
+tix edit <id> [--title/--body/--priority/--assignee/--add-tag/--rm-tag]
+tix comment <id> -m "text" [--author x]      # add comment
+tix dep add <id> blocks <target>             # id blocks target
+tix search "query"                           # full-text search
+```
 
-- Repo lives at ~/etc, managed with GNU Stow
-- Each top-level directory is a stow package (e.g. `stow git` symlinks `git/.gitconfig` to `~/.gitconfig`)
-- This file is stowed from `claude/.claude/CLAUDE.md`
+All list commands support `--json`. Use `-q` to get just the ID back.
 
-## Preferences
+## Workflow
 
-- Pragmatic and minimal — no over-engineering, no unnecessary abstractions
-- Shell scripts in bash for portability, zsh for interactive config
-- Use macOS Keychain for secrets, never .env files in repos
-- Claude Max plan by default; API key loaded on-demand via `claude-api` alias
-- Prefer direct solutions over frameworks when the problem is simple
+- Set issues to `in_progress` when starting, `closed` when done
+- Use `dep add` to model blocking relationships between tasks
+- Use comments to log decisions or progress
+- Use tags for categorization (`bug`, `enhancement`, etc.)
+- JSONL is the source of truth and is git-friendly — commit `.tix/issues.jsonl`
