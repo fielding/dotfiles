@@ -18,22 +18,34 @@
 [color]
   ui = auto
 [color "branch"]
-  current = yellow reverse
-  local = yellow
-  remote = green
+  current = "#bbff00" bold
+  local = "#f8f6f2"
+  remote = "#04b372"
+  upstream = "#1ad0d6"
 [color "diff"]
-  meta = yellow
-  frag = blue
-  old = red
-  new = green
+  meta = "#9871fe"
+  frag = "#1ad0d6"
+  context = "#828079"
+  old = "#e7349c"
+  new = "#04b372"
+  oldMoved = "#d68c6f"
+  newMoved = "#91cbcd"
+  whitespace = "#e7349c" reverse
 [color "status"]
-  added = yellow
-  changed = green
-  untracked = cyan
+  added = "#04b372"
+  changed = "#f2a633"
+  untracked = "#5a5d62"
+  deleted = "#e7349c"
+  branch = "#bbff00" bold
+[color "decorate"]
+  HEAD = "#e7349c" bold
+  branch = "#bbff00" bold
+  remoteBranch = "#04b372"
+  tag = "#f2a633"
 [core]
   excludesfile = ~/.gitignore.global
   whitespace = space-before-tab,-indent-with-non-tab,trailing-space
-	pager = 
+  pager = delta
 [credential]
   helper = osxkeychain
 [github]
@@ -82,3 +94,26 @@ trustExitCode = false
 cmd = '/Applications/Unity/Unity.app/Contents/Tools/UnityYAMLMerge' merge -p "$BASE" "$REMOTE" "$LOCAL" "$MERGED"
 [gpg]
 	format = ssh
+[interactive]
+  diffFilter = delta --color-only
+[delta]
+  navigate = true
+  dark = true
+  syntax-theme = Human++
+  line-numbers = true
+  side-by-side = false
+  file-style = bold "#f8f6f2"
+  file-decoration-style = none
+  hunk-header-style = file line-number
+  hunk-header-decoration-style = "#3a3d42" box
+  line-numbers-left-style = "#5a5d62"
+  line-numbers-right-style = "#5a5d62"
+  line-numbers-minus-style = "#e7349c"
+  line-numbers-plus-style = "#04b372"
+  line-numbers-zero-style = "#5a5d62"
+  minus-style = syntax "#e7349c20"
+  minus-emph-style = syntax "#e7349c40"
+  plus-style = syntax "#04b37220"
+  plus-emph-style = syntax "#04b37240"
+  whitespace-error-style = "#e7349c" reverse
+  blame-palette = "#1a1c22" "#282b31" "#3a3d42"

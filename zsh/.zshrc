@@ -156,3 +156,10 @@ esac
 export NVM_DIR="$HOME/.config/nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+# Human++ color scheme
+[ -f "$HOME/src/hack/human-plus-plus/dist/shell-init.sh" ] && source "$HOME/src/hack/human-plus-plus/dist/shell-init.sh"
+
+# added by Speedscale
+export SPEEDSCALE_HOME=/Users/fielding/.speedscale
+export PATH=$PATH:$SPEEDSCALE_HOME
