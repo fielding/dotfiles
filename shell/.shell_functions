@@ -172,4 +172,10 @@ load_secrets() {
   echo "Done. Keys synced to Keychain and loaded."
 }
 
+# Load Anthropic API key from Keychain into current shell (on-demand)
+load-anthropic-key() {
+  export ANTHROPIC_API_KEY=$(security find-generic-password -s "ANTHROPIC_API_KEY" -w 2>/dev/null)
+  echo "ANTHROPIC_API_KEY loaded into shell."
+}
+
 # vim: ft=sh

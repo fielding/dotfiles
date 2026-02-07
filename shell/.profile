@@ -140,6 +140,5 @@ export PATH
 
 . "$HOME/.langflow/uv/env"
 
-# Load secrets from macOS Keychain (no auth after login)
-export ANTHROPIC_API_KEY=$(security find-generic-password -s "ANTHROPIC_API_KEY" -w 2>/dev/null)
+# Anthropic key loaded on-demand via claude-api alias (avoids conflicts with Max plan)
 export OPENAI_API_KEY=$(security find-generic-password -s "OPENAI_API_KEY" -w 2>/dev/null)

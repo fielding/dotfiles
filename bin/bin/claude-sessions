@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+# claude-sessions — spin up a tmux session with multiple Claude Code panes
+#
+# Usage:
+#   claude-sessions [dirs...]         each dir gets its own pane
+#   claude-sessions [count]           N panes in cwd (legacy)
+#   claude-sessions                   3 panes in cwd (legacy)
+#
+# Examples:
+#   claude-sessions ~/src/api ~/src/frontend ~/src/shared
+#   claude-sessions 4
+#   claude-sessions 2 (still works — detected as a number)
+
+LABELS=(alpha bravo charlie delta echo foxtrot golf hotel)
+
+# detect mode: if first arg is a number (or missing), use count mode
+# otherwise treat all args as directories
+if [ $# -eq 0 ]; then
+  DIRS=("$PWD" "$PWD" "$PWD")
+elif [[ "$1" =~ ^[0-9]+$ ]] && [ $# -le 2 ]; then
+  COUNT="$1"
+  SESSION="${2:-$(basename "$PWD")}"
+  DIRS=()
+  for i in $(seq 1 "$COUNT"); do
+    DIRS+=("$PWD")
+  done
+else
+  DIRS=("$@")
+fi
+
+# derive session name
+if [ -z "$SESSION" ]; then
+  if [ ${#DIRS[@]} -eq 1 ] || [ "$(printf '%s\n' "${DIRS[@]}" | sed 's|.*/||' | sort -u | wc -l)" -eq 1 ]; then
+    SESSION="$(basename "${DIRS[0]}")"
+  else
+    # join dir basenames: api-frontend-shared
+    SESSION="$(printf '%s\n' "${DIRS[@]}" | sed 's|.*/||' | paste -sd '-' -)"
+  fi
+fi
+
+# sanitize session name (tmux doesn't like dots or colons)
+SESSION="${SESSION//./-}"
+SESSION="${SESSION//:/-}"
+
+# resolve all dirs to absolute paths and derive per-pane labels
+PANE_LABELS=()
+for d in "${DIRS[@]}"; do
+  abs="$(cd "$d" 2>/dev/null && pwd)" || abs="$d"
+  PANE_LABELS+=("$(basename "$abs")")
+done
+
+# if already inside tmux, build panes in a new window
+if [ "$TMUX" ]; then
+  CUR="$(tmux display-message -p '#S')"
+  WIN="claude"
+
+  tmux new-window -n "$WIN" -c "${DIRS[0]}"
+  tmux select-pane -T "${PANE_LABELS[0]}"
+
+  for i in $(seq 1 $((${#DIRS[@]} - 1))); do
+    tmux split-window -t "$CUR:$WIN" -v -c "${DIRS[$i]}"
+    tmux select-pane -T "${PANE_LABELS[$i]}"
+    tmux select-layout -t "$CUR:$WIN" tiled
+  done
+
+  for i in $(seq 0 $((${#DIRS[@]} - 1))); do
+    tmux send-keys -t "$CUR:$WIN.$((i + 1))" "claude" Enter
+  done
+  exit 0
+fi
+
+# outside tmux — create or attach
+if tmux has-session -t "$SESSION" 2>/dev/null; then
+  tmux attach-session -t "$SESSION"
+  exit 0
+fi
+
+tmux new-session -d -s "$SESSION" -n "claude" -c "${DIRS[0]}"
+tmux select-pane -t "$SESSION:1.1" -T "${PANE_LABELS[0]}"
+
+for i in $(seq 1 $((${#DIRS[@]} - 1))); do
+  tmux split-window -t "$SESSION" -v -c "${DIRS[$i]}"
+  tmux select-pane -T "${PANE_LABELS[$i]}"
+  tmux select-layout -t "$SESSION" tiled
+done
+
+for i in $(seq 0 $((${#DIRS[@]} - 1))); do
+  tmux send-keys -t "$SESSION:1.$((i + 1))" "claude" Enter
+done
+
+tmux attach-session -t "$SESSION"
