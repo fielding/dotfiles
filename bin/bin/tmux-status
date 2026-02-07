@@ -1,18 +1,21 @@
 #!/bin/sh
 # edited by Fielding Johnston to work on os x
 
+# Source Human++ palette (generated from palette.toml)
+. "$HOME/src/hack/human-plus-plus/dist/tmux/colors.sh"
+
 FULL=▓
 EMPTY=░
-EOL=▒ 
+EOL=▒
 SIZE=7
-C0="#000000"
-C1="#222222"
-C2="#1C596E"
-C3="#B3291C"
-C4="#3A3A3A"
-C5="#efefef"
-C6="#878787"
-C7="#8787af"
+C0="$HMPP_BG"
+C1="$HMPP_BG_ELEVATION"
+C2="$HMPP_CYAN"
+C3="$HMPP_PINK"
+C4="$HMPP_BG_ELEVATION"
+C5="$HMPP_FG"
+C6="$HMPP_CYAN"
+C7="$HMPP_CYAN"
 
 draw()
 {
