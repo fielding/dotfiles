@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 #  ┳━┓┳━┓0┏┓┓┳━┓┏━┓┓ ┳
 #  ┃┳┛┃━┫┃┃┃┃┃━┃┃ ┃┃┃┃
@@ -10,64 +10,81 @@
 #    ┗━┓┣┻┓┃ ┃┃  ┃
 #    ━━┛┇ ┛┗━┛┗━┛┗━┛
 #
-# the worst color script
+# base24 rainbow puke skull (8 LOUD accents)
 # by xero <http://0w.nz>
 #  adapted by fielding
 #  <justfielding.com>
-cat << 'EOF'
-[1;37m                  .................
-[1;37m             .syhhso++++++++/++osyyhys+.
-[1;37m          -oddyo+o+++++++++++++++o+oo+osdms:
-[1;37m        :dmyo++oosssssssssssssssooooooo+/+ymm+`
-[1;37m       hmyo++ossyyhhddddddddddddhyyyssss+//+ymd-
-[1;37m     -mho+oosyhhhddmmmmmmmmmmmmmmddhhyyyso+//+hN+
-[1;37m     my+++syhhhhdmmNNNNNNNNNNNNmmmmmdhhyyyyo//+sd:
-[1;37m    hs//+oyhhhhdmNNNNNNNNNNNNNNNNNNmmdhyhhhyo//++y
-[1;37m    s+++shddhhdmmNNNNNNNNNNNNNNNNNNNNmdhhhdhyo/++/
-[1;37m    'hs+shmmmddmNNNNNNNNNNNNNNNNNNNNNmddddddhs+oh/
-[1;37m     shsshdmmmmmNNMMMMMMMMMMMNNNNNNNNmmmmmmdhssdh-
-[1;37m      +ssohdmmmmNNNNNMMMMMMMMNNNNNNmmmmmNNmdhhhs:`
-[1;37m  -+oo++////++sydmNNNNNNNNNNNNNNNNNNNdyyys/--://+//:
-[1;37m  d/+hmNNNmmdddhhhdmNNNNNNNNNNNNNNNmdhyyyhhhddmmNmdyd-
-[1;37m  ++--+ymNMMNNNNNNmmmmNNNNNNNNNNNmdhddmNNMMMMMMNmhyss
-[1;37m   /d+` -+ydmNMMMMMMNNmNMMMMMMMmmmmNNMMMMMNNmh- :sdo
-[1;37m    sNo   ` /ohdmNNMMMMNNMMMMMNNNMMMMMNmdyo/ `  hNh
-[1;37m     M+'     ``-/oyhmNNMNhNMNhNMMMMNmho/ `     'MN/
-[1;37m     d+'         `-+osydh0w.nzmNNmho:          'mN:
-[1;37m    +o/             ` :oo+:s :+o/-`            -dds
-[1;37m   :hdo       [0;31mx[1;37m    `-/ooss:':+ooo: `    [0;31m0[1;37m      :sdm+
-[1;37m  +dNNNh+         :ydmNNm'   `sddmyo          +hmNmds
-[1;37m dhNMMNNNNmddhsyhdmmNNNM:      NNmNmhyo+oyyyhmNMMNmysd
-[1;37m ydNNNNNh+/++ohmMMMMNMNh       oNNNNNNNmho++++yddhyssy
-[1;37m              `:sNMMMMN'       `mNMNNNd/`
-   [0;31mXXXXXX[1;31mXXXX[1;37m y/hMMNm/  .dXb.  -hdmdy: ` [0;35mXXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXX[1;37m `o+hNNds. -ymNNy-  .yhys+/`` [0;35mXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXX[1;37m +-+//o/+odMNMMMNdmh++////-/s [0;35mXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXX[1;37m mhNd -+d/+myo++ysy/hs -mNsdh/ [0;35mXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXX[1;37m mhMN+ dMm-/-smy-::dMN/sMMmdo [0;35mXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXXXX[1;37m NMy+NMMh oMMMs yMMMyNMMs+ [0;35mXXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXXXXX[1;37m dy-hMMm+dMMMdoNMMh ydo [0;35mXXXXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXXXXX[0;33mXX [1;37m smm 'NMMy dms  sm  [0;34mX[0;35mXXXXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXXXXX[0;33mXXX                   [0;34mXX[0;35mXXXXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXXXXX[0;33mXXXXXX[0;32mXXXXXX[0;36mXXXXXX[0;34mXXXXXX[0;35mXXXXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXXXXX[0;33mXXXXXX[0;32mXXXXXX[0;36mXXXXXX[0;34mXXXXXX[0;35mXXXXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXXXXX[0;33mXXXXXX[0;32mXXXXXX[0;36mXXXXXX[0;34mXXXXXX[0;35mXXXXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXXXXX[0;33mXXXXXX[0;32mXXXXXX[0;36mXXXXXX[0;34mXXXXXX[0;35mXXXXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXXXXX[0;33mXXXXXX[0;32mXXXXXX[0;36mXXXXXX[0;34mXXXXXX[0;35mXXXXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXXXXX[0;33mXXXXXX[0;32mXXXXXX[0;36mXXXXXX[0;34mXXXXXX[0;35mXXXXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXXXXX[0;33mXXXXXX[0;32mXXXXXX[0;36mXXXXXX[0;34mXXXXXX[0;35mXXXXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXXXXX[0;33mXXXXXX[0;32mXXXXXX[0;36mXXXXXX[0;34mXXXXXX[0;35mXXXXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXXXXX[0;33mXXXXXX[0;32mXXXXXX[0;36mXXXXXX[0;34mXXXXXX[0;35mXXXXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXXXXX[0;33mXXXXXX[0;32mXXXXXX[0;36mXXXXXX[0;34mXXXXXX[0;35mXXXXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXXXXX[0;33mXXXXXX[0;32mXXXXXX[0;36mXXXXXX[0;34mXXXXXX[0;35mXXXXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXXXXX[0;33mXXXXXX[0;32mXXXXXX[0;36mXXXXXX[0;34mXXXXXX[0;35mXXXXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXXXXX[0;33mXXXXXX[0;32mXXXXXX[0;36mXXXXXX[0;34mXXXXXX[0;35mXXXXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXXXXX[0;33mXXXXXX[0;32mXXXXXX[0;36mXXXXXX[0;34mXXXXXX[0;35mXXXXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXXXXX[0;33mXXXXXX[0;32mXXXXXX[0;36mXXXXXX[0;34mXXXXXX[0;35mXXXXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXXXXX[0;33mXXXXXX[0;32mXXXXXX[0;36mXXXXXX[0;34mXXXXXX[0;35mXXXXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXXXXX[0;33mXXXXXX[0;32mXXXXXX[0;36mXXXXXX[0;34mXXXXXX[0;35mXXXXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXXXXX[0;33mXXXXXX[0;32mXXXXXX[0;36mXXXXXX[0;34mXXXXXX[0;35mXXXXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXXXXX[0;33mXXXXXX[0;32mXXXXXX[0;36mXXXXXX[0;34mXXXXXX[0;35mXXXXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXXXXX[0;33mXXXXXX[0;32mXXXXXX[0;36mXXXXXX[0;34mXXXXXX[0;35mXXXXXX[1;35mXXXXXX
-   [0;31mXXXXXX[1;31mXXXXXX[0;33mXXXXXX[0;32mXXXXXX[0;36mXXXXXX[0;34mXXXXXX[0;35mXXXXXX[1;35mXXXERO
+#
+# Uses proper escape sequences for all 8 LOUD base24 accents
+
+# 8 LOUD accent escape codes (ANSI-C quoting for real escape bytes)
+R=$'\033[31m'       # base08 pink
+O=$'\033[38;5;16m'  # base09 orange
+Y=$'\033[33m'       # base0A amber
+G=$'\033[32m'       # base0B green
+C=$'\033[36m'       # base0C cyan
+B=$'\033[34m'       # base0D blue
+P=$'\033[35m'       # base0E purple
+L=$'\033[38;5;17m'  # base0F lime
+W=$'\033[1;37m'     # bright white (skull)
+X=$'\033[0m'        # reset
+
+b='XXXXXX'
+
+cat << EOF
+${W}                  .................
+${W}             .syhhso++++++++/++osyyhys+.
+${W}          -oddyo+o+++++++++++++++o+oo+osdms:
+${W}        :dmyo++oosssssssssssssssooooooo+/+ymm+\`
+${W}       hmyo++ossyyhhddddddddddddhyyyssss+//+ymd-
+${W}     -mho+oosyhhhddmmmmmmmmmmmmmmddhhyyyso+//+hN+
+${W}     my+++syhhhhdmmNNNNNNNNNNNNmmmmmdhhyyyyo//+sd:
+${W}    hs//+oyhhhhdmNNNNNNNNNNNNNNNNNNmmdhyhhhyo//++y
+${W}    s+++shddhhdmmNNNNNNNNNNNNNNNNNNNNmdhhhdhyo/++/
+${W}    'hs+shmmmddmNNNNNNNNNNNNNNNNNNNNNmddddddhs+oh/
+${W}     shsshdmmmmmNNMMMMMMMMMMMNNNNNNNNmmmmmmdhssdh-
+${W}      +ssohdmmmmNNNNNMMMMMMMMNNNNNNmmmmmNNmdhhhs:\`
+${W}  -+oo++////++sydmNNNNNNNNNNNNNNNNNNNdyyys/--://+//:
+${W}  d/+hmNNNmmdddhhhdmNNNNNNNNNNNNNNNmdhyyyhhhddmmNmdyd-
+${W}  ++--+ymNMMNNNNNNmmmmNNNNNNNNNNNmdhddmNNMMMMMMNmhyss
+${W}   /d+\` -+ydmNMMMMMMNNmNMMMMMMMmmmmNNMMMMMNNmh- :sdo
+${W}    sNo   \` /ohdmNNMMMMNNMMMMMNNNMMMMMNmdyo/ \`  hNh
+${W}     M+'     \`\`-/oyhmNNMNhNMNhNMMMMNmho/ \`     'MN/
+${W}     d+'         \`-+osydh0w.nzmNNmho:          'mN:
+${W}    +o/             \` :oo+:s :+o/-\`            -dds
+${W}   :hdo       ${R}x${W}    \`-/ooss:':+ooo: \`    ${R}0${W}      :sdm+
+${W}  +dNNNh+         :ydmNNm'   \`sddmyo          +hmNmds
+${W} dhNMMNNNNmddhsyhdmmNNNM:      NNmNmhyo+oyyyhmNMMNmysd
+${W} ydNNNNNh+/++ohmMMMMNMNh       oNNNNNNNmho++++yddhyssy
+${W}              \`:sNMMMMN'       \`mNMNNNd/\`
+   ${R}${b}${O}XXXX${W} y/hMMNm/  .dXb.  -hdmdy: \` ${P}XXXX${L}${b}
+   ${R}${b}${O}XXX${W} \`o+hNNds. -ymNNy-  .yhys+/\`\` ${P}XXX${L}${b}
+   ${R}${b}${O}XXX${W} +-+//o/+odMNMMMNdmh++////-/s ${P}XXX${L}${b}
+   ${R}${b}${O}XX${W} mhNd -+d/+myo++ysy/hs -mNsdh/ ${P}XXX${L}${b}
+   ${R}${b}${O}XXX${W} mhMN+ dMm-/-smy-::dMN/sMMmdo ${P}XXX${L}${b}
+   ${R}${b}${O}XXXXX${W} NMy+NMMh oMMMs yMMMyNMMs+ ${P}XXXX${L}${b}
+   ${R}${b}${O}${b}${W} dy-hMMm+dMMMdoNMMh ydo ${P}${b}${L}${b}
+   ${R}${b}${O}${b}${Y}XX ${W} smm 'NMMy dms  sm  ${B}X${P}${b}${L}${b}
+   ${R}${b}${O}${b}${Y}XXX                   ${B}XX${P}${b}${L}${b}
+   ${R}${b}${O}${b}${Y}${b}${G}${b}${C}${b}${B}${b}${P}${b}${L}${b}
+   ${R}${b}${O}${b}${Y}${b}${G}${b}${C}${b}${B}${b}${P}${b}${L}${b}
+   ${R}${b}${O}${b}${Y}${b}${G}${b}${C}${b}${B}${b}${P}${b}${L}${b}
+   ${R}${b}${O}${b}${Y}${b}${G}${b}${C}${b}${B}${b}${P}${b}${L}${b}
+   ${R}${b}${O}${b}${Y}${b}${G}${b}${C}${b}${B}${b}${P}${b}${L}${b}
+   ${R}${b}${O}${b}${Y}${b}${G}${b}${C}${b}${B}${b}${P}${b}${L}${b}
+   ${R}${b}${O}${b}${Y}${b}${G}${b}${C}${b}${B}${b}${P}${b}${L}${b}
+   ${R}${b}${O}${b}${Y}${b}${G}${b}${C}${b}${B}${b}${P}${b}${L}${b}
+   ${R}${b}${O}${b}${Y}${b}${G}${b}${C}${b}${B}${b}${P}${b}${L}${b}
+   ${R}${b}${O}${b}${Y}${b}${G}${b}${C}${b}${B}${b}${P}${b}${L}${b}
+   ${R}${b}${O}${b}${Y}${b}${G}${b}${C}${b}${B}${b}${P}${b}${L}${b}
+   ${R}${b}${O}${b}${Y}${b}${G}${b}${C}${b}${B}${b}${P}${b}${L}${b}
+   ${R}${b}${O}${b}${Y}${b}${G}${b}${C}${b}${B}${b}${P}${b}${L}${b}
+   ${R}${b}${O}${b}${Y}${b}${G}${b}${C}${b}${B}${b}${P}${b}${L}${b}
+   ${R}${b}${O}${b}${Y}${b}${G}${b}${C}${b}${B}${b}${P}${b}${L}${b}
+   ${R}${b}${O}${b}${Y}${b}${G}${b}${C}${b}${B}${b}${P}${b}${L}${b}
+   ${R}${b}${O}${b}${Y}${b}${G}${b}${C}${b}${B}${b}${P}${b}${L}${b}
+   ${R}${b}${O}${b}${Y}${b}${G}${b}${C}${b}${B}${b}${P}${b}${L}${b}
+   ${R}${b}${O}${b}${Y}${b}${G}${b}${C}${b}${B}${b}${P}${b}${L}${b}
+   ${R}${b}${O}${b}${Y}${b}${G}${b}${C}${b}${B}${b}${P}${b}${L}XXXERO
+${X}
 EOF

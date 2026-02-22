@@ -1,4 +1,15 @@
-#! /bin/sh
+#!/bin/sh
+#
+# termco - base24 terminal color overview
+#
+# 3 rows of 8 colors (24 total):
+#   Row 1: LOUD accents (base08-0F)  — diagnostics, signals
+#   Row 2: QUIET accents (base10-17) — syntax, UI state
+#   Row 3: Grayscale (base00-07)     — backgrounds, text
+#
+# Uses ANSI 0-15 for colors with native slots, and
+# 256-color extended slots 16-23 for the remaining 8 base24 colors.
+# (Requires shell-init.sh to have remapped slots 16-23.)
 
 pattern='██'
 
@@ -8,15 +19,26 @@ cprint() {
 
 printf '\n'
 
-for attr in 0 1 ; do
-    for fgi in $(seq 1 6) ; do
-        cprint "${attr};3${fgi}" "$pattern"
-    done
-    printf '\n\n'
+# Row 1: LOUD accents (base08-0F)
+# base08=31  base09=38;5;16  base0A=33  base0B=32
+# base0C=36  base0D=34       base0E=35  base0F=38;5;17
+for code in '0;31' '38;5;16' '0;33' '0;32' '0;36' '0;34' '0;35' '38;5;17'; do
+    cprint "$code" "$pattern"
 done
+printf '\n\n'
 
-for co in '1;30' '0;37' '1;37' '1;30' '0;37' '1;37' ; do
-    cprint "$co" "$pattern"
+# Row 2: QUIET accents (base10-17)
+# base10=91  base11=38;5;22  base12=93  base13=92
+# base14=96  base15=94       base16=95  base17=38;5;23
+for code in '0;91' '38;5;22' '0;93' '0;92' '0;96' '0;94' '0;95' '38;5;23'; do
+    cprint "$code" "$pattern"
 done
+printf '\n\n'
 
+# Row 3: Grayscale (base00-07)
+# base00=30   base01=38;5;18  base02=38;5;19  base03=90
+# base04=38;5;20  base05=38;5;21  base06=37  base07=97
+for code in '0;30' '38;5;18' '38;5;19' '0;90' '38;5;20' '38;5;21' '0;37' '0;97'; do
+    cprint "$code" "$pattern"
+done
 printf '\n\n'
