@@ -1,0 +1,51 @@
+[1;37m                  .................
+[1;37m             .syhhso++++++++/++osyyhys+.
+[1;37m          -oddyo+o+++++++++++++++o+oo+osdms:
+[1;37m        :dmyo++oosssssssssssssssooooooo+/+ymm+`
+[1;37m       hmyo++ossyyhhddddddddddddhyyyssss+//+ymd-
+[1;37m     -mho+oosyhhhddmmmmmmmmmmmmmmddhhyyyso+//+hN+
+[1;37m     my+++syhhhhdmmNNNNNNNNNNNNmmmmmdhhyyyyo//+sd:
+[1;37m    hs//+oyhhhhdmNNNNNNNNNNNNNNNNNNmmdhyhhhyo//++y
+[1;37m    s+++shddhhdmmNNNNNNNNNNNNNNNNNNNNmdhhhdhyo/++/
+[1;37m    'hs+shmmmddmNNNNNNNNNNNNNNNNNNNNNmddddddhs+oh/
+[1;37m     shsshdmmmmmNNMMMMMMMMMMMNNNNNNNNmmmmmmdhssdh-
+[1;37m      +ssohdmmmmNNNNNMMMMMMMMNNNNNNmmmmmNNmdhhhs:`
+[1;37m  -+oo++////++sydmNNNNNNNNNNNNNNNNNNNdyyys/--://+//:
+[1;37m  d/+hmNNNmmdddhhhdmNNNNNNNNNNNNNNNmdhyyyhhhddmmNmdyd-
+[1;37m  ++--+ymNMMNNNNNNmmmmNNNNNNNNNNNmdhddmNNMMMMMMNmhyss
+[1;37m   /d+` -+ydmNMMMMMMNNmNMMMMMMMmmmmNNMMMMMNNmh- :sdo
+[1;37m    sNo   ` /ohdmNNMMMMNNMMMMMNNNMMMMMNmdyo/ `  hNh
+[1;37m     M+'     ``-/oyhmNNMNhNMNhNMMMMNmho/ `     'MN/
+[1;37m     d+'         `-+osydh0w.nzmNNmho:          'mN:
+[1;37m    +o/             ` :oo+:s :+o/-`            -dds
+[1;37m   :hdo       [31mx[1;37m    `-/ooss:':+ooo: `    [31m0[1;37m      :sdm+
+[1;37m  +dNNNh+         :ydmNNm'   `sddmyo          +hmNmds
+[1;37m dhNMMNNNNmddhsyhdmmNNNM:      NNmNmhyo+oyyyhmNMMNmysd
+[1;37m ydNNNNNh+/++ohmMMMMNMNh       oNNNNNNNmho++++yddhyssy
+[1;37m              `:sNMMMMN'       `mNMNNNd/`
+   [31mXXXXXX[38;5;16mXXXX[1;37m y/hMMNm/  .dXb.  -hdmdy: ` [35mXXXX[38;5;17mXXXXXX
+   [31mXXXXXX[38;5;16mXXX[1;37m `o+hNNds. -ymNNy-  .yhys+/`` [35mXXX[38;5;17mXXXXXX
+   [31mXXXXXX[38;5;16mXXX[1;37m +-+//o/+odMNMMMNdmh++////-/s [35mXXX[38;5;17mXXXXXX
+   [31mXXXXXX[38;5;16mXX[1;37m mhNd -+d/+myo++ysy/hs -mNsdh/ [35mXXX[38;5;17mXXXXXX
+   [31mXXXXXX[38;5;16mXXX[1;37m mhMN+ dMm-/-smy-::dMN/sMMmdo [35mXXX[38;5;17mXXXXXX
+   [31mXXXXXX[38;5;16mXXXXX[1;37m NMy+NMMh oMMMs yMMMyNMMs+ [35mXXXX[38;5;17mXXXXXX
+   [31mXXXXXX[38;5;16mXXXXXX[1;37m dy-hMMm+dMMMdoNMMh ydo [35mXXXXXX[38;5;17mXXXXXX
+   [31mXXXXXX[38;5;16mXXXXXX[33mXX [1;37m smm 'NMMy dms  sm  [34mX[35mXXXXXX[38;5;17mXXXXXX
+   [31mXXXXXX[38;5;16mXXXXXX[33mXXX                   [34mXX[35mXXXXXX[38;5;17mXXXXXX
+   [31mXXXXXX[38;5;16mXXXXXX[33mXXXXXX[32mXXXXXX[36mXXXXXX[34mXXXXXX[35mXXXXXX[38;5;17mXXXXXX
+   [31mXXXXXX[38;5;16mXXXXXX[33mXXXXXX[32mXXXXXX[36mXXXXXX[34mXXXXXX[35mXXXXXX[38;5;17mXXXXXX
+   [31mXXXXXX[38;5;16mXXXXXX[33mXXXXXX[32mXXXXXX[36mXXXXXX[34mXXXXXX[35mXXXXXX[38;5;17mXXXXXX
+   [31mXXXXXX[38;5;16mXXXXXX[33mXXXXXX[32mXXXXXX[36mXXXXXX[34mXXXXXX[35mXXXXXX[38;5;17mXXXXXX
+   [31mXXXXXX[38;5;16mXXXXXX[33mXXXXXX[32mXXXXXX[36mXXXXXX[34mXXXXXX[35mXXXXXX[38;5;17mXXXXXX
+   [31mXXXXXX[38;5;16mXXXXXX[33mXXXXXX[32mXXXXXX[36mXXXXXX[34mXXXXXX[35mXXXXXX[38;5;17mXXXXXX
+   [31mXXXXXX[38;5;16mXXXXXX[33mXXXXXX[32mXXXXXX[36mXXXXXX[34mXXXXXX[35mXXXXXX[38;5;17mXXXXXX
+   [31mXXXXXX[38;5;16mXXXXXX[33mXXXXXX[32mXXXXXX[36mXXXXXX[34mXXXXXX[35mXXXXXX[38;5;17mXXXXXX
+   [31mXXXXXX[38;5;16mXXXXXX[33mXXXXXX[32mXXXXXX[36mXXXXXX[34mXXXXXX[35mXXXXXX[38;5;17mXXXXXX
+   [31mXXXXXX[38;5;16mXXXXXX[33mXXXXXX[32mXXXXXX[36mXXXXXX[34mXXXXXX[35mXXXXXX[38;5;17mXXXXXX
+   [31mXXXXXX[38;5;16mXXXXXX[33mXXXXXX[32mXXXXXX[36mXXXXXX[34mXXXXXX[35mXXXXXX[38;5;17mXXXXXX
+   [31mXXXXXX[38;5;16mXXXXXX[33mXXXXXX[32mXXXXXX[36mXXXXXX[34mXXXXXX[35mXXXXXX[38;5;17mXXXXXX
+   [31mXXXXXX[38;5;16mXXXXXX[33mXXXXXX[32mXXXXXX[36mXXXXXX[34mXXXXXX[35mXXXXXX[38;5;17mXXXXXX
+   [31mXXXXXX[38;5;16mXXXXXX[33mXXXXXX[32mXXXXXX[36mXXXXXX[34mXXXXXX[35mXXXXXX[38;5;17mXXXXXX
+   [31mXXXXXX[38;5;16mXXXXXX[33mXXXXXX[32mXXXXXX[36mXXXXXX[34mXXXXXX[35mXXXXXX[38;5;17mXXXXXX
+   [31mXXXXXX[38;5;16mXXXXXX[33mXXXXXX[32mXXXXXX[36mXXXXXX[34mXXXXXX[35mXXXXXX[38;5;17mXXXERO
+[0m

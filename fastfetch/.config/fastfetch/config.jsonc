@@ -1,0 +1,99 @@
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
+  "logo": {
+    "type": "file-raw",
+    "source": "~/.config/fastfetch/pukeskull.txt",
+    "padding": {
+      "top": 0,
+      "left": 0,
+      "right": 3
+    },
+    "printRemaining": true
+  },
+  "display": {
+    "separator": " → ",
+    "color": {
+      "keys": "#9871fe",
+      "title": "#e7349c",
+      "output": "#f8f6f2",
+      "separator": "#5a5d62"
+    },
+    "brightColor": false
+  },
+  "modules": [
+    "break",
+    "break",
+    "break",
+    "break",
+    "break",
+    "break",
+    "break",
+    "break",
+    {
+      "type": "title",
+      "color": {
+        "user": "#e7349c",
+        "at": "#5a5d62",
+        "host": "#9871fe"
+      }
+    },
+    {
+      "type": "separator",
+      "string": "─"
+    },
+    {
+      "type": "os"
+    },
+    {
+      "type": "host"
+    },
+    {
+      "type": "kernel"
+    },
+    {
+      "type": "uptime"
+    },
+    {
+      "type": "shell"
+    },
+    {
+      "type": "wm"
+    },
+    {
+      "type": "terminal"
+    },
+    {
+      "type": "terminalfont"
+    },
+    {
+      "type": "cpu"
+    },
+    {
+      "type": "gpu"
+    },
+    {
+      "type": "memory"
+    },
+    {
+      "type": "disk"
+    },
+    "break",
+    {
+      "type": "command",
+      "key": " ",
+      "text": "termco | sed -n 2p"
+    },
+    "break",
+    {
+      "type": "command",
+      "key": " ",
+      "text": "termco | sed -n 4p"
+    },
+    "break",
+    {
+      "type": "command",
+      "key": " ",
+      "text": "termco | sed -n 6p"
+    }
+  ]
+}
