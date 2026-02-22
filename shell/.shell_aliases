@@ -69,4 +69,7 @@ alias claude='env -u ANTHROPIC_API_KEY command claude --dangerously-skip-permiss
 # Claude Code — API billing (fetches key from Keychain on demand)
 alias claude-api='ANTHROPIC_API_KEY=$(security find-generic-password -s "ANTHROPIC_API_KEY" -w) command claude --dangerously-skip-permissions'
 
+# Codex
+alias codex='codex --dangerously-bypass-approvals-and-sandbox'
+
 # vim: ft=sh
