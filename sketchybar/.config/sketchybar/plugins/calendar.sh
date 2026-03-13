@@ -7,11 +7,7 @@
 CLICK="$1"
 MEETING_LINK_FILE="/tmp/sketchybar_meeting_link"
 
-# Colors (Monokai base + vibrant accents)
-COLOR_FG_DIM=0xff727072
-COLOR_ORANGE=0xffffb86c
-COLOR_RED=0xffff5555
-COLOR_MINT=0xff6bffb8
+source "$HOME/.config/sketchybar/colors.sh"
 
 # Handle click - open meeting link
 if [ "$CLICK" = "--click" ]; then
@@ -83,9 +79,6 @@ fi
 
 DIFF=$((EVENT_TIME - NOW))
 
-# Colors for label
-COLOR_FG=0xfffcfcfa
-
 # Format countdown
 if [ $DIFF -lt -3600 ]; then
   # Event ended more than an hour ago, skip
@@ -109,13 +102,13 @@ elif [ $DIFF -lt 3600 ]; then
   # Less than 1 hour
   MINS=$((DIFF / 60))
   COUNTDOWN="${MINS}m"
-  ICON_COLOR=$COLOR_MINT
+  ICON_COLOR=$COLOR_GREEN
 else
   # More than 1 hour
   HOURS=$((DIFF / 3600))
   MINS=$(((DIFF % 3600) / 60))
   COUNTDOWN="${HOURS}h${MINS}m"
-  ICON_COLOR=$COLOR_MINT
+  ICON_COLOR=$COLOR_GREEN
 fi
 
 # Truncate title

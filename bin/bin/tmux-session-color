@@ -1,0 +1,17 @@
+#!/bin/sh
+# tmux-session-color — return a Human++ palette color for a session index
+# Usage: tmux-session-color <index>  (1-based)
+# Shared by tmux-sessions-bar and tmux-window-color for consistency
+
+case "${1:-1}" in
+  1) echo "#e7349c" ;;  # pink
+  2) echo "#1ad0d6" ;;  # cyan
+  3) echo "#458ae2" ;;  # blue
+  4) echo "#9871fe" ;;  # purple
+  5) echo "#f2a633" ;;  # amber
+  6) echo "#04b372" ;;  # green
+  7) echo "#f26c33" ;;  # orange
+  8) echo "#bbff00" ;;  # lime
+  9) echo "#c8518f" ;;  # muted pink
+  *) echo "#828079" ;;  # secondary
+esac

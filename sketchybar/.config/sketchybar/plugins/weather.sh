@@ -4,9 +4,7 @@
 # Weather Plugin - Fetches weather from wttr.in
 # ─────────────────────────────────────────────────────────────────────────────
 
-COLOR_FG_DIM=0xff6272a4
-COLOR_CYAN=0xff5ce1ff
-COLOR_ORANGE=0xffffb86c
+source "$HOME/.config/sketchybar/colors.sh"
 
 # Fetch weather (format: icon temp)
 WEATHER=$(curl -s "wttr.in/?format=%c%t" 2>/dev/null | tr -d '+')

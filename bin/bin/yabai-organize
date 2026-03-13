@@ -1,0 +1,151 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# yabai-organize — LLM-powered window organizer
+# Gathers window state, asks Haiku to sort them, executes the plan.
+
+MODEL="claude-haiku-4-5-20251001"
+LOG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/yabai-organize"
+API_KEY="${ANTHROPIC_API_KEY:-$(security find-generic-password -s "ANTHROPIC_API_KEY" -w 2>/dev/null)}"
+[ -z "$API_KEY" ] && { echo "error: no ANTHROPIC_API_KEY" >&2; exit 1; }
+
+# ── Gather ───────────────────────────────────────────────────────────────────
+
+# Only the fields the LLM needs: id, app, title, space
+WINDOWS=$(yabai -m query --windows | jq '[.[] | {id, app, title, space}]')
+SPACES=$(yabai -m query --spaces | jq '[.[] | {index, label}]')
+
+# Known project names
+PROJECTS=$(ls ~/notes/projects/ 2>/dev/null | grep -v '\.md$' | tr '\n' ' ')
+SRC_DIRS=$(ls -d ~/src/hack/*/ ~/src/work/*/ 2>/dev/null | xargs -I{} basename {} | sort -u | tr '\n' ' ')
+
+# Listening ports → process name (maps localhost:5173 in browser to a project)
+PORTS=$(lsof -iTCP -sTCP:LISTEN -P 2>/dev/null | awk 'NR>1 {print $1, $9}' | sort -u | head -20)
+
+# ── Prompt ───────────────────────────────────────────────────────────────────
+
+read -r -d '' SYSTEM_PROMPT <<'PROMPT' || true
+You sort windows into workspaces. Return ONLY valid JSON — no markdown, no explanation.
+
+SPACES: 1=main, 2-5=project slots (p1-p4), 6=notes, 7=scratch, 8=inbox, 9=media, 10=comms
+
+FIXED ROUTING:
+- comms(10): Slack, Gather, Signal, AyuGram, Telegram — always
+- notes(6): Obsidian, Notion, nvim/vim editing notes or research — unless title clearly ties to a project
+- media(9): VPN, Docker, media players
+- inbox(8): random/unrelated stuff
+
+PROJECT SLOTS (2-5):
+- Identify distinct projects from window titles. Each project gets ONE dedicated slot.
+- Different projects MUST go on different spaces — never merge two projects into one slot.
+- Two windows are the same project ONLY if they share the same repo/directory root.
+- A browser tab mentioning a project name goes with that project, but similar-sounding names (e.g. "sigil" vs "ripguard") are SEPARATE projects.
+- "[~/src/hack/review]" or "~/src/hack/review" → project "review-crew"
+- "[~/etc]" or "~/etc" → project "dotfiles"
+- "[~/src/work/freed/comms]" → project "freed"
+- Match paths against KNOWN PROJECTS list. Use the project name as the label.
+- Terminals with CWD in brackets like "[~/path]" are Claude Code sessions — the path IS the project.
+- Chrome titles with project names ("Freed Comms - Google Chrome") go with that project.
+- Running commands hint at projects ("pnpm elevenlabs:listen" → freed).
+- Browser tabs on localhost/127.0.0.1 with a port? Match the port to LISTENING PORTS to find the project.
+- Ghostty windows with spinner/status titles ("✳ Claude Code", "⠐ Claude Code", "⠂ Claude Code") have no CWD info — leave them where they are. Do NOT move ambiguous windows.
+- >4 projects? Prioritize by window count. Overflow → scratch(7).
+
+RULES:
+- ALWAYS move windows to their correct space when you can confidently identify the project.
+- Leave ambiguous windows (no CWD, unclear title) where they are.
+- Label p1-p4 with project names. Unused slots get default labels (p1/p2/p3/p4).
+- Include labels for ALL slots 2-5.
+
+RESPONSE FORMAT:
+{"labels":{"2":"name","3":"name","4":"p3","5":"p4"},"moves":[{"id":123,"space":2}]}
+
+Only include moves for windows that need to change. Empty moves array is fine.
+PROMPT
+
+# ── Call API ─────────────────────────────────────────────────────────────────
+
+USER_MSG="spaces: $SPACES
+
+known_projects: $PROJECTS
+src_dirs: $SRC_DIRS
+
+listening_ports:
+$PORTS
+
+windows:
+$WINDOWS"
+
+PAYLOAD=$(jq -n \
+  --arg model "$MODEL" \
+  --arg system "$SYSTEM_PROMPT" \
+  --arg user "$USER_MSG" \
+  '{
+    model: $model,
+    max_tokens: 1024,
+    temperature: 0,
+    system: $system,
+    messages: [{role: "user", content: $user}]
+  }')
+
+RESPONSE=$(curl -s https://api.anthropic.com/v1/messages \
+  -H "x-api-key: $API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "content-type: application/json" \
+  -d "$PAYLOAD")
+
+# ── Log usage for thinktax ───────────────────────────────────────────────────
+
+mkdir -p "$LOG_DIR"
+USAGE=$(echo "$RESPONSE" | jq '{
+  model: .model,
+  input_tokens: .usage.input_tokens,
+  output_tokens: .usage.output_tokens,
+  cache_creation_input_tokens: (.usage.cache_creation_input_tokens // 0),
+  cache_read_input_tokens: (.usage.cache_read_input_tokens // 0)
+}' 2>/dev/null)
+TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+echo "$USAGE" | jq -c --arg ts "$TS" '. + {ts: $ts, tool: "yabai-organize"}' >> "$LOG_DIR/usage.jsonl" 2>/dev/null
+
+# ── Parse response ───────────────────────────────────────────────────────────
+
+PLAN=$(echo "$RESPONSE" | jq -r '.content[0].text // empty')
+[ -z "$PLAN" ] && { echo "error: no response" >&2; echo "$RESPONSE" | jq . >&2; exit 1; }
+
+# Strip markdown fences if present
+PLAN=$(echo "$PLAN" | sed '/^```/d')
+echo "$PLAN" | jq . >/dev/null 2>&1 || { echo "error: bad JSON" >&2; echo "$PLAN" >&2; exit 1; }
+
+# ── Execute ──────────────────────────────────────────────────────────────────
+
+# Build a lookup of current window positions for skip detection
+CURRENT=$(echo "$WINDOWS" | jq -r '.[] | "\(.id) \(.space)"')
+
+# Apply labels
+echo "$PLAN" | jq -r '.labels // {} | to_entries[] | "\(.key) \(.value)"' | while IFS=' ' read -r idx label; do
+  [ -z "$idx" ] && continue
+  yabai -m space "$idx" --label "$label" 2>/dev/null && echo "label: $idx → $label"
+done
+
+# Apply moves
+echo "$PLAN" | jq -r '.moves[]? | "\(.id) \(.space)"' | while IFS=' ' read -r wid target; do
+  current=$(echo "$CURRENT" | awk -v id="$wid" '$1 == id {print $2}')
+  [ "$current" = "$target" ] && continue
+  info=$(echo "$WINDOWS" | jq -r --argjson id "$wid" '.[] | select(.id == $id) | "\(.app): \(.title[0:40])"')
+  yabai -m window "$wid" --space "$target" 2>/dev/null && echo "move: $info → $target" || echo "fail: $info → $target"
+done
+
+# Refresh sketchybar labels (single batch command)
+BAR_ARGS=()
+for i in 1 2 3 4 5 6 7 8 9 10; do
+  label=$(echo "$SPACES" | jq -r --argjson i "$i" '.[] | select(.index == $i) | .label // empty')
+  # If we just set a new label, use that instead
+  new_label=$(echo "$PLAN" | jq -r --arg i "$i" '.labels[$i] // empty')
+  [ -n "$new_label" ] && label="$new_label"
+  case "$label" in p1|p2|p3|p4|"") display="" ;; *) display=$(echo "$label" | tr '[:lower:]' '[:upper:]') ;; esac
+  BAR_ARGS+=(--set "space.$i" label="$display")
+done
+sketchybar "${BAR_ARGS[@]}" 2>/dev/null
+
+MOVE_COUNT=$(echo "$PLAN" | jq '.moves | length')
+echo "done ($MOVE_COUNT moves, $(echo "$USAGE" | jq -r '"\(.input_tokens)+\(.output_tokens) tokens"'))"

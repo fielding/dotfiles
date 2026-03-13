@@ -4,8 +4,7 @@
 # WiFi Plugin - Shows WiFi status
 # ─────────────────────────────────────────────────────────────────────────────
 
-COLOR_FG_DIM=0xff6272a4
-COLOR_MINT=0xff6bffb8
+source "$HOME/.config/sketchybar/colors.sh"
 
 # Check if we have an IP (means connected)
 IP=$(ipconfig getifaddr en0 2>/dev/null)
@@ -17,7 +16,7 @@ if [ -z "$IP" ]; then
 else
   # Connected
   ICON="󰤨"
-  COLOR=$COLOR_MINT
+  COLOR=$COLOR_GREEN
 fi
 
 sketchybar --set $NAME icon="$ICON" icon.color=$COLOR

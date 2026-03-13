@@ -4,8 +4,7 @@
 # Volume Plugin - Updates volume icon based on level/mute state
 # ─────────────────────────────────────────────────────────────────────────────
 
-COLOR_FG_DIM=0xff6272a4
-COLOR_ACCENT=0xffff0074
+source "$HOME/.config/sketchybar/colors.sh"
 
 # Get volume info
 VOLUME=$(osascript -e 'output volume of (get volume settings)')
@@ -13,7 +12,7 @@ MUTED=$(osascript -e 'output muted of (get volume settings)')
 
 if [ "$MUTED" = "true" ]; then
   ICON="󰖁"
-  COLOR=$COLOR_ACCENT
+  COLOR=$COLOR_RED
 elif [ "$VOLUME" -eq 0 ]; then
   ICON="󰕿"
   COLOR=$COLOR_FG_DIM

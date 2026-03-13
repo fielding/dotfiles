@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# tmux-window-color — return tmux style for a window tab
+# Uses the same color as the current session from the palette
+# Usage: tmux-window-color <window_index> <active>
+
+ACTIVE="${2:-0}"
+BG="#1a1c22"
+BG_DIM="#282b31"
+
+# Find our session's position in the session list
+current=$(tmux display-message -p '#S')
+i=1
+while IFS= read -r s; do
+  [[ "$s" == "$current" ]] && break
+  i=$((i + 1))
+done < <(tmux list-sessions -F '#S' 2>/dev/null)
+
+color=$(~/bin/tmux-session-color "$i")
+
+if [ "$ACTIVE" = "1" ]; then
+  printf '#[bg=%s,fg=%s,bold]█▓░' "$color" "$BG"
+else
+  printf '#[bg=%s,fg=%s]█▓░' "$BG_DIM" "$color"
+fi

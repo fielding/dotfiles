@@ -1,0 +1,2 @@
+#!/bin/sh
+echo "$(date +%Y-%m-%dT%H:%M:%S) $*" >> ~/.local/share/skhd/usage.log

@@ -32,8 +32,11 @@ export COLOR_PURPLE_QUIET=0xff8f72e3 # base16
 
 # Mode colors (using loud accents for visibility)
 export MODE_DEFAULT=0xffe7349c       # base08 - hot pink
-export MODE_SWITCHER=0xff04b372      # base0B - green
-export MODE_SWAP=0xff1ad0d6          # base0C - cyan
+export MODE_SWITCHER=0xff1ad0d6      # base0C - cyan
+export MODE_SWAP=0xff458ae2          # base0D - blue
 export MODE_TREE=0xfff2a633          # base0A - amber
 export MODE_LAYOUT=0xff9871fe        # base0E - purple
 export MODE_MEET=0xfff26c33          # base09 - orange
+
+# Active space accent (matches default mode color)
+export COLOR_ACCENT=$COLOR_CYAN       # 0xff1ad0d6 - cyan (loud)

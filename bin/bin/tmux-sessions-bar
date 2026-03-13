@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# tmux-sessions-bar — render session list with per-session colors
+
+BG="#1a1c22"
+BG_DIM="#282b31"
+FG_DIM="#828079"
+
+current=$(tmux display-message -p '#S')
+sessions=$(tmux list-sessions -F '#S' 2>/dev/null)
+
+out=""
+i=1
+for s in $sessions; do
+  color=$(~/bin/tmux-session-color "$i")
+  if [[ "$s" == "$current" ]]; then
+    out+="#[bg=$color,fg=$BG,bold] $s #[default] "
+  else
+    out+="#[bg=$BG_DIM,fg=$color] $s #[default] "
+  fi
+  i=$((i + 1))
+done
+
+echo "$out"

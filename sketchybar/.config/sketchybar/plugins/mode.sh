@@ -4,17 +4,18 @@
 # Mode Plugin - Updates mode indicator with instant show/hide keybinds
 # ─────────────────────────────────────────────────────────────────────────────
 
-# Colors
-TRANSPARENT="0x00000000"
+# Human++ palette (from colors.sh, with fallbacks)
 COLOR_BG="${COLOR_BG:-0xff1a1c22}"
 COLOR_FG="${COLOR_FG:-0xffdbd6cc}"
-COLOR_ACCENT="${COLOR_ACCENT:-0xffff0074}"
-COLOR_MINT="${COLOR_MINT:-0xff6bffb8}"
-COLOR_CYAN="${COLOR_CYAN:-0xff5ce1ff}"
-COLOR_ORANGE="${COLOR_ORANGE:-0xffffb86c}"
-COLOR_PURPLE="${COLOR_PURPLE:-0xffbd93f9}"
-COLOR_RED="${COLOR_RED:-0xffff5555}"
 COLOR_FG_DIM="${COLOR_FG_DIM:-0xff5a5d62}"
+COLOR_PINK="${COLOR_RED:-0xffe7349c}"         # base08 - errors, attention
+COLOR_ORANGE="${COLOR_ORANGE:-0xfff26c33}"    # base09 - warnings
+COLOR_AMBER="${COLOR_YELLOW:-0xfff2a633}"     # base0A - caution
+COLOR_GREEN="${COLOR_GREEN:-0xff04b372}"      # base0B - success
+COLOR_CYAN="${COLOR_CYAN:-0xff1ad0d6}"        # base0C - info
+COLOR_BLUE="${COLOR_BLUE:-0xff458ae2}"        # base0D - links
+COLOR_PURPLE="${COLOR_PURPLE:-0xff9871fe}"    # base0E - special
+COLOR_HUMAN="${COLOR_HUMAN:-0xffbbff00}"     # base0F - human intent / lime
 
 TIMEOUT=5
 MODE_EXPANDED_FILE="/tmp/sketchybar_mode_expanded"
@@ -73,39 +74,43 @@ fi
 MODE="${MODE:-$(cat /tmp/skhd_mode 2>/dev/null || echo "default")}"
 
 case "$MODE" in
-  switcher|swap|tree|layout|meet) ;;
+  switcher|swap|tree|layout|meet|tmux) ;;
   *) MODE="default" ;;
 esac
 
 echo "$MODE" > /tmp/skhd_mode
 
 case "$MODE" in
-  switcher) COLOR=$COLOR_MINT;   LABEL="SWITCH" ;;
-  swap)     COLOR=$COLOR_CYAN;   LABEL="MOVE" ;;
-  tree)     COLOR=$COLOR_ORANGE; LABEL="SIZE" ;;
+  switcher) COLOR=$COLOR_CYAN;   LABEL="SWITCH" ;;
+  swap)     COLOR=$COLOR_BLUE;   LABEL="MOVE" ;;
+  tree)     COLOR=$COLOR_AMBER;  LABEL="SIZE" ;;
   layout)   COLOR=$COLOR_PURPLE; LABEL="LAYOUT" ;;
-  meet)     COLOR=$COLOR_RED;    LABEL="MEET" ;;
-  *)        COLOR=$COLOR_ACCENT; LABEL="DEFAULT" ;;
+  meet)     COLOR=$COLOR_ORANGE; LABEL="MEET" ;;
+  tmux)     COLOR=$COLOR_HUMAN;  LABEL="TMUX" ;;
+  *)        COLOR=$COLOR_PINK;   LABEL="DEFAULT" ;;
 esac
 
 case "$MODE" in
   default)
-    CHIPS=("^F|switch|$COLOR_MINT" "^M|meet|$COLOR_RED" "^hjkl|focus|$COLOR_ACCENT" "⌘⇧↩|term|$COLOR_ACCENT")
+    CHIPS=("^F|switch|$COLOR_CYAN" "^M|meet|$COLOR_ORANGE" "^hjkl|focus|$COLOR_PINK" "⌘⇧↩|term|$COLOR_PINK")
     ;;
   switcher)
-    CHIPS=("m|move|$COLOR_CYAN" "l|layout|$COLOR_PURPLE" "s|size|$COLOR_ORANGE" "g|meet|$COLOR_RED" "↩|term|$COLOR_MINT" "d|scatter|$COLOR_MINT" "⇧1-9|send|$COLOR_MINT" "zxc|mon|$COLOR_MINT")
+    CHIPS=("m|move|$COLOR_BLUE" "l|layout|$COLOR_PURPLE" "s|size|$COLOR_AMBER" "t|tmux|$COLOR_HUMAN" "g|meet|$COLOR_ORANGE" "o|tidy|$COLOR_CYAN" "↩|term|$COLOR_CYAN" "⇧0-9|send|$COLOR_CYAN")
     ;;
   swap)
-    CHIPS=("hjkl|swap|$COLOR_CYAN" "⇧hjkl|warp|$COLOR_CYAN" "y|flip-y|$COLOR_CYAN" "x|flip-x|$COLOR_CYAN" "s|stack|$COLOR_CYAN" "⇥|next|$COLOR_CYAN")
+    CHIPS=("hjkl|swap|$COLOR_BLUE" "⇧hjkl|warp|$COLOR_BLUE" "y|flip-y|$COLOR_BLUE" "x|flip-x|$COLOR_BLUE" "s|stack|$COLOR_BLUE")
     ;;
   tree)
-    CHIPS=("f|full|$COLOR_ORANGE" "⇧F|native|$COLOR_ORANGE" "d|parent|$COLOR_ORANGE" "w|float|$COLOR_ORANGE" "r|rotate|$COLOR_ORANGE" "s|split|$COLOR_ORANGE" "hjkl|size|$COLOR_ORANGE" "e|bal|$COLOR_ORANGE")
+    CHIPS=("f|full|$COLOR_AMBER" "⇧F|native|$COLOR_AMBER" "d|parent|$COLOR_AMBER" "w|float|$COLOR_AMBER" "r|rotate|$COLOR_AMBER" "s|split|$COLOR_AMBER" "m|min|$COLOR_AMBER" "p|pip|$COLOR_AMBER")
     ;;
   layout)
-    CHIPS=("a|bsp|$COLOR_PURPLE" "s|monocle|$COLOR_PURPLE" "d|float|$COLOR_PURPLE" "o|padding|$COLOR_PURPLE")
+    CHIPS=("a|bsp|$COLOR_PURPLE" "s|stack|$COLOR_PURPLE" "d|float|$COLOR_PURPLE" "o|padding|$COLOR_PURPLE")
     ;;
   meet)
-    CHIPS=("d|mic|$COLOR_RED" "e|cam|$COLOR_RED" "q|leave|$COLOR_RED")
+    CHIPS=("d|mic|$COLOR_ORANGE" "e|cam|$COLOR_ORANGE" "q|leave|$COLOR_ORANGE")
+    ;;
+  tmux)
+    CHIPS=("f|pick|$COLOR_HUMAN" "⎵|last|$COLOR_HUMAN" "np|sess←→|$COLOR_HUMAN" "hl|win←→|$COLOR_HUMAN" "1-9|win#|$COLOR_HUMAN" "c|new|$COLOR_HUMAN" "d|close|$COLOR_HUMAN" "r|rename|$COLOR_HUMAN")
     ;;
   *)
     CHIPS=()

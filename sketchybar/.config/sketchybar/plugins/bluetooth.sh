@@ -4,8 +4,7 @@
 # Bluetooth Plugin - Shows Bluetooth status and connected devices
 # ─────────────────────────────────────────────────────────────────────────────
 
-COLOR_FG_DIM=0xff6272a4
-COLOR_CYAN=0xff5ce1ff
+source "$HOME/.config/sketchybar/colors.sh"
 
 # Check if Bluetooth is on
 BT_POWER=$(blueutil --power 2>/dev/null)

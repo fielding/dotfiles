@@ -4,9 +4,7 @@
 # Mic Plugin - Shows mic mute status, toggles on click
 # ─────────────────────────────────────────────────────────────────────────────
 
-COLOR_FG_DIM=0xff6272a4
-COLOR_RED=0xffff5555
-COLOR_MINT=0xff6bffb8
+source "$HOME/.config/sketchybar/colors.sh"
 
 # Handle toggle
 if [ "$1" = "--toggle" ]; then
@@ -35,7 +33,7 @@ if [ "$INPUT_VOL" -eq 0 ]; then
 else
   ICON="󰍬"
   if [ "$MODE" = "meet" ]; then
-    COLOR=$COLOR_MINT
+    COLOR=$COLOR_GREEN
   else
     COLOR=$COLOR_FG_DIM
   fi

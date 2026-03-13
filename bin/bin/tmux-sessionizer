@@ -1,0 +1,204 @@
+#!/usr/bin/env bash
+# tmux-sessionizer — fuzzy-find a project and switch to its tmux session
+# Shows project status, git info, and session state in a preview pane.
+#
+# Usage:
+#   tmux-sessionizer           # interactive fzf picker
+#   tmux-sessionizer <dir>     # jump directly to session for <dir>
+
+set -euo pipefail
+
+PROJECT_DIRS=(
+  ~/src/hack
+  ~/src/work
+  ~/src/oss
+  ~/etc
+)
+
+# Go two levels deep under src/work (e.g. ~/src/work/freed/comms)
+DEEP_DIRS=(
+  ~/src/work
+)
+
+# ── Session name derivation ──────────────────────────────────────────────────
+
+_session_name() {
+  local dir="$1"
+  local parent base
+  parent=$(basename "$(dirname "$dir")")
+  base=$(basename "$dir")
+  for d in "${DEEP_DIRS[@]}"; do
+    d="${d/#\~/$HOME}"
+    if [[ "$dir" == "$d"/* ]] && [[ "$(echo "$dir" | tr -cd '/' | wc -c)" -gt "$(echo "$d" | tr -cd '/' | wc -c)" ]]; then
+      base="${parent}-${base}"
+      break
+    fi
+  done
+  echo "$base" | tr '.:' '--'
+}
+
+# ── Direct jump mode ────────────────────────────────────────────────────────
+
+if [[ $# -eq 1 ]]; then
+  selected="$1"
+  session_name=$(_session_name "$selected")
+  if ! tmux has-session -t="$session_name" 2>/dev/null; then
+    tmux new-session -d -s "$session_name" -c "$selected"
+  fi
+  if [[ -n "${TMUX:-}" ]]; then
+    tmux switch-client -t "$session_name"
+  else
+    tmux attach-session -t "$session_name"
+  fi
+  exit 0
+fi
+
+# ── Build candidate list ────────────────────────────────────────────────────
+
+# Get active tmux sessions
+declare -A active_sessions=()
+while IFS= read -r line; do
+  [[ -n "$line" ]] && active_sessions["$line"]=1
+done < <(tmux list-sessions -F '#S' 2>/dev/null)
+
+# Collect all candidate dirs
+all_dirs=$(
+  {
+    for d in "${PROJECT_DIRS[@]}"; do
+      find "$d" -mindepth 1 -maxdepth 1 -type d 2>/dev/null
+    done
+    for d in "${DEEP_DIRS[@]}"; do
+      find "$d" -mindepth 2 -maxdepth 2 -type d 2>/dev/null
+    done
+    for d in "${PROJECT_DIRS[@]}"; do
+      [[ -d "$d" ]] && echo "$d"
+    done
+  } | sort -u
+)
+
+# Filter to git repos only, get timestamps in parallel
+stamped=""
+while IFS= read -r dir; do
+  [[ -z "$dir" ]] && continue
+  [[ -d "$dir/.git" ]] || [[ -n "${active_sessions[$(_session_name "$dir")]+x}" ]] || continue
+  echo "$dir"
+done <<< "$all_dirs" | xargs -P8 -I{} bash -c '
+  dir="$1"
+  epoch=$(git -C "$dir" log -1 --format=%ct 2>/dev/null || echo 0)
+  echo "$epoch $dir"
+' _ {} | sort -rn > /tmp/tmux-sessionizer-$$
+
+# Build formatted list: active sessions first, then rest by recency
+formatted=""
+declare -a seen=()
+
+# Active sessions pinned to top
+while IFS= read -r line; do
+  [[ -z "$line" ]] && continue
+  dir="${line#* }"
+  sname=$(_session_name "$dir")
+  if [[ -n "${active_sessions[$sname]+x}" ]]; then
+    wins=$(tmux list-windows -t "$sname" 2>/dev/null | wc -l | tr -d ' ')
+    formatted+="● ${dir/#$HOME/\~}  [${wins}w]"$'\n'
+    seen+=("$dir")
+  fi
+done < /tmp/tmux-sessionizer-$$
+
+# Rest sorted by recency
+while IFS= read -r line; do
+  [[ -z "$line" ]] && continue
+  dir="${line#* }"
+  # Skip if already shown as active
+  skip=""
+  for s in "${seen[@]}"; do [[ "$s" == "$dir" ]] && skip=1 && break; done
+  [[ -n "$skip" ]] && continue
+  formatted+="  ${dir/#$HOME/\~}"$'\n'
+done < /tmp/tmux-sessionizer-$$
+
+rm -f /tmp/tmux-sessionizer-$$
+
+# ── Preview script (passed inline to fzf) ───────────────────────────────────
+
+preview_cmd='
+dir=$(echo {} | sed "s/^[● ]*//" | sed "s/  \[.*$//" | sed "s|~|$HOME|")
+printf "\033[1;36m%s\033[0m\n" "$(basename "$dir")"
+printf "\033[2m%s\033[0m\n\n" "$dir"
+
+# git info
+if [ -d "$dir/.git" ]; then
+  branch=$(git -C "$dir" branch --show-current 2>/dev/null)
+  dirty=$(git -C "$dir" status --porcelain 2>/dev/null | head -5)
+  ahead=$(git -C "$dir" rev-list --count @{upstream}..HEAD 2>/dev/null || echo 0)
+  behind=$(git -C "$dir" rev-list --count HEAD..@{upstream} 2>/dev/null || echo 0)
+
+  if [ -n "$dirty" ]; then
+    printf "\033[33m⎇  %s ✗\033[0m" "$branch"
+  else
+    printf "\033[32m⎇  %s ✓\033[0m" "$branch"
+  fi
+  [ "$ahead" != "0" ] && printf " ↑%s" "$ahead"
+  [ "$behind" != "0" ] && printf " ↓%s" "$behind"
+  printf "\n\n"
+
+  printf "\033[2m── recent commits ──\033[0m\n"
+  git -C "$dir" log --oneline --no-decorate -5 2>/dev/null
+  printf "\n"
+
+  if [ -n "$dirty" ]; then
+    printf "\033[2m── changes ──\033[0m\n"
+    echo "$dirty"
+    total=$(git -C "$dir" status --porcelain 2>/dev/null | wc -l | tr -d " ")
+    [ "$total" -gt 5 ] && printf "  ... +%s more\n" "$((total - 5))"
+    printf "\n"
+  fi
+fi
+
+# tmux session info
+sname=$(basename "$dir" | tr ".:/" "---")
+if tmux has-session -t="$sname" 2>/dev/null; then
+  printf "\033[2m── tmux windows ──\033[0m\n"
+  tmux list-windows -t "$sname" -F "  #{window_index}: #{window_name} #{?window_active,(active),}" 2>/dev/null
+  printf "\n"
+fi
+
+# heartbeat task
+if [ -f "$dir/NEXT_TASK.md" ]; then
+  task=$(cat "$dir/NEXT_TASK.md")
+  printf "\033[2m── next task ──\033[0m\n"
+  printf "\033[35m%s\033[0m\n" "$task"
+fi
+'
+
+# ── Run fzf ──────────────────────────────────────────────────────────────────
+
+selected=$(echo "$formatted" | fzf \
+  --ansi \
+  --prompt="project> " \
+  --reverse \
+  --border=rounded \
+  --border-label=" sessions " \
+  --border-label-pos=3 \
+  --preview="$preview_cmd" \
+  --preview-window=right:50%:wrap \
+  --color="pointer:#e7349c,prompt:#1ad0d6,hl:#e7349c,hl+:#e7349c,border:#5a5d62,label:#1ad0d6" \
+) || exit 0
+
+# ── Parse selection and switch ───────────────────────────────────────────────
+
+# Strip status indicator and window count
+selected=$(echo "$selected" | sed 's/^[● ]*//' | sed 's/  \[.*$//')
+selected="${selected/#\~/$HOME}"
+
+[[ -z "$selected" ]] && exit 0
+
+session_name=$(_session_name "$selected")
+
+if ! tmux has-session -t="$session_name" 2>/dev/null; then
+  tmux new-session -d -s "$session_name" -c "$selected"
+fi
+
+if [[ -n "${TMUX:-}" ]]; then
+  tmux switch-client -t "$session_name"
+else
+  tmux attach-session -t "$session_name"
+fi
