@@ -178,4 +178,21 @@ load-anthropic-key() {
   echo "ANTHROPIC_API_KEY loaded into shell."
 }
 
+
+# cat files with headers (useful for LLM context)
+concat() { [ $# -eq 0 ] && set -- *; for f in "$@"; do printf '=== %s ===\n' "$f"; cat "$f"; printf '\n\n'; done; }
+
+# Track CWD per-tty for yabai-organize (survives title overrides from Claude Code etc.)
+__track_cwd() {
+  local tty_id=$(tty 2>/dev/null | tr '/' '_')
+  [ -n "$tty_id" ] && echo "$PWD" > "/tmp/tty_cwd${tty_id}"
+}
+if [ -n "$ZSH_VERSION" ]; then
+  autoload -U add-zsh-hook
+  add-zsh-hook chpwd __track_cwd
+  add-zsh-hook precmd __track_cwd
+fi
+# Write initial CWD on shell start
+__track_cwd
+
 # vim: ft=sh

@@ -19,3 +19,9 @@ fi
 [ -n "${ZPLUG_HOME:-}" ] && export ZPLUG_HOME
 [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
 [ -f "$HOME/.aftman/env" ] && . "$HOME/.aftman/env"
+
+export PATH="$PATH:/Users/fielding/.config/.foundry/bin"
+
+export PATH="$PATH:/Users/fielding/.config/.foundry/bin"
+
+export PATH="$PATH:/Users/fielding/.config/.foundry/bin"

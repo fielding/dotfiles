@@ -1,15 +1,8 @@
 #!/usr/bin/env sh
 
-# bar settings
-yabai -m config status_bar                   on
-yabai -m config status_bar_text_font         "Helvetica Neue:Bold:12.0"
-yabai -m config status_bar_icon_font         "FontAwesome:Regular:12.0"
-yabai -m config status_bar_background_color  0xff202020
-yabai -m config status_bar_foreground_color  0xffa8a8a8
-yabai -m config status_bar_space_icon_strip  I II III IV V VI VII VIII IX X
-yabai -m config status_bar_power_icon_strip   
-yabai -m config status_bar_space_icon        
-yabai -m config status_bar_clock_icon        
+# Auto-reload scripting addition on Dock restart (e.g. after defaults changes)
+yabai -m signal --add event=dock_did_restart action="sudo yabai --load-sa"
+sudo yabai --load-sa
 
 # global settings
 yabai -m config mouse_follows_focus          off
@@ -17,18 +10,12 @@ yabai -m config focus_follows_mouse          off
 yabai -m config window_topmost               off
 yabai -m config window_opacity               off
 yabai -m config window_shadow                on
-# Borders now handled by JankyBorders (see ~/etc/borders/bordersrc)
-yabai -m config window_border                off
-# yabai -m config window_border_width          4
-# yabai -m config active_window_border_color   0xff6f5bab
-# yabai -m config normal_window_border_color   0xff6f5bab
-# yabai -m config insert_window_border_color   0xff7dfdee
 yabai -m config active_window_opacity        1.0
 yabai -m config normal_window_opacity        0.90
 yabai -m config split_ratio                  0.50
 yabai -m config auto_balance                 on
 yabai -m config mouse_modifier               fn
-yabai -m config mouse_action1                move2
+yabai -m config mouse_action1                move
 yabai -m config mouse_action2                resize
 
 # general space settings
@@ -96,5 +83,54 @@ yabai -m rule --add title="^Save" manage=off
 yabai -m rule --add title="^Export" manage=off
 yabai -m rule --add title="^Import" manage=off
 yabai -m rule --add title="^Print" manage=off
+
+# =====================================================
+# APP ROUTING — disabled, using on-demand organizer instead
+# =====================================================
+
+# =====================================================
+# SPACE LABELS (must come before display assignment)
+# =====================================================
+yabai -m space 1 --label main
+yabai -m space 2 --label p1
+yabai -m space 3 --label p2
+yabai -m space 4 --label p3
+yabai -m space 5 --label p4
+yabai -m space 6 --label notes
+yabai -m space 7 --label scratch
+yabai -m space 8 --label inbox
+yabai -m space 9 --label media
+yabai -m space 10 --label comms
+
+# =====================================================
+# SPACE-DISPLAY ASSIGNMENT
+# =====================================================
+# Spaces 1-8 on external display (display 1)
+# Spaces 9-10 on laptop display (display 2)
+yabai -m space 9 --display 2 2>/dev/null
+yabai -m space 10 --display 2 2>/dev/null
+
+# =====================================================
+# PER-SPACE LAYOUT OVERRIDES
+# =====================================================
+yabai -m config --space 10 layout stack   # comms: stack Slack/Gather/Signal
+
+# =====================================================
+# INBOX SIGNAL — disabled for now, too aggressive
+# =====================================================
+# yabai -m signal --add event=window_created action='
+#   win=$(yabai -m query --windows --window $YABAI_WINDOW_ID 2>/dev/null)
+#   [ -z "$win" ] && exit 0
+#   managed=$(echo "$win" | jq -r ".\"is-floating\" | not")
+#   [ "$managed" = "false" ] && exit 0
+#   win_space=$(echo "$win" | jq -r ".space")
+#   focused_space=$(yabai -m query --spaces --space | jq -r ".index")
+#   [ "$win_space" = "$focused_space" ] && exit 0
+#   app=$(echo "$win" | jq -r ".app")
+#   case "$app" in
+#     Slack|Gather|Signal|AyuGram|Obsidian|Notion) exit 0 ;;
+#   esac
+#   yabai -m window $YABAI_WINDOW_ID --space inbox 2>/dev/null
+# '
 
 echo "yabai configuration loaded.."
