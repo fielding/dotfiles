@@ -113,7 +113,7 @@ switcher < cmd - 2 : skl switcher cmd+2 send-mon:2; yabai -m window --display 2;
 # and avoid #{format} strings (they don't expand from outside tmux)
 
 ## session management
-tmux < f : skl tmux f session:pick; tmux display-popup -w 90% -h 80% -E "~/bin/tmux-sessionizer"; skhd -k 'escape'
+tmux < f : skl tmux f session:pick; skhd -k 'escape'; tmux display-popup -w 90% -h 80% -E "~/bin/tmux-sessionizer"
 tmux < space : skl tmux space session:last; tmux switch-client -l
 tmux < r : skl tmux r session:rename; skhd -k 'escape'; tmux command-prompt -I "#S" "rename-session -- '%%'"
 tmux < x : skl tmux x session:kill; tmux display-popup -E "tmux confirm-before -p 'kill session? (y/n)' kill-session"

@@ -195,4 +195,23 @@ fi
 # Write initial CWD on shell start
 __track_cwd
 
+# Ring bell after long-running commands (>30s) to trigger tmux alert badge
+__bell_after_long_cmd() {
+  local elapsed=${EPOCHREALTIME:-0}
+  if [[ -n "$__cmd_start" ]]; then
+    local dur=$(( ${elapsed%.*} - ${__cmd_start%.*} ))
+    if [[ $dur -ge 30 ]]; then
+      printf '\a'
+    fi
+  fi
+  unset __cmd_start
+}
+__cmd_timer_start() {
+  __cmd_start=${EPOCHREALTIME:-$SECONDS}
+}
+if [ -n "$ZSH_VERSION" ]; then
+  add-zsh-hook preexec __cmd_timer_start
+  add-zsh-hook precmd __bell_after_long_cmd
+fi
+
 # vim: ft=sh

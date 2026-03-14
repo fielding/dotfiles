@@ -11,7 +11,7 @@ case "${1:-1}" in
   5) echo "#f2a633" ;;  # amber
   6) echo "#04b372" ;;  # green
   7) echo "#f26c33" ;;  # orange
-  8) echo "#bbff00" ;;  # lime
-  9) echo "#c8518f" ;;  # muted pink
+  8) echo "#c8518f" ;;  # muted pink
+  9) echo "#d68c6f" ;;  # muted orange
   *) echo "#828079" ;;  # secondary
 esac

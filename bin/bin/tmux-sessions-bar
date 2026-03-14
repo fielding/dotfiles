@@ -1,23 +1,27 @@
 #!/usr/bin/env bash
-# tmux-sessions-bar — render session list with per-session colors
+# tmux-sessions-bar — render session list with per-session colors and alert badges
 
 BG="#1a1c22"
 BG_DIM="#282b31"
-FG_DIM="#828079"
+AMBER="#f2a633"
 
 current=$(tmux display-message -p '#S')
-sessions=$(tmux list-sessions -F '#S' 2>/dev/null)
 
 out=""
 i=1
-for s in $sessions; do
+while IFS=$'\t' read -r name alerts; do
   color=$(~/bin/tmux-session-color "$i")
-  if [[ "$s" == "$current" ]]; then
-    out+="#[bg=$color,fg=$BG,bold] $s #[default] "
+  badge=""
+  if [[ "$alerts" == *"!"* ]]; then
+    badge="#[fg=#bbff00]●"
+  fi
+
+  if [[ "$name" == "$current" ]]; then
+    out+="#[bg=$color,fg=$BG,bold] $name ${badge} #[default]"
   else
-    out+="#[bg=$BG_DIM,fg=$color] $s #[default] "
+    out+="#[bg=$BG_DIM,fg=$color] $name ${badge} #[default]"
   fi
   i=$((i + 1))
-done
+done < <(tmux list-sessions -F '#{session_name}	#{session_alerts}' 2>/dev/null)
 
 echo "$out"
