@@ -1,14 +1,12 @@
 #!/usr/bin/env sh
 
 # Auto-reload scripting addition on Dock restart (e.g. after defaults changes)
-yabai -m signal --add event=dock_did_restart action="sudo yabai --load-sa"
-sudo yabai --load-sa
+yabai -m signal --add event=dock_did_restart action="sudo /opt/homebrew/Cellar/yabai/7.1.17/bin/yabai --load-sa"
+sudo /opt/homebrew/Cellar/yabai/7.1.17/bin/yabai --load-sa
 
 # global settings
 yabai -m config mouse_follows_focus          off
 yabai -m config focus_follows_mouse          off
-yabai -m config window_topmost               off
-yabai -m config window_opacity               off
 yabai -m config window_shadow                on
 yabai -m config active_window_opacity        1.0
 yabai -m config normal_window_opacity        0.90
