@@ -1,0 +1,4 @@
+theme = human-plus-plus
+window-decoration = false
+custom-shader = /Users/fielding/src/hack/ghostty-shader-adventures/shaders/splatter.glsl
+custom-shader-animation = true
