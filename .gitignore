@@ -32,7 +32,14 @@ sketchybar/.config/sketchybar/helpers/
 # Symlinks to local builds
 bin/bin/do
 bin/bin/hold
+bin/bin/iter
 bin/bin/mon
 bin/bin/tix
 bin/bin/vent
+bin/bin/warm
+bin/bin/zed
+.handoff
 .handoff/
+
+# Karabiner app-generated config backups
+karabiner/.config/karabiner/automatic_backups/
