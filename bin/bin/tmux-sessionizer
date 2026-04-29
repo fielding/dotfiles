@@ -12,6 +12,8 @@ PROJECT_DIRS=(
   ~/src/hack
   ~/src/work
   ~/src/oss
+  ~/src/research
+  ~/src/scratch
   ~/etc
 )
 

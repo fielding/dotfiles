@@ -116,6 +116,7 @@ switcher < cmd - 2 : skl switcher cmd+2 send-mon:2; yabai -m window --display 2;
 tmux < f : skl tmux f session:pick; skhd -k 'escape'; tmux display-popup -w 90% -h 80% -E "~/bin/tmux-sessionizer"
 tmux < space : skl tmux space session:last; tmux switch-client -l
 tmux < r : skl tmux r session:rename; skhd -k 'escape'; tmux command-prompt -I "#S" "rename-session -- '%%'"
+tmux < s : skl tmux s session:new; skhd -k 'escape'; tmux command-prompt "new-session -s '%%'"
 tmux < x : skl tmux x session:kill; tmux display-popup -E "tmux confirm-before -p 'kill session? (y/n)' kill-session"
 
 ## window (tab) navigation — stays in tmux mode so you can browse
