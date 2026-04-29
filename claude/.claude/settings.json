@@ -1,0 +1,75 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(brew install:*)",
+      "Bash(chmod:*)",
+      "Bash(icalBuddy:*)",
+      "Bash(sketchybar:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd JankyBorders, SketchyBar, and improve skhd/yabai configs\n\n- Add JankyBorders config with mode-colored window borders\n- Add SketchyBar setup with mode indicator popup cheatsheet,\n  calendar with meeting countdown/click-to-join, battery, clock\n- Update skhd with quick actions \\(alt+e/r/f/t\\), scatter windows,\n  stack operations, PiP window shortcut\n- Add yabai float rules for GIMP, Inkscape, Blender, VLC,\n  LibreOffice and generic dialog patterns\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport:*)",
+      "Bash(blueutil:*)",
+      "Bash(networksetup -getairportnetwork:*)",
+      "Bash(networksetup -listallhardwareports:*)",
+      "Bash(ipconfig getifaddr:*)",
+      "Bash(system_profiler:*)",
+      "Bash(skhd --reload:*)",
+      "Bash(borders active_color=0xffff6188)",
+      "Bash(borders active_color=0xffff0074)",
+      "Bash(bash -x:*)",
+      "Bash(NAME=calendar /Users/fielding/etc/sketchybar/.config/sketchybar/plugins/calendar.sh:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(pgrep:*)",
+      "Bash(screencapture:*)",
+      "Bash(brew services:*)",
+      "Bash(fc-list:*)",
+      "Bash(git stash push:*)",
+      "Bash(git stash:*)"
+    ],
+    "defaultMode": "dontAsk"
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/fielding/src/hack/glean/.venv/bin/python3 /Users/fielding/src/hack/glean/hooks/claude_dailylog_hook.py"
+          },
+          {
+            "type": "command",
+            "command": "printf '\\a' > /dev/tty"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/fielding/src/hack/glean/.venv/bin/python3 /Users/fielding/src/hack/glean/hooks/claude_dailylog_hook.py"
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "npx -y ccstatusline@latest",
+    "padding": 0
+  },
+  "enabledPlugins": {
+    "swift-lsp@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "obsidian-cli-skill": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/pablo-mano/Obsidian-CLI-skill.git"
+      }
+    }
+  },
+  "skipDangerousModePermissionPrompt": true
+}
