@@ -2,7 +2,30 @@
 [ -f "$HOME/.shell_functions" ] && . "$HOME/.shell_functions"
 [ -f "$HOME/.shell_extra" ] && . "$HOME/.shell_extra"
 
+# Initialize completions early so zplug (and anything else that calls
+# compinit transitively) inherits the -i flag and skips the insecure-
+# directories prompt for /opt/homebrew/share.
+zstyle ':completion:*' completer _complete _ignored _correct _approximate
+zstyle ':completion:*' matcher-list 'm:{[:lower:]}={[:upper:]}' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'l:|=* r:|=*'
+zstyle :compinstall filename '/Users/fielding/.zshrc'
+if type brew &> /dev/null; then
+  FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
+fi
+autoload -Uz compinit
+compinit -i -u
 
+# zplug's load.zsh calls `compinit -d ...` without security flags, which
+# prompts about /opt/homebrew/share (group-writable since brew 4.x) and
+# aborts. Shadow compinit with a function that re-adds -i; it self-clears
+# after one call so the autoloaded compinit is restored.
+compinit() {
+  unfunction compinit
+  autoload -Uz compinit
+  compinit -i "$@"
+}
+
+# zplug uses `git` directly; temporarily unalias so it doesn't call `nit`
+unalias git 2>/dev/null
 if [ -n "${ZPLUG_HOME:-}" ] \
    && [ -r "$ZPLUG_HOME/init.zsh" ] \
    && [ -d "$ZPLUG_HOME/log" ] && [ -w "$ZPLUG_HOME/log" ] \
@@ -23,6 +46,7 @@ if [ -n "${ZPLUG_HOME:-}" ] \
 
   zplug load
 fi
+alias git='nit' g='nit'
 
 PURE_PROMPT_SYMBOL_COLOR=red
 export PURE_PROMPT_SYMBOL_COLOR
@@ -42,20 +66,6 @@ setopt interactive_comments
 setopt sharehistory
 
 bindkey -v
-
-# The following lines were added by compinstall
-
-zstyle ':completion:*' completer _complete _ignored _correct _approximate
-zstyle ':completion:*' matcher-list 'm:{[:lower:]}={[:upper:]}' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'l:|=* r:|=*'
-zstyle :compinstall filename '/Users/fielding/.zshrc'
-
-if type brew &> /dev/null; then
-  FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
-  autoload -Uz compinit
-  compinit -i -u
-fi
-# End of lines added by compinstall
-
 
 . $BREW_PATH/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
@@ -170,4 +180,4 @@ export NVM_DIR="$HOME/.config/nvm"
 # added by Speedscale
 export SPEEDSCALE_HOME=/Users/fielding/.speedscale
 export PATH=$PATH:$SPEEDSCALE_HOME
-
+export PATH="/opt/homebrew/opt/openjdk@17/bin:$PATH"

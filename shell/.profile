@@ -135,10 +135,5 @@ PATH=$PATH:$GOPATH/bin
 PATH="$HOME/bin:$BREW_PATH/bin:$BREW_PATH/opt/coreutils/libexec/gnubin:/usr/local/bin:/opt/homebrew/opt/gems:$GEM_PATH:${AIR_HOME}/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/git/bin:/opt/bin:$HOME/.cabal/bin:$HOME/perl5/bin:/Library/TeX/texbin:$HOME/.cargo/env:$ANDROID_HOME/tools:$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:/usr/local/lib/python2.7/site-packages:/opt/metasploit-framework/bin:$BREW_PATH/Cellar/openssl/1.0.2l/bin:$GOPATH/bin:$HOME/Library/Python/3.6/bin:$ESP_PATH:$BREW_PATH/opt/llvm/bin:$MOS_BIN:$HOME/Library/Application Support/itch/apps/butler:$PATH"
 export PATH
 
-. "$HOME/.local/share/../bin/env"
-. "$HOME/.aftman/env"
-
-. "$HOME/.langflow/uv/env"
-
 # Anthropic key loaded on-demand via claude-api alias (avoids conflicts with Max plan)
 export OPENAI_API_KEY=$(security find-generic-password -s "OPENAI_API_KEY" -w 2>/dev/null)

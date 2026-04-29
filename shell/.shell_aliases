@@ -1,6 +1,6 @@
 alias b='brew'
-alias git='hub'
-alias g='hub'
+alias git='nit'
+alias g='nit'
 alias kb='keybase'
 alias se='sudo nvim'
 alias tm='tmux'
