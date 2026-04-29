@@ -1,164 +1,66 @@
 # dotfiles
 
-## Table of Contents
-- [Overview](#overview)
-- [Installation](#installation)
-- [Extended information](#extended-information)
-- [TODO](#todo)
-- [Inspiration / Special Thanks](#inspiration-/-special-thanks-to...)
+My macOS configuration, managed with GNU Stow. Each top-level directory
+is a stow package; running `stow <name>` symlinks its contents into `~`.
 
----
+## Active packages
 
-## Overview
+| Package      | What it is                                                         |
+|--------------|--------------------------------------------------------------------|
+| `bin`        | personal scripts (`tmux-sessionizer`, `sync-tix-to-vault`, …)      |
+| `borders`    | JankyBorders — window outlines tinted by skhd mode                 |
+| `claude`     | Claude Code global settings, hooks, status line                    |
+| `codex`      | OpenAI Codex CLI config                                            |
+| `fastfetch`  | system info banner at shell startup                                |
+| `fonts`      | installed font files                                               |
+| `ghostty`    | Ghostty terminal config                                            |
+| `git`        | gitconfig, commit template, global gitignore                       |
+| `karabiner`  | keyboard remapping                                                 |
+| `shell`      | shell-agnostic `.profile`, aliases, functions                      |
+| `sketchybar` | macOS status bar with mode indicator, calendar, battery, clock     |
+| `skhd`       | modal hotkey daemon (yabai control, tmux mode, …)                  |
+| `terminfo`   | italic-capable iterm and tmux terminfo entries                     |
+| `tmux`       | true-color tmux with bell alerts and per-session colors            |
+| `vim`        | vim config and plugin set                                          |
+| `yabai`      | tiling window manager                                              |
+| `zsh`        | zsh config with zplug, purer prompt, Human++ theme                 |
 
-```
-babel       >
-bash        > bash settings, aliases, functions
-bin         > scripts
-dircolors   > color settings for ls output
-eslint      >
-fonts       >
-git         > global git configuration and templates
-grc         > colorized command output configuration
-iterm2      > iterm2 color presets
-karabiner   > karabiner config files
-mpv         >
-neovim      > config and colors for the successor to vim
-readline    > vi editing mode and iterm2 unicode usage via .inputrc
-ruby        >
-shell       >
-terminfo    > iterm and tmux-256color with italics support terminfo files
-tmux        > .tmux.conf and tmux plugins
-vim         >
-vint        >
-.osx        > sensible os x defaults
-```
+## Legacy
 
----
+Kept around for reference or because something on disk still expects
+them, but no longer maintained: `babel`, `bash`, `chunkwm` (replaced by
+yabai), `clang-format`, `dircolors`, `eslint`, `grc`, `homebrew` (the
+Brewfile is from 2020 and stale), `iterm2` (replaced by ghostty), `khd`
+(replaced by skhd), `mpv`, `neovim`, `readline`, `ruby`, `spaceship`,
+`vint`.
 
 ## Installation
 
 ```sh
 brew install stow
 
-stow babel bash bin dircolors eslint fonts git grc iterm2 mpv neovim readline ruby shell terminfo tmux vim vint
+# Symlink the active set:
+stow bin borders claude codex fastfetch fonts ghostty git karabiner \
+     shell sketchybar skhd terminfo tmux vim yabai zsh
 
-git submodule update --init --recursive
-
-tic ~/.terminfo/69/iterm.terminfo
+# Compile terminfo entries (italic support in tmux):
 tic ~/.terminfo/74/tmux.terminfo
 tic ~/.terminfo/74/tmux-256color.terminfo
-
-vim +BundleInstall +BundleClean +q
-
-~/.tmux/plugins/tpm/bin/install_plugins
 ```
 
----
+`bootstrap.sh` covers a from-scratch macOS setup (timezone, hostname,
+Homebrew, sane Finder defaults). It is dated and may need editing
+before re-running on a fresh machine.
 
-## Extended Information
+## Theme
 
-### Bash
+Most colors come from [Human++](https://github.com/justfielding/human-plus-plus),
+my base24 palette. The shell-init script under
+`~/src/hack/human-plus-plus/dist/shell-init.sh` is sourced from `.zshrc`
+and emits the OSC palette overrides at startup.
 
-### VIM
+## Inspiration / thanks
 
-![VIM Screenshot](previews/vim.png)
-
-#### VIM Plugins
-
-##### Feature Plugins
-[bronson/vim-trailing-whitespace](https://github.com/bronson/vim-trailing-whitespace)  
-[nathanaelkane/vim-indent-guides](https://github.com/nathanaelkane/vim-indent-guides)  
-[tpope/vim-afterimage](https://github.com/tpope/vim-afterimage)  
-[scrooloose/syntastic](https://github.com/scrooloose/syntastic)  
-[scrooloose/nerdtree](https://github.com/scrooloose/nerdtree)  
-[terryma/vim-multiple-cursors](https://github.com/terryma/vim-multiple-cursors)  
-[kien/ctrlp.vim](https://github.com/kien/ctrlp.vim)  
-[ryanss/vim-hackernews](https://github.com/ryanss/vim-hackernews)  
-[fs111/pydoc.vim](https://github.com/fs111/pydoc.vim)  
-[christoomey/vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator)  
-[sjl/vitality.vim](https://github.com/sjl/vitality.vim)  
-[shime/vim-livedown](https://github.com/shime/vim-livedown)  
-[mrtazz/simplenote.vim](https://github.com/mrtazz/simplenote.vim)  
-[junegunn/goyo.vim](https://github.com/junegunn/goyo.vim)  
-[moll/vim-bbye](https://github.com/moll/vim-bbye)  
-[tomtom/tcomment_vim](https://github.com/tomtom/tcomment_vim)  
-[mhinz/vim-startify](https://github.com/mhinz/vim-startify)  
-[airblade/vim-gitgutter](https://github.com/airblade/vim-gitgutter)  
-[godlygeek/csapprox](https://github.com/godlygeek/csapprox)  
-[godlygeek/tabular](https://github.com/godlygeek/tabular)  
-
-##### Specific language support/features
-
-[plasticboy/vim-markdown](https://github.com/plasticboy/vim-markdown)  
-[leshill/vim-json](https://github.com/leshill/vim-json)  
-
-
-##### Current Color Scheme
-
-[w0ng/vim-hybrid](https://github.com/w0ng/vim-hybrid)  
-
-### Tmux
-
-#### Tmux Plugins
-[tmux-plugins/tmux-sensible](https://github.com/tmux-plugins/tmux-sensible)  
-[tmux-plugins/tmux-pain-control](https://github.com/tmux-plugins/tmux-pain-control)  
-[tmux-plugins/tmux-resurrect](https://github.com/tmux-plugins/tmux-resurrect)  
-[tmux-plugins/tmux-continuum](https://github.com/tmux-plugins/tmux-continuum)  
-
----
-## README Maintenance
-
-vim search and replace to convert bundles.vim to markdown hyperlinks for plugin section.
-
-```
-  %s/[\(.*\)](https://github.com/\(.*\))  /[\1](https:\/\/github.com\/\1)  /
-```
-
----
-## TODO
-
-- [x] binds/tune up text/code folding within vim (temp marking as done, I think I am content with za, zo, zc, and their bigcase counterparts)
-- [x] Rework implementation/installation at new workstation; current .gitignore with the git repo existing in ~ is pretty bogus
-- [x] check in to submodules for tmux/vim/whatev plugins
-- [x] Tmux configuration (basically a default config currently)
-- [ ] write up on using GNU Stow and what each stow package is for, etc
-  - [ ] update "overview" section to include a brief overview of what my settings/additions include
-- [ ] where the hell should I put .colors/fielding? XResources?
-- [ ] find a suitable vim binding for Goyo and Goyo!
-- [ ] check in to vim-hackernews and adding additional color highlighting to
- comments pages. A small dab of color could go a long way
-- [ ] can I get Github Flavored Markdown for livedown/vim-livedown?
-- [ ] Revise Vim plugins; Try and incorporate desired, but currently unsed
-plugins, in to my workflow, and then remove any "unfitting" or not needed.
-- [ ] Tmux scrolling with less
-- [ ] Reevaluate clipboard "functionality" and sanity with vim/tmux and os x
-- [ ] AN OPTIMISTIC ADVENTURE DOWN POSTAL LANE: MUTT the ultimate setup.
-  - [ ] MUTT
-  - [ ] notmuch
-  - [ ] msmtp
-  - [ ] POSSIBLY offlineimap
-  - [ ] contacts (brew install contacts)
-- [ ] License/consider if needed
-- [ ] Colors between powerline/tmux/vim seem to be off a tad bit
-- [ ] .vimrc restructuring using folding and better sections
-- [ ] add my weechat configuration
-- [ ] submodule upkeep? (git submodule foreach git pull or git submodule foreach git pull origin master)
-- [ ] actually configure and include custom powerline configuration for latest version
-- [ ] include and test pip-upgrade-all with update alias
-- [ ] seinfeild/git commit daily indicator on tmux status line
-- [ ] reevaluate tmux status line and add/remove accordingly
-- [ ] vim PluginUpdate fails on gmarik/vundle, just need to make sure this is correct behavior
-- [ ] revisit grc
-- [ ] utilize grc.bashrc (as an include in the bash_profile.d include directory)
-
-### Someday/Maybe
-- [ ] Hotline Miami Color Scheme
-
----
-## Inspiration / Special Thanks to...
-
-* [Jeffrey Carpenter](https://github.com/i8degrees), his [dotfiles repository](https://github.com/i8degrees/dotfiles), and for having somebody to "talk nerdy" to!
-* [Mathias Bynens](https://mathiasbynens.be/) and his [dotfile repository](https://github.com/mathiasbynens/dotfiles)
-* [Xero Harrison](http://xero.nu) and his [dotfile repository](https://github.com/xero/dotfiles)
-
+- [Jeffrey Carpenter](https://github.com/i8degrees) and his [dotfiles](https://github.com/i8degrees/dotfiles) — for somebody to "talk nerdy" to.
+- [Mathias Bynens](https://mathiasbynens.be/) and his [dotfiles](https://github.com/mathiasbynens/dotfiles).
+- [Xero Harrison](http://xero.nu) and his [dotfiles](https://github.com/xero/dotfiles).
