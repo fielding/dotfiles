@@ -1,3 +1,14 @@
+# yank — copy file(s) or stdin into the macOS clipboard
+# usage: yank file.md
+#        cmd | yank
+yank() {
+  if [ $# -eq 0 ]; then
+    pbcopy
+  else
+    cat -- "$@" | pbcopy
+  fi
+}
+
 # search man page
 # example: sman less -R
 # will search the man page of less for '-R'

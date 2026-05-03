@@ -48,10 +48,6 @@ tic ~/.terminfo/74/tmux.terminfo
 tic ~/.terminfo/74/tmux-256color.terminfo
 ```
 
-`bootstrap.sh` covers a from-scratch macOS setup (timezone, hostname,
-Homebrew, sane Finder defaults). It is dated and may need editing
-before re-running on a fresh machine.
-
 ## Theme
 
 Most colors come from [Human++](https://github.com/justfielding/human-plus-plus),
