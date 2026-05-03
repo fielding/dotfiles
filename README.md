@@ -3,6 +3,8 @@
 My macOS configuration, managed with GNU Stow. Each top-level directory
 is a stow package; running `stow <name>` symlinks its contents into `~`.
 
+![desktop preview](previews/desktop.png)
+
 ## Active packages
 
 | Package      | What it is                                                         |
