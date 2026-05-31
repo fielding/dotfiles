@@ -37,8 +37,9 @@ temp()
 }
 bat()
 {
-  status=$(pmset -g batt | awk -F '; *' 'NR==2 { print $2 }')
-	bat_perc=$(pmset -g batt | awk 'NR==2 { gsub(/;/,""); print $2 }')
+  batt=$(pmset -g batt | awk 'NR==2')
+  status=$(printf '%s\n' "$batt" | awk -F '; *' '{ print $2 }')
+  bat_perc=$(printf '%s\n' "$batt" | awk '{ for (i = 1; i <= NF; i++) if ($i ~ /^[0-9]+%;?$/) { gsub(/;/, "", $i); print $i; exit } }')
 
   case $status in
 		full)
@@ -50,12 +51,25 @@ bat()
 		charging)
 			st="+"
 			;;
+		*)
+			st="?"
+			;;
 	esac
-	echo $st$bat_perc
+	printf '%s%s\n' "$st" "$bat_perc"
 }
 cpu()
 {
-  iostat -w 1 -c 2 -n 1 | tail -1 | awk '{usage=100-$6} END {printf("%d",usage)}';
+  top -l 1 -s 0 -n 0 2>/dev/null | awk -F'[:,% ]+' '
+    /CPU usage/ {
+      for (i = 1; i <= NF; i++) {
+        if ($i == "user") user = $(i - 1)
+        if ($i == "sys") sys = $(i - 1)
+      }
+      printf("%d", user + sys)
+      found = 1
+    }
+    END { if (!found) exit 1 }
+  ' || iostat -w 1 -c 2 -n 1 | tail -1 | awk '{usage=100-$NF} END {printf("%d",usage)}'
 }
 ram()
 {
