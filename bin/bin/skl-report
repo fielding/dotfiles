@@ -1,0 +1,90 @@
+#!/bin/sh
+set -eu
+
+usage() {
+  cat <<'USAGE'
+Usage: skl-report [LOGFILE] [LIMIT]
+
+Summarize ~/.local/share/skhd/usage.log entries recorded by skl.
+The log format is: ISO_TIMESTAMP command [args...]
+
+Outputs total entries, first/last timestamps, top commands, and top full bindings.
+USAGE
+}
+
+case "${1:-}" in
+  -h|--help)
+    usage
+    exit 0
+    ;;
+esac
+
+log=${1:-$HOME/.local/share/skhd/usage.log}
+limit=${2:-10}
+
+case "$limit" in
+  ''|*[!0-9]*)
+    echo "skl-report: LIMIT must be a positive integer" >&2
+    exit 2
+    ;;
+esac
+
+if [ "$limit" -lt 1 ]; then
+  echo "skl-report: LIMIT must be a positive integer" >&2
+  exit 2
+fi
+
+if [ ! -f "$log" ]; then
+  echo "skl-report: no usage log found at $log" >&2
+  exit 1
+fi
+
+awk -v limit="$limit" '
+  NF >= 2 {
+    total++
+    if (first == "") first = $1
+    last = $1
+    command = $2
+    commands[command]++
+
+    binding = $2
+    for (i = 3; i <= NF; i++) binding = binding " " $i
+    bindings[binding]++
+  }
+
+  END {
+    if (total == 0) {
+      print "skl usage: 0 entries"
+      exit 0
+    }
+
+    print "skl usage: " total " entries"
+    print "first: " first
+    print "last:  " last
+    print ""
+
+    print "Top commands:"
+    print_top(commands, limit)
+    print ""
+
+    print "Top full bindings:"
+    print_top(bindings, limit)
+  }
+
+  function print_top(counts, max,    n, key, i, best_key, best_count, used) {
+    for (i = 1; i <= max; i++) {
+      best_key = ""
+      best_count = -1
+      for (key in counts) {
+        if (used[key]) continue
+        if (counts[key] > best_count || (counts[key] == best_count && (best_key == "" || key < best_key))) {
+          best_key = key
+          best_count = counts[key]
+        }
+      }
+      if (best_key == "") break
+      used[best_key] = 1
+      printf "%2d. %5d  %s\n", i, best_count, best_key
+    }
+  }
+' "$log"
