@@ -1,0 +1,112 @@
+#!/bin/sh
+set -eu
+
+usage() {
+  cat <<'USAGE'
+Usage: skl-report [LOGFILE] [LIMIT]
+
+Summarize ~/.local/share/skhd/usage.log entries recorded by skl.
+The log format is: ISO_TIMESTAMP mode key action
+
+Outputs total entries, first/last timestamps, and a ranked action-first table.
+USAGE
+}
+
+case "${1:-}" in
+  -h|--help)
+    usage
+    exit 0
+    ;;
+esac
+
+log=${1:-$HOME/.local/share/skhd/usage.log}
+limit=${2:-10}
+
+case "$limit" in
+  ''|*[!0-9]*)
+    echo "skl-report: LIMIT must be a positive integer" >&2
+    exit 2
+    ;;
+esac
+
+if [ "$limit" -lt 1 ]; then
+  echo "skl-report: LIMIT must be a positive integer" >&2
+  exit 2
+fi
+
+if [ ! -f "$log" ]; then
+  echo "skl-report: no usage log found at $log" >&2
+  exit 1
+fi
+
+awk -v limit="$limit" '
+  NF >= 4 {
+    total++
+    if (first == "") first = $1
+    last = $1
+
+    mode = $2
+    key = $3
+    action = $4
+    for (i = 5; i <= NF; i++) action = action " " $i
+
+    binding = mode SUBSEP key SUBSEP action
+    counts[binding]++
+    modes[binding] = mode
+    keys[binding] = key
+    actions[binding] = action
+  }
+
+  END {
+    if (total == 0) {
+      print "skl usage: 0 entries"
+      exit 0
+    }
+
+    print "skl usage: " total " entries"
+    print "first: " first
+    print "last:  " last
+    print ""
+
+    print_top(limit)
+  }
+
+  function print_top(max,    row, binding, best, best_count, used, width_count, width_action, width_mode, width_key, count_text) {
+    width_count = length("COUNT")
+    width_action = length("ACTION")
+    width_mode = length("MODE")
+    width_key = length("KEY")
+
+    for (row = 1; row <= max; row++) {
+      best = ""
+      best_count = -1
+      for (binding in counts) {
+        if (used[binding]) continue
+        if (counts[binding] > best_count || (counts[binding] == best_count && (best == "" || sort_key(binding) < sort_key(best)))) {
+          best = binding
+          best_count = counts[binding]
+        }
+      }
+      if (best == "") break
+
+      used[best] = 1
+      top[row] = best
+
+      count_text = counts[best] ""
+      if (length(count_text) > width_count) width_count = length(count_text)
+      if (length(actions[best]) > width_action) width_action = length(actions[best])
+      if (length(modes[best]) > width_mode) width_mode = length(modes[best])
+      if (length(keys[best]) > width_key) width_key = length(keys[best])
+    }
+
+    printf "%*s  %-*s  %-*s  %-*s\n", width_count, "COUNT", width_action, "ACTION", width_mode, "MODE", width_key, "KEY"
+    for (row = 1; row in top; row++) {
+      binding = top[row]
+      printf "%*d  %-*s  %-*s  %-*s\n", width_count, counts[binding], width_action, actions[binding], width_mode, modes[binding], width_key, keys[binding]
+    }
+  }
+
+  function sort_key(binding) {
+    return actions[binding] SUBSEP modes[binding] SUBSEP keys[binding]
+  }
+' "$log"
