@@ -116,3 +116,7 @@ fi
 # Human++ color scheme
 [ -f "$HOME/src/hack/human-plus-plus/dist/shell-init.sh" ] \
   && . "$HOME/src/hack/human-plus-plus/dist/shell-init.sh"
+
+# fabro
+export PATH="/Users/fielding/.fabro/bin:$PATH"
+
