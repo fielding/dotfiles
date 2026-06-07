@@ -41,7 +41,11 @@ set backup
 set backupdir=~/.vim/files/backup/
 set backupext=-vimbackup
 set backupskip=
-set viminfo='100,n~/.vim/files/viminfo
+if has('nvim')
+  set shada='100,n~/.vim/files/shada
+else
+  set viminfo='100,n~/.vim/files/viminfo
+endif
 
 set listchars=tab:▸\ ,trail:·,eol:¬,nbsp:_
 set list
