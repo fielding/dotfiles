@@ -17,6 +17,7 @@ call plug#begin('~/.vim/plugged')
 Plug 'fielding/vice'
 Plug 'fielding/lightline-vice.vim'
 Plug '~/src/hack/human-plus-plus/packages/neovim-plugin'
+Plug '~/src/hack/human-plus-plus/packages/vim-plugin'
 
 " features
 Plug 'bronson/vim-trailing-whitespace'
@@ -151,7 +152,7 @@ nmap <leader>P <Plug>yankstack_substitute_newer_paste
 
 " lightline
 let g:lightline = {
-      \ 'colorscheme': 'vice',
+      \ 'colorscheme': 'humanplusplus',
       \ 'tabline': {'left': [['buffers']], 'right': [[]]},
       \ 'component_expand': {'buffers': 'lightline#bufferline#buffers'},
       \ 'component_type': {'buffers': 'tabsel'}

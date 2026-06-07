@@ -15,7 +15,12 @@ if has('termguicolors')
   set termguicolors
 endif
 
-" use humanplusplus if available, fall back to desert
+" use humanplusplus from the human-plus-plus repo if checked out,
+" fall back to desert otherwise.
+let s:hpp = expand('~/src/hack/human-plus-plus/packages/vim-plugin')
+if isdirectory(s:hpp)
+  let &runtimepath = s:hpp . ',' . &runtimepath
+endif
 try
   colorscheme humanplusplus
 catch
