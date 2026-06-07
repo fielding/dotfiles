@@ -70,3 +70,4 @@ export PATH
 # OpenAI key for codex / non-Claude tools
 OPENAI_API_KEY=$(security find-generic-password -s "OPENAI_API_KEY" -w 2>/dev/null)
 export OPENAI_API_KEY
+. "$HOME/.cargo/env"
