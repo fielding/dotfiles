@@ -120,3 +120,7 @@ fi
 # fabro
 export PATH="/Users/fielding/.fabro/bin:$PATH"
 
+# fnm (Node version manager): auto-switches Node per .node-version on cd.
+# No default is set, so Node stays at the system/brew version outside repos
+# that pin one. Node 22 (the Venice pin) bundles corepack, which provides yarn.
+command -v fnm >/dev/null && eval "$(fnm env --use-on-cd --shell zsh)"
