@@ -2,12 +2,34 @@
 set -euo pipefail
 
 # yabai-organize — LLM-powered window organizer
-# Gathers window state, asks Haiku to sort them, executes the plan.
+# Gathers window state, asks a model to sort them, executes the plan.
+#
+# Backend is picked from the model name:
+#   gpt-*/codex-* → local cliproxyapi (OpenAI-compatible, ChatGPT Pro OAuth)
+#   claude-*      → Anthropic API
+#   anything else → local ollama
+# Override the model with YABAI_ORGANIZE_MODEL.
 
-MODEL="claude-haiku-4-5-20251001"
+MODEL="${YABAI_ORGANIZE_MODEL:-gpt-5.5}"
+EFFORT="${YABAI_ORGANIZE_EFFORT:-low}"
+OPENAI_URL="${YABAI_ORGANIZE_OPENAI_URL:-http://localhost:8317/v1}"
+OLLAMA_URL="${OLLAMA_HOST:-http://localhost:11434}"
 LOG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/yabai-organize"
-API_KEY="${ANTHROPIC_API_KEY:-$(security find-generic-password -s "ANTHROPIC_API_KEY" -w 2>/dev/null)}"
-[ -z "$API_KEY" ] && { echo "error: no ANTHROPIC_API_KEY" >&2; exit 1; }
+
+case "$MODEL" in
+  gpt-*|codex-*) BACKEND=openai ;;
+  claude-*)      BACKEND=anthropic ;;
+  *)             BACKEND=ollama ;;
+esac
+
+if [ "$BACKEND" = anthropic ]; then
+  API_KEY="${ANTHROPIC_API_KEY:-$(security find-generic-password -s "ANTHROPIC_API_KEY" -w 2>/dev/null)}"
+  [ -z "$API_KEY" ] && { echo "error: no ANTHROPIC_API_KEY" >&2; exit 1; }
+elif [ "$BACKEND" = openai ]; then
+  # cliproxyapi key lives in its conf; don't hardcode it in a tracked script
+  API_KEY="${YABAI_ORGANIZE_API_KEY:-$(grep -A1 '^api-keys:' /opt/homebrew/etc/cliproxyapi.conf 2>/dev/null | sed -n '2s/.*"\(.*\)".*/\1/p')}"
+  [ -z "$API_KEY" ] && { echo "error: no API key for $OPENAI_URL (set YABAI_ORGANIZE_API_KEY)" >&2; exit 1; }
+fi
 
 # ── Gather ───────────────────────────────────────────────────────────────────
 
@@ -17,10 +39,32 @@ SPACES=$(yabai -m query --spaces | jq '[.[] | {index, label}]')
 
 # Known project names
 PROJECTS=$(ls ~/notes/projects/ 2>/dev/null | grep -v '\.md$' | tr '\n' ' ')
-SRC_DIRS=$(ls -d ~/src/hack/*/ ~/src/work/*/ 2>/dev/null | xargs -I{} basename {} | sort -u | tr '\n' ' ')
+# Git repos up to 2 levels deep, relative to ~/src (catches nested ones like work/venice/outerface)
+SRC_DIRS=$(find ~/src/hack ~/src/work -maxdepth 3 -name .git 2>/dev/null | sed "s|$HOME/src/||; s|/\.git$||" | sort | tr '\n' ' ')
 
 # Listening ports → process name (maps localhost:5173 in browser to a project)
 PORTS=$(lsof -iTCP -sTCP:LISTEN -P 2>/dev/null | awk 'NR>1 {print $1, $9}' | sort -u | head -20)
+
+# Terminal CWDs — yabai can't tell us which Ghostty window is which surface,
+# but listing each surface's working directory + foreground command lets the
+# model correlate spinner/status titles with projects.
+TERM_SESSIONS=$(
+  GPID=$(ps -axo pid,command | awk '/Ghostty\.app\/Contents\/MacOS\/ghostty/ {print $1; exit}')
+  [ -n "$GPID" ] && for L in $(ps -axo pid,ppid | awk -v g="$GPID" '$2==g {print $1}'); do
+    pid=$L
+    for _ in 1 2 3 4 5 6; do
+      kid=$(ps -axo pid,ppid | awk -v p="$pid" '$2==p {print $1}' | head -1)
+      [ -z "$kid" ] && break
+      pid=$kid
+    done
+    cwd=$(lsof -a -p "$pid" -d cwd -Fn 2>/dev/null | sed -n 's/^n//p')
+    cmd=$(ps -o command= -p "$pid" 2>/dev/null | cut -c1-60)
+    [ -n "$cwd" ] && echo "- cwd=$cwd cmd=$cmd"
+  done
+)
+
+# tmux sessions → cwd (session names show up in terminal titles)
+TMUX_SESSIONS=$(tmux list-panes -a -F '- session=#{session_name} cwd=#{pane_current_path} cmd=#{pane_current_command}' 2>/dev/null)
 
 # ── Prompt ───────────────────────────────────────────────────────────────────
 
@@ -30,10 +74,13 @@ You sort windows into workspaces. Return ONLY valid JSON — no markdown, no exp
 SPACES: 1=main, 2-5=project slots (p1-p4), 6=notes, 7=scratch, 8=inbox, 9=media, 10=comms
 
 FIXED ROUTING:
-- comms(10): Slack, Gather, Signal, AyuGram, Telegram — always
-- notes(6): Obsidian, Notion, nvim/vim editing notes or research — unless title clearly ties to a project
-- media(9): VPN, Docker, media players
+- main(1): the HUB terminal — the Ghostty window attached to tmux (title like "tmux:N [ cmd ]" or matching a tmux session name). It hosts many tabs across projects; it is NOT a project window. Always main(1).
+- main(1): Chrome, when exactly ONE Chrome window exists — it lives with the hub. When MULTIPLE Chrome windows exist: windows tied to a project (title/localhost port) go to that project's slot; the general-purpose one stays on main(1).
+- comms(10): Slack, Gather, Signal, AyuGram, Telegram, Messages, Discord — always
+- notes(6): Obsidian — ALWAYS, regardless of which note is open. Also Notion, nvim/vim editing notes or research.
+- media(9): Docker, media players
 - inbox(8): random/unrelated stuff
+- NordVPN and other VPN panels: never include in moves — yabai cannot move them.
 
 PROJECT SLOTS (2-5):
 - Identify distinct projects from window titles. Each project gets ONE dedicated slot.
@@ -44,11 +91,14 @@ PROJECT SLOTS (2-5):
 - "[~/etc]" or "~/etc" → project "dotfiles"
 - "[~/src/work/freed/comms]" → project "freed"
 - Match paths against KNOWN PROJECTS list. Use the project name as the label.
+- Labels use the repo/leaf directory name, NEVER the parent or org directory: "work/venice/outerface" → label "outerface", not "venice".
 - Terminals with CWD in brackets like "[~/path]" are Claude Code sessions — the path IS the project.
 - Chrome titles with project names ("Freed Comms - Google Chrome") go with that project.
 - Running commands hint at projects ("pnpm elevenlabs:listen" → freed).
 - Browser tabs on localhost/127.0.0.1 with a port? Match the port to LISTENING PORTS to find the project.
-- Ghostty windows with spinner/status titles ("✳ Claude Code", "⠐ Claude Code", "⠂ Claude Code") have no CWD info — leave them where they are. Do NOT move ambiguous windows.
+- TERMINAL SESSIONS lists each terminal's working directory + running command, and TMUX SESSIONS lists tmux session names with their cwd. Use these to resolve windows whose titles lack a path:
+  - A spinner title ("✳ <task>", "⠐ <task>") is a Claude Code session; its <task> text describes work happening in one of the claude cwds. If exactly ONE session's cwd plausibly matches the task topic, that cwd is the window's project. If multiple could match, leave the window alone.
+  - tmux-titled Ghostty windows are the HUB (see FIXED ROUTING) — main(1), do NOT assign them to a project slot even if the tmux cwd points at a project.
 - >4 projects? Prioritize by window count. Overflow → scratch(7).
 
 RULES:
@@ -73,47 +123,133 @@ src_dirs: $SRC_DIRS
 listening_ports:
 $PORTS
 
+terminal_sessions:
+$TERM_SESSIONS
+
+tmux_sessions:
+$TMUX_SESSIONS
+
 windows:
 $WINDOWS"
 
-PAYLOAD=$(jq -n \
-  --arg model "$MODEL" \
-  --arg system "$SYSTEM_PROMPT" \
-  --arg user "$USER_MSG" \
-  '{
-    model: $model,
-    max_tokens: 1024,
-    temperature: 0,
-    system: $system,
-    messages: [{role: "user", content: $user}]
-  }')
+# JSON schema for the plan — ollama enforces this via structured outputs
+read -r -d '' PLAN_SCHEMA <<'SCHEMA' || true
+{
+  "type": "object",
+  "properties": {
+    "labels": {"type": "object", "additionalProperties": {"type": "string"}},
+    "moves": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {"id": {"type": "integer"}, "space": {"type": "integer"}},
+        "required": ["id", "space"]
+      }
+    }
+  },
+  "required": ["labels", "moves"]
+}
+SCHEMA
 
-RESPONSE=$(curl -s https://api.anthropic.com/v1/messages \
-  -H "x-api-key: $API_KEY" \
-  -H "anthropic-version: 2023-06-01" \
-  -H "content-type: application/json" \
-  -d "$PAYLOAD")
+if [ "$BACKEND" = anthropic ]; then
+  PAYLOAD=$(jq -n \
+    --arg model "$MODEL" \
+    --arg system "$SYSTEM_PROMPT" \
+    --arg user "$USER_MSG" \
+    '{
+      model: $model,
+      max_tokens: 1024,
+      temperature: 0,
+      system: $system,
+      messages: [{role: "user", content: $user}]
+    }')
+
+  RESPONSE=$(curl -s https://api.anthropic.com/v1/messages \
+    -H "x-api-key: $API_KEY" \
+    -H "anthropic-version: 2023-06-01" \
+    -H "content-type: application/json" \
+    -d "$PAYLOAD")
+
+  USAGE=$(echo "$RESPONSE" | jq '{
+    model: .model,
+    input_tokens: .usage.input_tokens,
+    output_tokens: .usage.output_tokens,
+    cache_creation_input_tokens: (.usage.cache_creation_input_tokens // 0),
+    cache_read_input_tokens: (.usage.cache_read_input_tokens // 0)
+  }' 2>/dev/null)
+  PLAN=$(echo "$RESPONSE" | jq -r '.content[0].text // empty')
+elif [ "$BACKEND" = openai ]; then
+  PAYLOAD=$(jq -n \
+    --arg model "$MODEL" \
+    --arg system "$SYSTEM_PROMPT" \
+    --arg user "$USER_MSG" \
+    --arg effort "$EFFORT" \
+    '{
+      model: $model,
+      reasoning_effort: $effort,
+      response_format: {type: "json_object"},
+      messages: [
+        {role: "system", content: $system},
+        {role: "user", content: $user}
+      ]
+    }')
+
+  RESPONSE=$(curl -s "$OPENAI_URL/chat/completions" \
+    -H "Authorization: Bearer $API_KEY" \
+    -H "content-type: application/json" \
+    -d "$PAYLOAD")
+
+  USAGE=$(echo "$RESPONSE" | jq '{
+    model: .model,
+    input_tokens: .usage.prompt_tokens,
+    output_tokens: .usage.completion_tokens,
+    cache_creation_input_tokens: 0,
+    cache_read_input_tokens: (.usage.prompt_tokens_details.cached_tokens // 0)
+  }' 2>/dev/null)
+  PLAN=$(echo "$RESPONSE" | jq -r '.choices[0].message.content // empty')
+else
+  PAYLOAD=$(jq -n \
+    --arg model "$MODEL" \
+    --arg system "$SYSTEM_PROMPT" \
+    --arg user "$USER_MSG" \
+    --argjson schema "$PLAN_SCHEMA" \
+    '{
+      model: $model,
+      stream: false,
+      format: $schema,
+      options: {temperature: 0, num_ctx: 8192},
+      messages: [
+        {role: "system", content: $system},
+        {role: "user", content: $user}
+      ]
+    }')
+
+  RESPONSE=$(curl -s "$OLLAMA_URL/api/chat" -d "$PAYLOAD")
+
+  USAGE=$(echo "$RESPONSE" | jq '{
+    model: .model,
+    input_tokens: .prompt_eval_count,
+    output_tokens: .eval_count,
+    cache_creation_input_tokens: 0,
+    cache_read_input_tokens: 0
+  }' 2>/dev/null)
+  PLAN=$(echo "$RESPONSE" | jq -r '.message.content // empty')
+fi
 
 # ── Log usage for thinktax ───────────────────────────────────────────────────
 
 mkdir -p "$LOG_DIR"
-USAGE=$(echo "$RESPONSE" | jq '{
-  model: .model,
-  input_tokens: .usage.input_tokens,
-  output_tokens: .usage.output_tokens,
-  cache_creation_input_tokens: (.usage.cache_creation_input_tokens // 0),
-  cache_read_input_tokens: (.usage.cache_read_input_tokens // 0)
-}' 2>/dev/null)
 TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 echo "$USAGE" | jq -c --arg ts "$TS" '. + {ts: $ts, tool: "yabai-organize"}' >> "$LOG_DIR/usage.jsonl" 2>/dev/null
 
 # ── Parse response ───────────────────────────────────────────────────────────
 
-PLAN=$(echo "$RESPONSE" | jq -r '.content[0].text // empty')
 [ -z "$PLAN" ] && { echo "error: no response" >&2; echo "$RESPONSE" | jq . >&2; exit 1; }
 
-# Strip markdown fences if present
+# Strip markdown fences if present (claude path; ollama schema output is clean)
 PLAN=$(echo "$PLAN" | sed '/^```/d')
+# Strip stray control chars small local models sometimes emit (keep newlines)
+PLAN=$(echo "$PLAN" | tr -d '\000-\011\013-\037')
 echo "$PLAN" | jq . >/dev/null 2>&1 || { echo "error: bad JSON" >&2; echo "$PLAN" >&2; exit 1; }
 
 # ── Execute ──────────────────────────────────────────────────────────────────
