@@ -17,6 +17,7 @@ is a stow package; running `stow <name>` symlinks its contents into `~`.
 | `fonts`      | installed font files                                               |
 | `ghostty`    | Ghostty terminal config                                            |
 | `git`        | gitconfig, commit template, global gitignore                       |
+| `homebrew`   | Brewfile — brew, cask, cargo, and npm package manifest             |
 | `karabiner`  | keyboard remapping                                                 |
 | `shell`      | shell-agnostic `.profile`, aliases, functions                      |
 | `sketchybar` | macOS status bar with mode indicator, calendar, battery, clock     |
@@ -31,10 +32,9 @@ is a stow package; running `stow <name>` symlinks its contents into `~`.
 
 Kept around for reference or because something on disk still expects
 them, but no longer maintained: `babel`, `bash`, `chunkwm` (replaced by
-yabai), `clang-format`, `dircolors`, `eslint`, `grc`, `homebrew` (the
-Brewfile is from 2020 and stale), `iterm2` (replaced by ghostty), `khd`
-(replaced by skhd), `mpv`, `neovim`, `readline`, `ruby`, `spaceship`,
-`vint`.
+yabai), `clang-format`, `dircolors`, `eslint`, `grc`, `iterm2` (replaced
+by ghostty), `khd` (replaced by skhd), `mpv`, `neovim`, `readline`,
+`ruby`, `spaceship`, `vint`.
 
 ## Installation
 
@@ -42,8 +42,8 @@ Brewfile is from 2020 and stale), `iterm2` (replaced by ghostty), `khd`
 brew install stow
 
 # Symlink the active set:
-stow bin borders claude codex fastfetch fonts ghostty git karabiner \
-     shell sketchybar skhd terminfo tmux vim yabai zsh
+stow bin borders claude codex fastfetch fonts ghostty git homebrew \
+     karabiner shell sketchybar skhd terminfo tmux vim yabai zsh
 
 # Compile terminfo entries (italic support in tmux):
 tic ~/.terminfo/74/tmux.terminfo
