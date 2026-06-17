@@ -235,8 +235,13 @@ phase_homebrew() {
   # until trusted. Trust every tap the Brewfile declares.
   if brew trust --help >/dev/null 2>&1; then
     local t
+    # Homebrew stores trust under $XDG_CONFIG_HOME/homebrew, or ~/.homebrew when
+    # the var is unset. The interactive zsh sets XDG_CONFIG_HOME=~/.config, so
+    # write trust there too — otherwise `brew services`/formula loads in the real
+    # shell won't see it (they'd fail with "tap is not trusted").
+    local xdg="${XDG_CONFIG_HOME:-$HOME/.config}"
     while IFS= read -r t; do
-      [[ -n "$t" ]] && run brew trust "$t" >/dev/null 2>&1 || true
+      [[ -n "$t" ]] && XDG_CONFIG_HOME="$xdg" run brew trust "$t" >/dev/null 2>&1 || true
     done < <(grep -E '^[[:space:]]*tap "' "$BREWFILE" | sed -E 's/.*"([^"]+)".*/\1/')
     ok "Trusted Brewfile taps"
   fi
@@ -385,9 +390,10 @@ phase_yabai() {
     ok "Wrote /etc/sudoers.d/yabai"
   fi
 
-  # Start the service and load the SA.
-  run brew services start yabai 2>/dev/null || true
-  run "$yb" --load-sa 2>/dev/null || warn "yabai --load-sa failed (expected until SIP is configured)"
+  # Start the service and load the SA. yabai manages its own launchd service
+  # (`yabai --start-service`); `brew services` no longer handles it.
+  run "$yb" --start-service 2>/dev/null || true
+  run "$yb" --load-sa 2>/dev/null || warn "yabai --load-sa failed (expected until accessibility is granted / SIP+SA support on this macOS)"
 
   # SIP — cannot be changed from the booted OS; report and instruct.
   local sip; sip="$(csrutil status 2>/dev/null || echo unknown)"
