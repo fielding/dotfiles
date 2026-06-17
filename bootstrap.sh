@@ -246,9 +246,12 @@ phase_homebrew() {
   ok "Brew bundle complete"
 
   # git-factor lives on git, not crates.io, so brew bundle's cargo can't get it.
+  # CARGO_NET_GIT_FETCH_WITH_CLI avoids libgit2's "no authentication methods
+  # succeeded" failure when cloning the public repo.
   if command -v cargo >/dev/null 2>&1 && ! command -v git-factor >/dev/null 2>&1; then
     info "Installing git-factor from git..."
-    run cargo install --git https://github.com/dkubb/git-factor || warn "git-factor install failed"
+    CARGO_NET_GIT_FETCH_WITH_CLI=true \
+      run cargo install --git https://github.com/dkubb/git-factor || warn "git-factor install failed"
   fi
 }
 
