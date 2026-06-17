@@ -91,10 +91,20 @@ confirm() { # confirm "prompt" -> 0 yes / 1 no ; auto-yes with --yes
 phase_preflight() {
   step "Preflight"
 
-  # Keep sudo warm for the whole run (some phases need it).
+  # Establish sudo for the whole run. `sudo -v` demands a password even under
+  # NOPASSWD and needs a tty, so it can't be the gate for SSH/automation runs:
+  # prefer a non-interactive check, fall back to an interactive prompt only
+  # when a terminal is actually attached.
   if (( ! DRY_RUN )); then
-    sudo -v || die "need sudo to continue"
-    ( while true; do sudo -n true; sleep 60; kill -0 "$$" 2>/dev/null || exit; done ) &
+    if sudo -n true 2>/dev/null; then
+      :  # passwordless (NOPASSWD) or already cached
+    elif [[ -t 0 ]]; then
+      sudo -v || die "need sudo to continue"
+    else
+      die "sudo needs a password but no terminal is attached — enable NOPASSWD or re-run with: ssh -t"
+    fi
+    # Keep the timestamp warm for the rest of the run (a no-op under NOPASSWD).
+    ( while true; do sudo -n true 2>/dev/null; sleep 60; kill -0 "$$" 2>/dev/null || exit; done ) &
   fi
 
   # Xcode Command Line Tools (git, clang, make, ...).
