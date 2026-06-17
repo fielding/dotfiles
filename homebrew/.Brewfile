@@ -49,7 +49,7 @@ brew "zsh-syntax-highlighting"
 brew "felixkratz/formulae/borders"
 brew "felixkratz/formulae/sketchybar"
 brew "hashicorp/tap/terraform"
-brew "jackielii/tap/skhd-zig"
+cask "jackielii/tap/skhd-zig"
 brew "koekeishiya/formulae/yabai"
 brew "oculus-vr/tap/meta-xr-simulator"
 brew "runpod/runpodctl/runpodctl"
@@ -77,7 +77,10 @@ cargo "cargo-expand"
 cargo "cargo-mutants"
 cargo "cargo-nextest"
 cargo "cargo-watch"
-cargo "git-factor"
+# git-factor is git-sourced (not on crates.io), so `brew bundle`'s cargo
+# directive can't install it. bootstrap.sh installs it post-bundle via:
+#   cargo install --git https://github.com/dkubb/git-factor
+# (provides git-factor + git-sequence-editor)
 cargo "sccache"
 npm "@ollama/pi-web-search"
 npm "corepack"

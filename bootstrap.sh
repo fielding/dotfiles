@@ -244,6 +244,12 @@ phase_homebrew() {
   info "Installing packages from Brewfile (this is the long one)..."
   run brew bundle --file="$BREWFILE" || warn "brew bundle reported errors — review above"
   ok "Brew bundle complete"
+
+  # git-factor lives on git, not crates.io, so brew bundle's cargo can't get it.
+  if command -v cargo >/dev/null 2>&1 && ! command -v git-factor >/dev/null 2>&1; then
+    info "Installing git-factor from git..."
+    run cargo install --git https://github.com/dkubb/git-factor || warn "git-factor install failed"
+  fi
 }
 
 # ============================================================================
@@ -512,7 +518,8 @@ main() {
 
   step "Done"
   info "If the shell or many defaults changed, log out and back in (or reboot)."
-  (( DRY_RUN )) && info "That was a dry run — re-run without --dry-run to apply."
+  if (( DRY_RUN )); then info "That was a dry run — re-run without --dry-run to apply."; fi
+  return 0
 }
 
 main "$@"
