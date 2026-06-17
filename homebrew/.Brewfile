@@ -53,7 +53,9 @@ brew "jackielii/tap/skhd-zig"
 brew "koekeishiya/formulae/yabai"
 brew "oculus-vr/tap/meta-xr-simulator"
 brew "runpod/runpodctl/runpodctl"
-brew "supabase/tap/supabase"
+# brew "supabase/tap/supabase"  # disabled 2026-06: upstream tap has a stale
+# checksum (recorded SHA != download), which aborts the whole `brew bundle`
+# transaction. Re-enable once the tap is fixed, or install supabase manually.
 cask "1password-cli"
 cask "android-studio"
 cask "ayugram"
