@@ -229,6 +229,18 @@ phase_homebrew() {
   fi
 
   [[ -f "$BREWFILE" ]] || die "Brewfile not found at $BREWFILE"
+
+  # Homebrew 6.0+ gates third-party taps behind a trust list
+  # ($HOMEBREW_REQUIRE_TAP_TRUST); `brew bundle` refuses their formulae/casks
+  # until trusted. Trust every tap the Brewfile declares.
+  if brew trust --help >/dev/null 2>&1; then
+    local t
+    while IFS= read -r t; do
+      [[ -n "$t" ]] && run brew trust "$t" >/dev/null 2>&1 || true
+    done < <(grep -E '^[[:space:]]*tap "' "$BREWFILE" | sed -E 's/.*"([^"]+)".*/\1/')
+    ok "Trusted Brewfile taps"
+  fi
+
   info "Installing packages from Brewfile (this is the long one)..."
   run brew bundle --file="$BREWFILE" || warn "brew bundle reported errors — review above"
   ok "Brew bundle complete"
