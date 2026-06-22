@@ -419,6 +419,7 @@ agent_label_for() { # map short name -> template filename
     weather)          echo "com.weather.desktop.plist" ;;
     sync-tix-to-vault)echo "com.fielding.sync-tix-to-vault.plist" ;;
     ollama)           echo "com.fielding.ollama.plist" ;;
+    mouse-tap)        echo "com.fielding.mouse-tap.plist" ;;
     *)                echo "" ;;
   esac
 }

@@ -1,0 +1,47 @@
+#!/bin/sh
+# log-focus — append a focus-change row to the mouseless focus log.
+#
+# Invoked from yabai signals (see ~/.yabairc). Captures GROUND TRUTH: which
+# window/app/space/display just gained focus, regardless of whether a keybind
+# or the mouse caused it. The analyzer (mouse-report) later subtracts the
+# keyboard trail (~/.local/share/skhd/usage.log) and the mouse trail
+# (mouse.jsonl) to classify each transition.
+#
+# Usage:  log-focus <event> [window_id]
+#   event      yabai event name (window_focused, application_front_switched,
+#              space_changed, display_changed)
+#   window_id  $YABAI_WINDOW_ID when the event carries one; optional
+#
+# One line of JSON per call. Timestamp is integer epoch seconds (matches the
+# granularity of skl's usage.log); the mouse log carries sub-second precision,
+# and mouse-report correlates with a ±2s window to absorb the boundary.
+
+set -eu
+
+event=${1:-unknown}
+wid=${2:-}
+
+dir="$HOME/.local/share/mouseless"
+log="$dir/focus.jsonl"
+mkdir -p "$dir"
+
+# Resolve the focused window: prefer the id yabai handed us, else ask for the
+# currently-focused window (space/display events carry no window id).
+if [ -n "$wid" ]; then
+  win=$(yabai -m query --windows --window "$wid" 2>/dev/null || true)
+else
+  win=$(yabai -m query --windows --window 2>/dev/null || true)
+fi
+[ -n "$win" ] || exit 0
+
+epoch=$(date +%s)
+iso=$(date +%Y-%m-%dT%H:%M:%S)
+
+# Build the row with jq so titles/apps are safely escaped. yabai window JSON
+# already has .app/.title/.id/.space/.display/.frame; we add ts + event.
+printf '%s' "$win" | jq -c \
+  --argjson epoch "$epoch" --arg iso "$iso" --arg event "$event" \
+  '{t:$epoch, iso:$iso, ev:$event, id:.id, app:.app, title:.title,
+    space:.space, display:.display,
+    x:.frame.x, y:.frame.y, w:.frame.w, h:.frame.h}' \
+  >> "$log" 2>/dev/null || true

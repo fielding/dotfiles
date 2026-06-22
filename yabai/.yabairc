@@ -4,6 +4,13 @@
 yabai -m signal --add event=dock_did_restart action="sudo /opt/homebrew/Cellar/yabai/7.1.17/bin/yabai --load-sa"
 sudo /opt/homebrew/Cellar/yabai/7.1.17/bin/yabai --load-sa
 
+# mouseless — focus ground-truth logging (see ~/etc/mouseless). Records every
+# focus/app/display change regardless of input method; mouse-report subtracts
+# the keyboard + mouse trails to surface mouse-driven focus switches.
+yabai -m signal --add label=mouseless_window  event=window_focused              action='~/bin/log-focus window_focused "$YABAI_WINDOW_ID"'
+yabai -m signal --add label=mouseless_app     event=application_front_switched  action='~/bin/log-focus application_front_switched'
+yabai -m signal --add label=mouseless_display event=display_changed             action='~/bin/log-focus display_changed'
+
 # global settings
 yabai -m config mouse_follows_focus          off
 yabai -m config focus_follows_mouse          off

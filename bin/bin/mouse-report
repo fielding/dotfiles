@@ -1,0 +1,221 @@
+#!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.10"
+# dependencies = []
+# ///
+"""mouse-report — find where the keyboard falls short and the mouse takes over.
+
+Joins three local logs:
+  ~/.local/share/mouseless/focus.jsonl   window-focus ground truth (log-focus)
+  ~/.local/share/mouseless/mouse.jsonl   mouse-down + key heartbeat (mouse-tap)
+  ~/.local/share/skhd/usage.log          intentional keyboard actions (skl)
+
+For every focus transition it asks: did a keyboard nav-binding fire around it
+(keyboard-driven), or only a mouse click (mouse-driven), or neither (auto —
+app self-activation, notifications)? The mouse-driven transitions, ranked by
+app->app, are your highest-value keybind targets. Companion to skl-report,
+which ranks the keyboard side.
+
+Usage: mouse-report [--days N] [--top N]
+"""
+from __future__ import annotations
+import argparse, json, os, sys
+from bisect import bisect_left, bisect_right
+from collections import Counter, defaultdict
+from datetime import datetime
+
+HOME = os.path.expanduser("~")
+FOCUS = f"{HOME}/.local/share/mouseless/focus.jsonl"
+MOUSE = f"{HOME}/.local/share/mouseless/mouse.jsonl"
+USAGE = f"{HOME}/.local/share/skhd/usage.log"
+
+# A keybind counts as "caused this focus change" if its action names navigation.
+NAV_TOKENS = ("focus:", "space:", "mon:", "stack", "mon ", "follow")
+# Correlation windows (seconds). Focus log is second-granular; widen to absorb
+# the boundary. A click slightly precedes the focus it triggers.
+KB_WINDOW = (2.0, 2.0)      # keybind within [T-2, T+2]
+CLICK_WINDOW = (2.0, 1.0)   # click within  [T-2, T+1]
+
+
+def iso_to_epoch(s: str) -> float | None:
+    try:
+        return datetime.strptime(s, "%Y-%m-%dT%H:%M:%S").timestamp()
+    except ValueError:
+        return None
+
+
+def load_focus():
+    rows = []
+    if not os.path.exists(FOCUS):
+        return rows
+    with open(FOCUS) as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                r = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if "t" in r and "app" in r:
+                rows.append(r)
+    rows.sort(key=lambda r: r["t"])
+    return rows
+
+
+def load_mouse():
+    clicks, keys = [], []
+    if not os.path.exists(MOUSE):
+        return clicks, keys
+    with open(MOUSE) as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                r = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            ev, t = r.get("ev"), r.get("t")
+            if t is None:
+                continue
+            if ev in ("left", "right", "other"):
+                clicks.append(t)
+            elif ev == "key":
+                keys.append(t)
+    clicks.sort(); keys.sort()
+    return clicks, keys
+
+
+def load_usage():
+    """Return sorted list of (epoch, action) for nav keybinds only."""
+    navs = []
+    if not os.path.exists(USAGE):
+        return navs
+    with open(USAGE) as f:
+        for line in f:
+            parts = line.split(None, 3)
+            if len(parts) < 4:
+                continue
+            ts, action = parts[0], parts[3].strip()
+            if not any(tok in action for tok in NAV_TOKENS):
+                continue
+            e = iso_to_epoch(ts)
+            if e is not None:
+                navs.append((e, action))
+    navs.sort()
+    return navs
+
+
+def any_in_window(sorted_times, t, before, after) -> bool:
+    lo = bisect_left(sorted_times, t - before)
+    hi = bisect_right(sorted_times, t + after)
+    return hi > lo
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--days", type=float, default=None,
+                    help="only consider the last N days")
+    ap.add_argument("--top", type=int, default=15)
+    args = ap.parse_args()
+
+    focus = load_focus()
+    clicks, keys = load_mouse()
+    navs = load_usage()
+    nav_times = [e for e, _ in navs]
+
+    if not focus:
+        print("no focus data yet at", FOCUS)
+        print("(is the yabai window_focused signal wired up? see ~/.yabairc)")
+        return
+
+    if args.days is not None:
+        cutoff = focus[-1]["t"] - args.days * 86400
+        focus = [r for r in focus if r["t"] >= cutoff]
+
+    # Build transitions (consecutive focus rows with a different window id).
+    transitions = []
+    prev = None
+    for r in focus:
+        if prev is not None and r.get("id") != prev.get("id"):
+            transitions.append((prev, r))
+        prev = r
+
+    kb = mouse = auto = 0
+    mouse_pairs = Counter()
+    mouse_by_space = Counter()
+    mouse_by_hour = Counter()
+    for frm, to in transitions:
+        t = to["t"]
+        is_kb = any_in_window(nav_times, t, *KB_WINDOW)
+        is_click = any_in_window(clicks, t, *CLICK_WINDOW)
+        if is_kb:
+            kb += 1
+        elif is_click:
+            mouse += 1
+            mouse_pairs[(frm.get("app", "?"), to.get("app", "?"))] += 1
+            sp = to.get("space")
+            if sp is not None:
+                mouse_by_space[sp] += 1
+            mouse_by_hour[datetime.fromtimestamp(t).hour] += 1
+        else:
+            auto += 1
+
+    # Clicks that did NOT change focus, grouped by the app focused at the time.
+    focus_times = [r["t"] for r in focus]
+    in_app_clicks = Counter()
+    interruptions = 0
+    for ct in clicks:
+        changed = any_in_window([tr[1]["t"] for tr in transitions], ct, 0.5, 2.0)
+        if not changed:
+            i = bisect_right(focus_times, ct) - 1
+            if 0 <= i < len(focus):
+                in_app_clicks[focus[i].get("app", "?")] += 1
+        # typing-flow interruption: a key tick within 3s before this click
+        if any_in_window(keys, ct, 3.0, 0.0):
+            interruptions += 1
+
+    total = len(transitions)
+    span_lo = datetime.fromtimestamp(focus[0]["t"])
+    span_hi = datetime.fromtimestamp(focus[-1]["t"])
+    pct = lambda n: f"{100*n/total:4.1f}%" if total else "  n/a"
+
+    def bar(n, mx, width=24):
+        return "█" * round(width * n / mx) if mx else ""
+
+    print(f"mouseless report  ·  {span_lo:%Y-%m-%d %H:%M} → {span_hi:%Y-%m-%d %H:%M}")
+    print(f"focus rows {len(focus)}   clicks {len(clicks)}   key-ticks {len(keys)}   nav-keybinds {len(navs)}")
+    print()
+    print(f"FOCUS TRANSITIONS  ({total} total)")
+    print(f"  keyboard-driven  {kb:6d}  {pct(kb)}")
+    print(f"  MOUSE-driven     {mouse:6d}  {pct(mouse)}   <- the holes")
+    print(f"  auto / unknown   {auto:6d}  {pct(auto)}")
+    if not clicks:
+        print("\n(no mouse data yet — is com.fielding.mouse-tap loaded + Input Monitoring granted?)")
+
+    if mouse_pairs:
+        mx = mouse_pairs.most_common(1)[0][1]
+        print(f"\nTOP MOUSE-DRIVEN FOCUS SWITCHES  (from → to, top {args.top})")
+        for (a, b), n in mouse_pairs.most_common(args.top):
+            print(f"  {n:4d}  {bar(n,mx)}  {a} → {b}")
+
+    if mouse_by_space:
+        mx = max(mouse_by_space.values())
+        print("\nMOUSE-DRIVEN FOCUS BY DESTINATION SPACE")
+        for sp in sorted(mouse_by_space):
+            n = mouse_by_space[sp]
+            print(f"  space {sp:>2}  {n:4d}  {bar(n,mx)}")
+
+    if in_app_clicks:
+        mx = in_app_clicks.most_common(1)[0][1]
+        print(f"\nIN-APP CLICKS (no focus change) BY APP  (top {args.top})")
+        for app, n in in_app_clicks.most_common(args.top):
+            print(f"  {n:5d}  {bar(n,mx)}  {app}")
+
+    if keys:
+        print(f"\nTYPING-FLOW INTERRUPTIONS  (key activity then a click ≤3s): {interruptions}")
+
+
+if __name__ == "__main__":
+    main()
