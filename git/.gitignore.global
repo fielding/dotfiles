@@ -3,6 +3,11 @@
 # (e.g. anti-slop writes audits to .fng/antislop/). One entry instead of N .gitignore edits.
 .fng/
 
+# Local agent/tool stores
+.tix/
+.vent/
+.box/
+
 # turd files
 .DS_Store
 .AppleDouble
