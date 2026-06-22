@@ -20,18 +20,18 @@ alt - f : skl default alt+f fullscreen; yabai -m window --toggle zoom-fullscreen
 alt - t : skl default alt+t float; yabai -m window --toggle float; yabai -m window --grid 4:4:1:1:2:2
 
 # =====================================================
-# SPACE FOCUS (cycle stack if already on that space)
+# SPACE FOCUS (re-press to cycle windows on that space — see ~/bin/yabai-space-focus)
 # =====================================================
-ctrl - 1 : skl default ctrl+1 space:1; [ "$(yabai -m query --spaces --space | jq '.index')" = "1" ] && { yabai -m window --focus stack.next 2>/dev/null || yabai -m window --focus stack.first 2>/dev/null; } || yabai -m space --focus 1
-ctrl - 2 : skl default ctrl+2 space:2; [ "$(yabai -m query --spaces --space | jq '.index')" = "2" ] && { yabai -m window --focus stack.next 2>/dev/null || yabai -m window --focus stack.first 2>/dev/null; } || yabai -m space --focus 2
-ctrl - 3 : skl default ctrl+3 space:3; [ "$(yabai -m query --spaces --space | jq '.index')" = "3" ] && { yabai -m window --focus stack.next 2>/dev/null || yabai -m window --focus stack.first 2>/dev/null; } || yabai -m space --focus 3
-ctrl - 4 : skl default ctrl+4 space:4; [ "$(yabai -m query --spaces --space | jq '.index')" = "4" ] && { yabai -m window --focus stack.next 2>/dev/null || yabai -m window --focus stack.first 2>/dev/null; } || yabai -m space --focus 4
-ctrl - 5 : skl default ctrl+5 space:5; [ "$(yabai -m query --spaces --space | jq '.index')" = "5" ] && { yabai -m window --focus stack.next 2>/dev/null || yabai -m window --focus stack.first 2>/dev/null; } || yabai -m space --focus 5
-ctrl - 6 : skl default ctrl+6 space:6; [ "$(yabai -m query --spaces --space | jq '.index')" = "6" ] && { yabai -m window --focus stack.next 2>/dev/null || yabai -m window --focus stack.first 2>/dev/null; } || yabai -m space --focus 6
-ctrl - 7 : skl default ctrl+7 space:7; [ "$(yabai -m query --spaces --space | jq '.index')" = "7" ] && { yabai -m window --focus stack.next 2>/dev/null || yabai -m window --focus stack.first 2>/dev/null; } || yabai -m space --focus 7
-ctrl - 8 : skl default ctrl+8 space:8; [ "$(yabai -m query --spaces --space | jq '.index')" = "8" ] && { yabai -m window --focus stack.next 2>/dev/null || yabai -m window --focus stack.first 2>/dev/null; } || yabai -m space --focus 8
-ctrl - 9 : skl default ctrl+9 space:9; [ "$(yabai -m query --spaces --space | jq '.index')" = "9" ] && { yabai -m window --focus stack.next 2>/dev/null || yabai -m window --focus stack.first 2>/dev/null; } || yabai -m space --focus 9
-ctrl - 0 : skl default ctrl+0 space:10; [ "$(yabai -m query --spaces --space | jq '.index')" = "10" ] && { yabai -m window --focus stack.next 2>/dev/null || yabai -m window --focus stack.first 2>/dev/null; } || yabai -m space --focus 10
+ctrl - 1 : skl default ctrl+1 space:1; ~/bin/yabai-space-focus 1
+ctrl - 2 : skl default ctrl+2 space:2; ~/bin/yabai-space-focus 2
+ctrl - 3 : skl default ctrl+3 space:3; ~/bin/yabai-space-focus 3
+ctrl - 4 : skl default ctrl+4 space:4; ~/bin/yabai-space-focus 4
+ctrl - 5 : skl default ctrl+5 space:5; ~/bin/yabai-space-focus 5
+ctrl - 6 : skl default ctrl+6 space:6; ~/bin/yabai-space-focus 6
+ctrl - 7 : skl default ctrl+7 space:7; ~/bin/yabai-space-focus 7
+ctrl - 8 : skl default ctrl+8 space:8; ~/bin/yabai-space-focus 8
+ctrl - 9 : skl default ctrl+9 space:9; ~/bin/yabai-space-focus 9
+ctrl - 0 : skl default ctrl+0 space:10; ~/bin/yabai-space-focus 10
 
 # =====================================================
 # NAVIGATION

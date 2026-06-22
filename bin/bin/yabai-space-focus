@@ -1,0 +1,40 @@
+#!/bin/sh
+# yabai-space-focus <space-index>
+#
+# Smart space key: if you're NOT on the space, focus it. If you're ALREADY on
+# it, cycle to the next window — so re-pressing a space bind walks its windows.
+#
+# Stacked spaces (e.g. comms) keep their native stack.next cycling. Tiled (bsp)
+# spaces — where stack.next is a no-op — cycle through their windows in spatial
+# order (left→right, top→bottom), wrapping at the end. Floating windows are
+# included via the same path.
+
+set -eu
+
+idx="$1"
+sp=$(yabai -m query --spaces --space)
+cur=$(printf '%s' "$sp" | jq -r '.index')
+
+# Not here yet → just go.
+if [ "$cur" != "$idx" ]; then
+  exec yabai -m space --focus "$idx"
+fi
+
+# Already here → cycle windows on this space.
+layout=$(printf '%s' "$sp" | jq -r '.type')
+if [ "$layout" = "stack" ]; then
+  yabai -m window --focus stack.next 2>/dev/null \
+    || yabai -m window --focus stack.first 2>/dev/null \
+    || true
+  exit 0
+fi
+
+# Tiled/float: pick the next window after the focused one, spatially, wrapping.
+next=$(yabai -m query --windows --space | jq -r '
+  sort_by(.frame.x, .frame.y) as $w
+  | ($w | map(.id))                                   as $ids
+  | ($w | map(select(."has-focus"==true)) | .[0].id) as $f
+  | if ($f == null or ($ids|length) < 2) then ""
+    else ($ids[(($ids|index($f)) + 1) % ($ids|length)] | tostring)
+    end')
+[ -n "$next" ] && yabai -m window --focus "$next" || true
