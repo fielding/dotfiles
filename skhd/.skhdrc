@@ -8,7 +8,7 @@
 :: tree @ : borders active_color=0xfff2a633; sketchybar --trigger mode_change MODE=tree
 :: layout @ : borders active_color=0xff9871fe; sketchybar --trigger mode_change MODE=layout
 :: meet @ : borders active_color=0xfff26c33; sketchybar --trigger mode_change MODE=meet
-:: tmux @ : borders active_color=0xffbbff00; sketchybar --trigger mode_change MODE=tmux
+:: tmux @ : ~/bin/yabai-focus-terminal; borders active_color=0xffbbff00; sketchybar --trigger mode_change MODE=tmux
 
 
 # =====================================================
@@ -117,7 +117,8 @@ tmux < f : skl tmux f session:pick; skhd -k 'escape'; tmux display-popup -w 90% 
 tmux < space : skl tmux space session:last; tmux switch-client -l
 tmux < r : skl tmux r session:rename; skhd -k 'escape'; tmux command-prompt -I "#S" "rename-session -- '%%'"
 tmux < s : skl tmux s session:new; skhd -k 'escape'; tmux command-prompt "new-session -s '%%'"
-tmux < x : skl tmux x session:kill; tmux display-popup -E "tmux confirm-before -p 'kill session? (y/n)' kill-session"
+tmux < x : skl tmux x session:kill; skhd -k 'escape'; tmux kill-session
+tmux < shift - x : skl tmux shift+x session:pick-kill; skhd -k 'escape'; tmux display-popup -w 80% -h 70% -E "~/bin/tmux-session-kill"
 
 ## window (tab) navigation — stays in tmux mode so you can browse
 tmux < 1 : skl tmux 1 win:1; tmux select-window -t :1

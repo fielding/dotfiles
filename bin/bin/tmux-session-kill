@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+# tmux-session-kill — fuzzy-pick tmux sessions to kill (and rename in place).
+#
+# Meant to run inside a tmux display-popup (see skhd tmux mode, `X`).
+#   Tab     multi-select
+#   Enter   kill selected session(s)
+#   ctrl-r  rename the highlighted session (stays in the picker)
+#   Esc     cancel
+#
+# The preview shows each session's windows (cmd + cwd) and a live snapshot of
+# the active pane, so you can tell a badly-named session from a dead one.
+
+set -euo pipefail
+
+# session<TAB>windows<TAB>marker<TAB>cmd<TAB>path
+_list() {
+  tmux list-sessions -F \
+    '#{session_name}	#{session_windows}w	#{?session_attached,*,}	#{pane_current_command}	#{pane_current_path}' \
+    2>/dev/null
+}
+
+case "${1:-}" in
+  --list)
+    _list
+    exit 0
+    ;;
+  --preview)
+    s="$2"
+    printf '\033[1m== %s ==\033[0m\n' "$s"
+    tmux list-windows -t "$s" -F \
+      '  #{window_index}: #{window_name}  [#{pane_current_command}]  #{pane_current_path}' 2>/dev/null
+    echo
+    printf '\033[2m--- active pane ---\033[0m\n'
+    tmux capture-pane -p -t "$s" 2>/dev/null | sed -e 's/[[:space:]]*$//' | grep -n '' \
+      | tail -40 | sed 's/^[0-9]*://'
+    exit 0
+    ;;
+  --rename)
+    s="$2"
+    printf 'rename "%s" to (empty = cancel): ' "$s"
+    read -r newname || exit 0
+    [ -n "$newname" ] && tmux rename-session -t "$s" "$newname" 2>/dev/null || true
+    exit 0
+    ;;
+esac
+
+# ── picker mode ──────────────────────────────────────────────────────────────
+current=$(tmux display-message -p '#S' 2>/dev/null || true)
+[ -z "$(_list)" ] && { echo "no sessions"; sleep 1; exit 0; }
+
+self="$0"
+selected=$(
+  _list | fzf \
+    --multi \
+    --with-nth=3,1,2,4,5 \
+    --delimiter='\t' \
+    --prompt='kill session(s) > ' \
+    --header='Tab: select   Enter: kill   ctrl-r: rename   Esc: cancel   (* = attached)' \
+    --preview "$self --preview {1}" \
+    --preview-window=right,55%,wrap \
+    --bind "ctrl-r:execute($self --rename {1})+reload($self --list)" \
+  | cut -f1
+) || exit 0
+
+[ -z "$selected" ] && exit 0
+
+killed_current=0
+while IFS= read -r s; do
+  [ -z "$s" ] && continue
+  [ "$s" = "$current" ] && killed_current=1
+  tmux kill-session -t "$s"
+done <<< "$selected"
+
+# If we killed the attached session, hop elsewhere so the popup client survives.
+if [ "$killed_current" -eq 1 ]; then
+  next=$(tmux list-sessions -F '#{session_name}' 2>/dev/null | head -1 || true)
+  [ -n "$next" ] && tmux switch-client -t "$next" 2>/dev/null || true
+fi
