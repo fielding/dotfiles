@@ -8,7 +8,7 @@
 sketchybar --add item volume right \
            --set volume icon.font="Hack Nerd Font:Bold:16.0" \
                         icon.color=$COLOR_FG_DIM \
-                        label.font="SF Mono:Medium:11.0" \
+                        label.font="RobotoMono Nerd Font:Medium:14.0" \
                         label.color=$COLOR_FG \
                         label.drawing=off \
                         background.color=$COLOR_BG_LIGHT \

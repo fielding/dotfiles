@@ -13,7 +13,7 @@ sketchybar --add item calendar right \
                           icon.padding_left=6 \
                           icon.padding_right=0 \
                           label="No meetings" \
-                          label.font="Inconsolata Nerd Font:Regular:13.0" \
+                          label.font="RobotoMono Nerd Font:Medium:14.0" \
                           label.color=$COLOR_FG_DIM \
                           label.padding_left=6 \
                           update_freq=60 \

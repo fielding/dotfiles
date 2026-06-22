@@ -8,7 +8,7 @@
 sketchybar --add item weather right \
            --set weather icon.font="Hack Nerd Font:Bold:16.0" \
                          icon.color=$COLOR_FG_DIM \
-                         label.font="Helvetica Neue:Condensed Black:14.0" \
+                         label.font="RobotoMono Nerd Font:Medium:14.0" \
                          label.color=$COLOR_FG \
                          background.color=$COLOR_BG_LIGHT \
                          update_freq=900 \
