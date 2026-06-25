@@ -1,0 +1,43 @@
+#!/bin/sh
+# yabai-window-pick — native fuzzy window switcher across all spaces.
+#
+# Pipes every real, non-minimized window through `choose` — a native dmenu-style
+# overlay — fuzzy-matched on "App — Title [space-label]", and focuses the pick.
+# Focusing a window on another space/display follows you to it, so this is the
+# "jump to any specific window" primitive that directional focus + the
+# same-space cycle don't cover.
+#
+# Bound to alt-w at the TOP level (not inside switcher mode) so `choose` gets
+# the keystrokes — an skhd mode would otherwise eat them.
+
+set -eu
+
+spaces=$(yabai -m query --spaces)
+wins=$(yabai -m query --windows | jq -c --argjson spaces "$spaces" '
+  ($spaces | map({(.index | tostring): .label}) | add) as $lab
+  | [ .[]
+      | select(.["is-minimized"] == false
+               and .subrole != "AXDialog"
+               and .subrole != "AXSystemDialog")
+    ]
+  | sort_by(.space, .app, .id)
+  | map(. + {
+      _label: (
+        (.app)
+        + "  —  "
+        # strip the redundant " - AppName…" suffix, then clip long titles
+        + ( (if (.title | length) > 0
+             then (.title / (" - " + .app))[0]
+             else "·" end) | .[:64] )
+        + "   [" + ($lab[(.space | tostring)] // (.space | tostring)) + "]"
+      )
+    })
+')
+[ "$(printf '%s' "$wins" | jq 'length')" -gt 0 ] || exit 0
+
+idx=$(printf '%s' "$wins" | jq -r '.[]._label' \
+  | "$HOME/.local/bin/pik" -i -n 12 -p "jump to window") || exit 0
+
+[ -n "${idx:-}" ] || exit 0
+id=$(printf '%s' "$wins" | jq -r ".[$idx].id")
+[ -n "$id" ] && [ "$id" != "null" ] && yabai -m window --focus "$id"
