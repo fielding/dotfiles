@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.fielding.holdpeek</string>
+
+  <!-- Hold ctrl (see --hold-ms) → show the space-map; release → hide. Passive
+       tap, so ctrl+number combos keep working while it's up. -->
+  <key>ProgramArguments</key>
+  <array>
+    <string>__HOME__/.local/libexec/holdpeek/holdpeek.app/Contents/MacOS/holdpeek</string>
+    <string>--mod</string>
+    <string>control</string>
+    <string>--hold-ms</string>
+    <string>150</string>
+    <string>--on</string>
+    <string>__HOME__/bin/spacemap show</string>
+    <string>--off</string>
+    <string>__HOME__/bin/spacemap hide</string>
+  </array>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <!-- Retry until Input Monitoring is granted (tapCreate fails -> exit 2). -->
+  <key>KeepAlive</key>
+  <true/>
+  <key>ThrottleInterval</key>
+  <integer>10</integer>
+
+  <key>ProcessType</key>
+  <string>Background</string>
+
+  <key>StandardErrorPath</key>
+  <string>__HOME__/.local/share/holdpeek/holdpeek.err.log</string>
+</dict>
+</plist>

@@ -420,6 +420,7 @@ agent_label_for() { # map short name -> template filename
     sync-tix-to-vault)echo "com.fielding.sync-tix-to-vault.plist" ;;
     ollama)           echo "com.fielding.ollama.plist" ;;
     mouse-tap)        echo "com.fielding.mouse-tap.plist" ;;
+    holdpeek)         echo "com.fielding.holdpeek.plist" ;;
     *)                echo "" ;;
   esac
 }

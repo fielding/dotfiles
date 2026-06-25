@@ -1,0 +1,83 @@
+#!/bin/sh
+# spacemap — fill + show/hide the sketchybar space-map HUD.
+#
+#   spacemap show     populate, then draw the popup on
+#   spacemap hide     draw the popup off
+#   spacemap toggle   populate, then toggle (default)
+#
+# Anchored under the leftmost space (space.1; slots created in items/mode.sh).
+# Each row: space number · project label · the apps living there, focused space
+# lit. Driven by holdpeek (hold ctrl). The glanceable "what's on which space".
+#
+# Speed matters (it's on the hold-to-peek path): all row data is computed in ONE
+# jq pass and pushed in ONE batched sketchybar call — ~50ms vs ~280ms for the
+# old per-row loop (20 jq spawns + 11 sketchybar calls).
+
+set -eu
+export PATH="/opt/homebrew/bin:/usr/bin:/bin:${PATH:-}"
+. "$HOME/.config/sketchybar/colors.sh" 2>/dev/null || true
+: "${COLOR_ACCENT:=0xff1ad0d6}"
+: "${COLOR_FG:=0xffdbd6cc}"
+: "${COLOR_FG_DIM:=0xff5a5d62}"
+
+ACTION="${1:-toggle}"
+
+if [ "$ACTION" = "hide" ]; then
+  sketchybar --set space.1 popup.drawing=off >/dev/null
+  exit 0
+fi
+
+# refresh: only do the work if the popup is actually open (keeps the focused-row
+# highlight current while it's held; free no-op when hidden).
+if [ "$ACTION" = "refresh" ]; then
+  [ "$(sketchybar --query space.1 2>/dev/null | jq -r '.popup.drawing')" = "on" ] || exit 0
+fi
+
+# One jq pass over both queries → 10 TSV rows: index, LABEL, detail, focused(0|1)
+# detail = per-window titles (browser cruft stripped, app-name fallback for
+# titleless windows), each truncated, busy spaces capped with "+N".
+rows=$(jq -rn \
+  --argjson sp "$(yabai -m query --spaces)" \
+  --argjson w "$(yabai -m query --windows)" '
+  def desc:
+    (.title // "") as $t
+    | (if ($t | length) > 0 then (($t / (" - " + .app))[0]) else .app end)
+    | gsub("^ +| +$"; "")
+    | if (length > 28) then (.[0:27] + "…") else . end;
+  range(1; 11) as $i
+  | ($sp | map(select(.index == $i))[0]) as $s
+  | ($w | map(select(.space == $i
+                     and .["is-minimized"] == false
+                     and .subrole != "AXDialog"
+                     and .subrole != "AXSystemDialog"
+                     and (.subrole != "" or (.title | length) > 0)) | desc)) as $d
+  | ($d | length) as $n
+  | (if   $n == 0 then "—"
+     elif $n > 4  then (($d[0:4] | join("  ·  ")) + "  +" + (($n - 4) | tostring))
+     else ($d | join("  ·  ")) end) as $detail
+  | [ $i,
+      ($s.label // "" | ascii_upcase),
+      $detail,
+      (if $s["has-focus"] then "1" else "0" end) ] | @tsv')
+
+# Build one batched sketchybar invocation from the rows (no subshell: heredoc).
+set --
+TAB=$(printf '\t')
+while IFS="$TAB" read -r i label apps focused; do
+  [ -n "$i" ] || continue
+  num=$i; [ "$i" = "10" ] && num="0"
+  name=$(printf '%-2s %-9s' "$num" "$label")   # "1  MAIN     " — bold Helvetica slot
+  if [ "$focused" = "1" ]; then icol="$COLOR_ACCENT"; lcol="$COLOR_FG"
+  else icol="$COLOR_FG"; lcol="$COLOR_FG_DIM"; fi
+  set -- "$@" --set "spacemap.$i" "icon=$name" "label=$apps" "icon.color=$icol" "label.color=$lcol"
+done <<EOF
+$rows
+EOF
+
+case "$ACTION" in
+  show)    set -- "$@" --set space.1 popup.drawing=on ;;
+  refresh) : ;;                                   # leave drawing as-is
+  *)       set -- "$@" --set space.1 popup.drawing=toggle ;;
+esac
+
+sketchybar "$@" >/dev/null
