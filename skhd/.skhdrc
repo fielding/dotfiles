@@ -18,6 +18,8 @@ alt - e : skl default alt+e balance; yabai -m space --balance
 alt - r : skl default alt+r rotate; yabai -m space --rotate 90
 alt - f : skl default alt+f fullscreen; yabai -m window --toggle zoom-fullscreen
 alt - t : skl default alt+t float; yabai -m window --toggle float; yabai -m window --grid 4:4:1:1:2:2
+# alt - w : fuzzy jump to any window across all spaces
+alt - w : skl default alt+w window-pick; ~/bin/yabai-window-pick
 
 # =====================================================
 # SPACE FOCUS (re-press to cycle windows on that space — see ~/bin/yabai-space-focus)
@@ -65,7 +67,7 @@ switcher < t ; tmux      # t = Tmux
 
 ## organize windows (LLM-powered)
 switcher < o : skl switcher o organize; ~/bin/yabai-organize &; \
-    sketchybar --trigger keybind_flash ACTION="organize"; skhd -k 'escape'
+    sketchybar --trigger keybind_flash ACTION="organize"
 
 ## launch terminal
 switcher < return : skl switcher return term; ~/bin/ghostty-create-window; skhd -k 'escape'
@@ -117,7 +119,7 @@ tmux < f : skl tmux f session:pick; skhd -k 'escape'; tmux display-popup -w 90% 
 tmux < space : skl tmux space session:last; tmux switch-client -l
 tmux < r : skl tmux r session:rename; skhd -k 'escape'; tmux command-prompt -I "#S" "rename-session -- '%%'"
 tmux < s : skl tmux s session:new; skhd -k 'escape'; tmux command-prompt "new-session -s '%%'"
-tmux < x : skl tmux x session:kill; skhd -k 'escape'; tmux kill-session
+tmux < x : skl tmux x session:kill; tmux kill-session
 tmux < shift - x : skl tmux shift+x session:pick-kill; skhd -k 'escape'; tmux display-popup -w 80% -h 70% -E "~/bin/tmux-session-kill"
 
 ## window (tab) navigation — stays in tmux mode so you can browse
@@ -136,13 +138,13 @@ tmux < n : skl tmux n session:next; tmux switch-client -n
 tmux < p : skl tmux p session:prev; tmux switch-client -p
 
 ## window actions — exit tmux mode after
-tmux < c : skl tmux c win:new; tmux new-window; skhd -k 'escape'
+tmux < c : skl tmux c win:new; tmux new-window
 tmux < d : skl tmux d win:kill; [ "$(tmux list-windows | wc -l | tr -d ' ')" -gt 1 ] && tmux kill-window || tmux display-message "last window — use x to kill session"
 tmux < w : skl tmux w win:rename; skhd -k 'escape'; tmux command-prompt -I "#W" "rename-window -- '%%'"
 
 ## pane splitting
-tmux < return : skl tmux return split:h; tmux split-window -v; skhd -k 'escape'
-tmux < 0x2A : skl tmux \\ split:v; tmux split-window -h; skhd -k 'escape'
+tmux < return : skl tmux return split:h; tmux split-window -v
+tmux < 0x2A : skl tmux \\ split:v; tmux split-window -h
 
 # swap mode
 ## swap window positions
@@ -228,5 +230,5 @@ cmd + shift + alt + ctrl - d : skl default hyper+d mic; osascript -e 'tell appli
 # quick ghostty - cmd+shift+return to open new ghostty window
 cmd + shift - return : skl default cmd+shift+return term; ~/bin/ghostty-create-window
 
-# toggle keybind cheatsheet popup
-ctrl - 0x2C : skl default ctrl+/ cheatsheet; sketchybar --set mode popup.drawing=toggle
+# space-map HUD is shown by HOLDING ctrl (holdpeek daemon owns it) — no manual
+# toggle here, so two controllers can't fight over the popup's state.
