@@ -1,0 +1,27 @@
+# gate operator config -- personal; the shared operator layer for gate, retro, and
+# handoff. Managed here in my dotfiles; just keep it out of shared project repos.
+
+# Knowledge-base routing (retro's domain half, gate stage 13). A repo whose remote
+# slug matches no entry routes domain learnings to its own
+# <project>/.handoff/retro/retro-<date>.md only. There is no default external destination.
+[[knowledge_base]]
+match = "veniceai/*"                                # glob on <owner>/<repo>
+path = "~/notes/Projects/venice/knowledge-distill"  # the Venice KB
+peer_reviewed = true                                # peers review this work -> high-signal
+
+# Handoff/retro storage. vault_root set -> docs live at <vault_root>/<proj>/handoff/
+# with an in-repo .handoff symlink created automatically; unset -> repo-local .handoff/.
+[handoff]
+vault_root = "~/notes/Projects"
+
+# Retro skill-half routing. A skill whose source is under skills_root is mine (retro
+# edits in place + pushes to its repo); anything else is upstream (proposal only).
+# Two skill trees live under skills_root: skills/ (public -> fielding/skills) and
+# skills-private/ (private -> fielding/skills-private). retro should push an edited
+# skill to ITS own repo, derived from the skill dir's git remote -- so skills_repo is
+# only a fallback default now. proposal_cmd files lower-confidence changes; unset ->
+# retro reports them instead.
+[retro]
+skills_root  = "~/src/hack"
+skills_repo  = "fielding/skills"
+proposal_cmd = "cd ~/.agents && tix add \"{title}\" -p 3 -b \"{body}\""

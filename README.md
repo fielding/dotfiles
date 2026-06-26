@@ -15,6 +15,7 @@ is a stow package; running `stow <name>` symlinks its contents into `~`.
 | `codex`      | OpenAI Codex CLI config                                            |
 | `fastfetch`  | system info banner at shell startup                                |
 | `fonts`      | installed font files                                               |
+| `gate`       | operator config for the gate/retro/handoff skills (vault, routing) |
 | `ghostty`    | Ghostty terminal config                                            |
 | `git`        | gitconfig, commit template, global gitignore                       |
 | `homebrew`   | Brewfile — brew, cask, cargo, and npm package manifest             |
