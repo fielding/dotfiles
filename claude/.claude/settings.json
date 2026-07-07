@@ -57,7 +57,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "npx -y ccstatusline@latest",
+    "command": "$HOME/.local/share/fnm/aliases/default/bin/node $HOME/.local/share/fnm/aliases/default/bin/ccstatusline",
     "padding": 0
   },
   "enabledPlugins": {
