@@ -1,0 +1,33 @@
+#!/bin/sh
+#
+# ██████             ██   ██                       ░██
+# ░██░░░██  ██████   ░░██ ██  ███     ██  ██████   ██████
+# ░██  ░██ ░░░░░░██   ░░███  ░░██  █ ░██ ░░░░░░██ ░░░██░
+# ░██████   ███████    ░██    ░██ ███░██  ███████   ░██
+# ░██░░░   ██░░░░██    ██     ░████░████ ██░░░░██   ░██
+# ░██     ░░████████  ██      ███░ ░░░██░░████████  ░░██
+# ░░       ░░░░░░░░  ░░      ░░░    ░░░  ░░░░░░░░    ░░
+#
+# this is dedicasted to @mbj because he loves bash lol
+
+# open a paywalled article through its archive.today snapshot
+# usage: paywat [url]      no arg = read the url from the clipboard
+#        paywat -n [url]   open the "save a fresh capture" page instead
+# ARCHIVE_HOST overrides the mirror (archive.ph default; .today/.is/.md also work)
+
+host="${ARCHIVE_HOST:-archive.ph}"
+
+path=newest/
+if [ "$1" = "-n" ]; then
+	path="?url="
+	shift
+fi
+
+url="${1:-$(pbpaste)}"
+
+case "$url" in
+	http://*|https://*) ;;
+	*) echo "paywat: need a url (arg or clipboard), got: $url" >&2; exit 1 ;;
+esac
+
+open "https://$host/$path$url"
