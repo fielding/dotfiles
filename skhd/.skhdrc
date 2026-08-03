@@ -8,7 +8,7 @@
 :: tree @ : borders active_color=0xfff2a633; sketchybar --trigger mode_change MODE=tree
 :: layout @ : borders active_color=0xff9871fe; sketchybar --trigger mode_change MODE=layout
 :: meet @ : borders active_color=0xfff26c33; sketchybar --trigger mode_change MODE=meet
-:: tmux @ : ~/bin/yabai-focus-terminal; borders active_color=0xffbbff00; sketchybar --trigger mode_change MODE=tmux
+:: herdr @ : ~/bin/yabai-focus-terminal; borders active_color=0xffbbff00; sketchybar --trigger mode_change MODE=herdr
 
 
 # =====================================================
@@ -47,8 +47,8 @@ ctrl - l -> : app=$(yabai -m query --windows --window | jq -r '.app'); if [[ "$a
 
 # switching modes
 default                        < ctrl - f      ; switcher
-switcher, swap, layout, tree, tmux < ctrl - f      ; default
-switcher, swap, layout, tree, tmux < escape        ; default
+switcher, swap, layout, tree, herdr < ctrl - f      ; default
+switcher, swap, layout, tree, herdr < escape        ; default
 
 # meet mode - ctrl+m to enter/exit
 default                              < ctrl - m      ; meet
@@ -63,7 +63,7 @@ switcher < m ; swap      # m = Move
 switcher < l ; layout    # l = Layout
 switcher < s ; tree      # s = Size
 switcher < g ; meet      # g = Google Meet
-switcher < t ; tmux      # t = Tmux
+switcher < t ; herdr     # t = Terminal (herdr)
 
 ## organize windows (LLM-powered)
 switcher < o : skl switcher o organize; ~/bin/yabai-organize &; \
@@ -110,41 +110,42 @@ switcher < cmd - c : skl switcher cmd+c send-mon:next; yabai -m window --display
 switcher < cmd - 1 : skl switcher cmd+1 send-mon:1; yabai -m window --display 1; yabai -m display --focus 1
 switcher < cmd - 2 : skl switcher cmd+2 send-mon:2; yabai -m window --display 2; yabai -m display --focus 2
 
-# tmux mode — control tmux from skhd
-# note: skhd runs outside tmux, so use display-popup for interactive commands
-# and avoid #{format} strings (they don't expand from outside tmux)
+# herdr mode — control herdr from skhd (socket API via ~/bin/herdr-ctl)
+# note: skhd runs outside herdr; pickers run in a temp pane (herdr-ctl picker)
+# and rename/new prompts use an osascript dialog
 
-## session management
-tmux < f : skl tmux f session:pick; skhd -k 'escape'; tmux display-popup -w 90% -h 80% -E "~/bin/tmux-sessionizer"
-tmux < space : skl tmux space session:last; tmux switch-client -l
-tmux < r : skl tmux r session:rename; skhd -k 'escape'; tmux command-prompt -I "#S" "rename-session -- '%%'"
-tmux < s : skl tmux s session:new; skhd -k 'escape'; tmux command-prompt "new-session -s '%%'"
-tmux < x : skl tmux x session:kill; tmux kill-session
-tmux < shift - x : skl tmux shift+x session:pick-kill; skhd -k 'escape'; tmux display-popup -w 80% -h 70% -E "~/bin/tmux-session-kill"
+## workspace management
+herdr < f : skl herdr f ws:pick; skhd -k 'escape'; ~/bin/herdr-ctl picker ~/bin/herdr-sessionizer
+herdr < j : skl herdr j ws:pick; skhd -k 'escape'; ~/bin/herdr-ctl picker ~/src/hack/firstmate/bin/fm-inbox-capture-popup.sh
+herdr < space : skl herdr space ws:last; ~/bin/herdr-ctl ws-focus last
+herdr < r : skl herdr r ws:rename; skhd -k 'escape'; ~/bin/herdr-ctl rename workspace
+herdr < s : skl herdr s ws:new; skhd -k 'escape'; ~/bin/herdr-ctl ws-new
+herdr < x : skl herdr x ws:kill; ~/bin/herdr-ctl ws-close
+herdr < shift - x : skl herdr shift+x ws:pick-kill; skhd -k 'escape'; ~/bin/herdr-ctl picker ~/bin/herdr-workspace-kill
 
-## window (tab) navigation — stays in tmux mode so you can browse
-tmux < 1 : skl tmux 1 win:1; tmux select-window -t :1
-tmux < 2 : skl tmux 2 win:2; tmux select-window -t :2
-tmux < 3 : skl tmux 3 win:3; tmux select-window -t :3
-tmux < 4 : skl tmux 4 win:4; tmux select-window -t :4
-tmux < 5 : skl tmux 5 win:5; tmux select-window -t :5
-tmux < 6 : skl tmux 6 win:6; tmux select-window -t :6
-tmux < 7 : skl tmux 7 win:7; tmux select-window -t :7
-tmux < 8 : skl tmux 8 win:8; tmux select-window -t :8
-tmux < 9 : skl tmux 9 win:9; tmux select-window -t :9
-tmux < h : skl tmux h win:prev; tmux previous-window
-tmux < l : skl tmux l win:next; tmux next-window
-tmux < n : skl tmux n session:next; tmux switch-client -n
-tmux < p : skl tmux p session:prev; tmux switch-client -p
+## tab navigation — stays in herdr mode so you can browse
+herdr < 1 : skl herdr 1 tab:1; ~/bin/herdr-ctl tab-focus 1
+herdr < 2 : skl herdr 2 tab:2; ~/bin/herdr-ctl tab-focus 2
+herdr < 3 : skl herdr 3 tab:3; ~/bin/herdr-ctl tab-focus 3
+herdr < 4 : skl herdr 4 tab:4; ~/bin/herdr-ctl tab-focus 4
+herdr < 5 : skl herdr 5 tab:5; ~/bin/herdr-ctl tab-focus 5
+herdr < 6 : skl herdr 6 tab:6; ~/bin/herdr-ctl tab-focus 6
+herdr < 7 : skl herdr 7 tab:7; ~/bin/herdr-ctl tab-focus 7
+herdr < 8 : skl herdr 8 tab:8; ~/bin/herdr-ctl tab-focus 8
+herdr < 9 : skl herdr 9 tab:9; ~/bin/herdr-ctl tab-focus 9
+herdr < h : skl herdr h tab:prev; ~/bin/herdr-ctl tab-focus prev
+herdr < l : skl herdr l tab:next; ~/bin/herdr-ctl tab-focus next
+herdr < n : skl herdr n ws:next; ~/bin/herdr-ctl ws-focus next
+herdr < p : skl herdr p ws:prev; ~/bin/herdr-ctl ws-focus prev
 
-## window actions — exit tmux mode after
-tmux < c : skl tmux c win:new; tmux new-window
-tmux < d : skl tmux d win:kill; [ "$(tmux list-windows | wc -l | tr -d ' ')" -gt 1 ] && tmux kill-window || tmux display-message "last window — use x to kill session"
-tmux < w : skl tmux w win:rename; skhd -k 'escape'; tmux command-prompt -I "#W" "rename-window -- '%%'"
+## tab actions — exit herdr mode after
+herdr < c : skl herdr c tab:new; ~/bin/herdr-ctl tab-new
+herdr < d : skl herdr d tab:kill; ~/bin/herdr-ctl tab-close
+herdr < w : skl herdr w tab:rename; skhd -k 'escape'; ~/bin/herdr-ctl rename tab
 
 ## pane splitting
-tmux < return : skl tmux return split:h; tmux split-window -v
-tmux < 0x2A : skl tmux \\ split:v; tmux split-window -h
+herdr < return : skl herdr return split:down; ~/bin/herdr-ctl split down
+herdr < 0x2A : skl herdr \\ split:right; ~/bin/herdr-ctl split right
 
 # swap mode
 ## swap window positions
