@@ -114,8 +114,11 @@ fi
 [ -d "$BREW_PATH/opt/openjdk@17" ] && export PATH="$BREW_PATH/opt/openjdk@17/bin:$PATH"
 
 # Human++ color scheme
-[ -f "$HOME/src/hack/human-plus-plus/dist/shell-init.sh" ] \
-  && . "$HOME/src/hack/human-plus-plus/dist/shell-init.sh"
+if [ -f "$HOME/.config/human-plus-plus/shell-init.sh" ]; then
+  . "$HOME/.config/human-plus-plus/shell-init.sh"
+elif [ -f "$HOME/src/hack/human-plus-plus/dist/shell-init.sh" ]; then
+  . "$HOME/src/hack/human-plus-plus/dist/shell-init.sh"
+fi
 
 # fabro
 export PATH="/Users/fielding/.fabro/bin:$PATH"
