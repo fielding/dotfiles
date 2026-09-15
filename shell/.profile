@@ -71,3 +71,5 @@ export PATH
 OPENAI_API_KEY=$(security find-generic-password -s "OPENAI_API_KEY" -w 2>/dev/null)
 export OPENAI_API_KEY
 . "$HOME/.cargo/env"
+
+export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"

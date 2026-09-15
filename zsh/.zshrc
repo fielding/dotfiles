@@ -124,3 +124,7 @@ export PATH="/Users/fielding/.fabro/bin:$PATH"
 # No default is set, so Node stays at the system/brew version outside repos
 # that pin one. Node 22 (the Venice pin) bundles corepack, which provides yarn.
 command -v fnm >/dev/null && eval "$(fnm env --use-on-cd --shell zsh)"
+
+# figlet/toilet fonts (includes xero/figlet-fonts: https://github.com/xero/figlet-fonts)
+export TOILET_FONT_PATH="$HOME/.local/share/figlet-fonts"
+export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
