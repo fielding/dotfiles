@@ -6,7 +6,7 @@
 # <project>/.handoff/retro/retro-<date>.md only. There is no default external destination.
 [[knowledge_base]]
 match = "veniceai/*"                                # glob on <owner>/<repo>
-path = "~/notes/Projects/venice/knowledge-distill"  # the Venice KB
+path = "~/notes/Domains/venice/knowledge-distill"  # the Venice KB
 peer_reviewed = true                                # peers review this work -> high-signal
 
 # Handoff/retro storage. vault_root set -> docs live at <vault_root>/<proj>/handoff/
@@ -25,3 +25,6 @@ vault_root = "~/notes/Projects"
 skills_root  = "~/src/hack"
 skills_repo  = "fielding/skills"
 proposal_cmd = "cd ~/.agents && tix add \"{title}\" -p 3 -b \"{body}\""
+# Conventions (pack entries, KB house conventions) land only on direct feedback from
+# these reviewers; anything else is a proposal or stays in the project note.
+trusted_reviewers = ["mbj", "dkubb"]
