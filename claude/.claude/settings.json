@@ -123,7 +123,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "$HOME/.local/share/fnm/aliases/default/bin/node $HOME/.local/share/fnm/aliases/default/bin/ccstatusline",
+    "command": "/opt/homebrew/bin/node /opt/homebrew/bin/ccstatusline",
     "padding": 0
   },
   "enabledPlugins": {
