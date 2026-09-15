@@ -11,7 +11,7 @@ is a stow package; running `stow <name>` symlinks its contents into `~`.
 |--------------|--------------------------------------------------------------------|
 | `bin`        | personal scripts (`tmux-sessionizer`, `sync-tix-to-vault`, …)      |
 | `borders`    | JankyBorders — window outlines tinted by skhd mode                 |
-| `claude`     | Claude Code global settings, hooks, status line                    |
+| `claude`     | Claude Code global settings, hooks, status line, themes            |
 | `codex`      | OpenAI Codex CLI config                                            |
 | `fastfetch`  | system info banner at shell startup                                |
 | `fonts`      | installed font files                                               |

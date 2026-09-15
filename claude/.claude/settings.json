@@ -1,4 +1,7 @@
 {
+  "env": {
+    "CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP": "1"
+  },
   "permissions": {
     "allow": [
       "Bash(brew install:*)",
@@ -29,7 +32,70 @@
     ],
     "defaultMode": "dontAsk"
   },
+  "model": "claude-fable-5-1[1m]",
+  "skillOverrides": {
+    "adapt": "name-only",
+    "animate": "name-only",
+    "audit": "name-only",
+    "bolder": "name-only",
+    "brainstorming": "user-invocable-only",
+    "clarify": "name-only",
+    "colorize": "name-only",
+    "critique": "name-only",
+    "delight": "name-only",
+    "distill": "name-only",
+    "impeccable": "name-only",
+    "layout": "name-only",
+    "optimize": "name-only",
+    "overdrive": "name-only",
+    "polish": "name-only",
+    "quieter": "name-only",
+    "shape": "name-only",
+    "typeset": "name-only"
+  },
   "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "chrome-devtools-axi",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "lavish-axi",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "gh-axi",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash '/Users/fielding/.claude/hooks/herdr-agent-state.sh' session",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [
@@ -61,11 +127,12 @@
     "padding": 0
   },
   "enabledPlugins": {
-    "swift-lsp@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": true,
+    "figma@claude-plugins-official": true,
     "pyright-lsp@claude-plugins-official": true,
     "rust-analyzer-lsp@claude-plugins-official": true,
-    "figma@claude-plugins-official": true
+    "swift-lsp@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "vercel@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "obsidian-cli-skill": {
@@ -75,10 +142,16 @@
       }
     }
   },
+  "effortLevel": "xhigh",
   "tui": "fullscreen",
+  "voice": {
+    "enabled": true,
+    "mode": "hold"
+  },
   "skipDangerousModePermissionPrompt": true,
-  "theme": "dark-ansi",
+  "theme": "custom:human-plus-plus",
   "editorMode": "vim",
   "remoteControlAtStartup": true,
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "voiceEnabled": true
 }
