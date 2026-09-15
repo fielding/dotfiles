@@ -1,0 +1,28 @@
+# Human++ - Base24
+# Generated from palette.toml
+
+background = 1a1c22
+foreground = f8f6f2
+cursor-color = f8f6f2
+selection-background = 3a3d42
+selection-foreground = dbd6cc
+
+# Normal colors (LOUD accents)
+palette = 0=#1a1c22
+palette = 1=#e7349c
+palette = 2=#04b372
+palette = 3=#f2a633
+palette = 4=#458ae2
+palette = 5=#9871fe
+palette = 6=#1ad0d6
+palette = 7=#eeeae2
+
+# Bright colors (QUIET accents)
+palette = 8=#5a5d62
+palette = 9=#c8518f
+palette = 10=#61b186
+palette = 11=#dfb683
+palette = 12=#5e84b6
+palette = 13=#8f72e3
+palette = 14=#91cbcd
+palette = 15=#f8f6f2
