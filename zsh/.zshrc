@@ -14,16 +14,6 @@ fi
 autoload -Uz compinit
 compinit -i -u
 
-# zplug's load.zsh calls `compinit -d ...` without security flags, which
-# prompts about /opt/homebrew/share (group-writable since brew 4.x) and
-# aborts. Shadow compinit with a function that re-adds -i; it self-clears
-# after one call so the autoloaded compinit is restored.
-compinit() {
-  unfunction compinit
-  autoload -Uz compinit
-  compinit -i "$@"
-}
-
 # zplug uses `git` directly; temporarily unalias so it doesn't call `nit`
 unalias git 2>/dev/null
 if [ -n "${ZPLUG_HOME:-}" ] \
@@ -31,6 +21,16 @@ if [ -n "${ZPLUG_HOME:-}" ] \
    && [ -d "$ZPLUG_HOME/log" ] && [ -w "$ZPLUG_HOME/log" ] \
    && [ -d "$ZPLUG_HOME/cache" ] && [ -w "$ZPLUG_HOME/cache" ]; then
   source "$ZPLUG_HOME/init.zsh"
+
+  # zplug re-autoloads compinit and later invokes it without security flags.
+  # Keep a private copy of the real function and wrap every zplug invocation
+  # with -i so Homebrew's group-writable share directory is skipped quietly.
+  autoload -Uz +X compinit
+  unfunction _fielding_compinit 2>/dev/null
+  functions -c compinit _fielding_compinit
+  compinit() {
+    _fielding_compinit -i "$@"
+  }
 
   zplug mafredri/zsh-async, from:github
   zplug fielding/zsh-brew-switcher, from:github, at:main
