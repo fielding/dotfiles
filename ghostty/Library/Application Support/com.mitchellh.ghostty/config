@@ -1,4 +1,5 @@
 theme = human-plus-plus
+font-family = "JetBrainsMono Nerd Font Mono"
 window-decoration = false
-custom-shader = /Users/fielding/src/hack/ghostty-shader-adventures/shaders/splatter.glsl
+#custom-shader = /Users/fielding/src/hack/ghostty-shader-adventures/shaders/splatter.glsl
 custom-shader-animation = true
