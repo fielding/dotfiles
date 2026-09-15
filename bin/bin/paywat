@@ -8,7 +8,7 @@
 # ░██     ░░████████  ██      ███░ ░░░██░░████████  ░░██
 # ░░       ░░░░░░░░  ░░      ░░░    ░░░  ░░░░░░░░    ░░
 #
-# this is dedicasted to @mbj because he loves bash lol
+# this is dedicated to @mbj because he loves bash lol
 
 # open a paywalled article through its archive.today snapshot
 # usage: paywat [url]      no arg = read the url from the clipboard
