@@ -45,7 +45,12 @@ if [ -n "${ZPLUG_HOME:-}" ] \
 
   zplug load
 fi
-alias git='nit' g='nit'
+if command -v nit >/dev/null 2>&1; then
+  alias git='nit' g='nit'
+else
+  unalias git 2>/dev/null
+  alias g='git'
+fi
 
 PURE_PROMPT_SYMBOL_COLOR=red
 export PURE_PROMPT_SYMBOL_COLOR
