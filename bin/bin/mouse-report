@@ -123,7 +123,6 @@ def main():
     focus = load_focus()
     clicks, keys = load_mouse()
     navs = load_usage()
-    nav_times = [e for e, _ in navs]
 
     if not focus:
         print("no focus data yet at", FOCUS)
@@ -133,6 +132,10 @@ def main():
     if args.days is not None:
         cutoff = focus[-1]["t"] - args.days * 86400
         focus = [r for r in focus if r["t"] >= cutoff]
+        clicks = [t for t in clicks if t >= cutoff]
+        keys = [t for t in keys if t >= cutoff]
+        navs = [(e, a) for e, a in navs if e >= cutoff]
+    nav_times = [e for e, _ in navs]
 
     # Build transitions (consecutive focus rows with a different window id).
     transitions = []
@@ -164,10 +167,11 @@ def main():
 
     # Clicks that did NOT change focus, grouped by the app focused at the time.
     focus_times = [r["t"] for r in focus]
+    trans_times = [to["t"] for _, to in transitions]
     in_app_clicks = Counter()
     interruptions = 0
     for ct in clicks:
-        changed = any_in_window([tr[1]["t"] for tr in transitions], ct, 0.5, 2.0)
+        changed = any_in_window(trans_times, ct, 0.5, 2.0)
         if not changed:
             i = bisect_right(focus_times, ct) - 1
             if 0 <= i < len(focus):
@@ -206,6 +210,13 @@ def main():
         for sp in sorted(mouse_by_space):
             n = mouse_by_space[sp]
             print(f"  space {sp:>2}  {n:4d}  {bar(n,mx)}")
+
+    if mouse_by_hour:
+        mx = max(mouse_by_hour.values())
+        print("\nMOUSE-DRIVEN FOCUS BY HOUR")
+        for h in sorted(mouse_by_hour):
+            n = mouse_by_hour[h]
+            print(f"  {h:02d}:00  {n:4d}  {bar(n,mx)}")
 
     if in_app_clicks:
         mx = in_app_clicks.most_common(1)[0][1]
