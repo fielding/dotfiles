@@ -17,4 +17,3 @@ if [ -z "${ZPLUG_HOME:-}" ]; then
 fi
 
 [ -n "${ZPLUG_HOME:-}" ] && export ZPLUG_HOME
-. "$HOME/.cargo/env"

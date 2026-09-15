@@ -121,13 +121,20 @@ elif [ -f "$HOME/src/hack/human-plus-plus/dist/shell-init.sh" ]; then
 fi
 
 # fabro
-export PATH="/Users/fielding/.fabro/bin:$PATH"
+export PATH="$HOME/.fabro/bin:$PATH"
 
 # fnm (Node version manager): auto-switches Node per .node-version on cd.
-# No default is set, so Node stays at the system/brew version outside repos
-# that pin one. Node 22 (the Venice pin) bundles corepack, which provides yarn.
-command -v fnm >/dev/null && eval "$(fnm env --use-on-cd --shell zsh)"
+# Outside pinned repositories, fnm uses the machine's configured default.
+# Enable Corepack when installing pinned runtimes and run the hook once so
+# shells opened directly inside a repository select its version.
+if command -v fnm >/dev/null; then
+  eval "$(fnm env --use-on-cd --corepack-enabled --shell zsh)"
+  (( $+functions[_fnm_autoload_hook] )) && _fnm_autoload_hook
+fi
 
 # figlet/toilet fonts (includes xero/figlet-fonts: https://github.com/xero/figlet-fonts)
 export TOILET_FONT_PATH="$HOME/.local/share/figlet-fonts"
-export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+
+# zsh keeps PATH and its `path` array in sync; make repeated integrations
+# idempotent without changing their first-occurrence priority.
+typeset -U path PATH
