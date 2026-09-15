@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+# herdr-workspace-kill — fuzzy-pick herdr workspaces to close (and rename in place).
+#
+# Meant to run inside a temporary herdr pane (see herdr-ctl picker, `X`).
+#   Tab     multi-select
+#   Enter   close selected workspace(s)
+#   ctrl-r  rename the highlighted workspace (stays in the picker)
+#   Esc     cancel
+#
+# The preview shows each workspace's tabs and a live snapshot of the active
+# pane, so you can tell a badly-named workspace from a dead one.
+
+set -euo pipefail
+
+_cleanup() {
+  [[ -n "${HERDR_PICKER_PANE:-}" ]] && herdr pane close "$HERDR_PICKER_PANE" > /dev/null 2>&1 || true
+}
+
+# id<TAB>label<TAB>tabs<TAB>marker<TAB>status
+_list() {
+  herdr workspace list 2>/dev/null | jq -r '
+    .result.workspaces[]
+    | "\(.workspace_id)\t\(.label)\t\(.tab_count)t\t\(if .focused then "*" else "" end)\t\(.agent_status)"'
+}
+
+case "${1:-}" in
+  --list)
+    _list
+    exit 0
+    ;;
+  --preview)
+    ws="$2"
+    label=$(herdr workspace get "$ws" 2>/dev/null | jq -r '.result.workspace.label')
+    printf '\033[1m== %s (%s) ==\033[0m\n' "$label" "$ws"
+    herdr tab list --workspace "$ws" 2>/dev/null | jq -r \
+      '.result.tabs[] | "  \(.number): \(.label)  [\(.pane_count)p]  \(.agent_status)"'
+    echo
+    printf '\033[2m--- active pane ---\033[0m\n'
+    active=$(herdr pane list --workspace "$ws" 2>/dev/null | jq -r '.result.panes[0].pane_id // empty')
+    [ -n "$active" ] && herdr pane read "$active" --source visible 2>/dev/null \
+      | sed -e 's/[[:space:]]*$//' | grep -v '^$' | tail -40
+    exit 0
+    ;;
+  --rename)
+    ws="$2"
+    label=$(herdr workspace get "$ws" 2>/dev/null | jq -r '.result.workspace.label')
+    printf 'rename "%s" to (empty = cancel): ' "$label"
+    read -r newname || exit 0
+    [ -n "$newname" ] && herdr workspace rename "$ws" "$newname" > /dev/null 2>&1 || true
+    exit 0
+    ;;
+esac
+
+trap _cleanup EXIT
+
+# ── picker mode ──────────────────────────────────────────────────────────────
+current=$(herdr workspace list | jq -r '.result.workspaces[] | select(.focused) | .workspace_id')
+[ -z "$(_list)" ] && { echo "no workspaces"; sleep 1; exit 0; }
+
+self="$0"
+selected=$(
+  _list | fzf \
+    --multi \
+    --with-nth=4,2,3,5 \
+    --delimiter='\t' \
+    --prompt='close workspace(s) > ' \
+    --header='Tab: select   Enter: close   ctrl-r: rename   Esc: cancel   (* = focused)' \
+    --preview "$self --preview {1}" \
+    --preview-window=right,55%,wrap \
+    --bind "ctrl-r:execute($self --rename {1})+reload($self --list)" \
+  | cut -f1
+) || exit 0
+
+[ -z "$selected" ] && exit 0
+
+# Close the focused workspace last: the picker pane lives in it, so closing
+# it kills this script — anything after that line would never run.
+kill_current=""
+while IFS= read -r ws; do
+  [ -z "$ws" ] && continue
+  if [ "$ws" = "$current" ]; then
+    kill_current=1
+    continue
+  fi
+  herdr workspace close "$ws" > /dev/null
+done <<< "$selected"
+
+if [ -n "$kill_current" ]; then
+  survivor=$(herdr workspace list | jq -r --arg cur "$current" \
+    '.result.workspaces | sort_by(.number) | map(select(.workspace_id != $cur)) | .[0].workspace_id // empty')
+  [ -n "$survivor" ] && herdr workspace focus "$survivor" > /dev/null
+  herdr workspace close "$current" > /dev/null
+fi

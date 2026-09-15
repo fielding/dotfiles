@@ -1,0 +1,208 @@
+#!/usr/bin/env bash
+# herdr-sessionizer — fuzzy-find a project and switch to its herdr workspace
+# Shows project status, git info, and workspace state in a preview pane.
+#
+# Usage:
+#   herdr-sessionizer           # interactive fzf picker
+#   herdr-sessionizer <dir>     # jump directly to workspace for <dir>
+#
+# Runs inside a temporary herdr pane (see herdr-ctl picker); when
+# HERDR_PICKER_PANE is set, that pane is closed on exit.
+
+set -euo pipefail
+
+PROJECT_DIRS=(
+  ~/src/hack
+  ~/src/work
+  ~/src/oss
+  ~/src/research
+  ~/src/scratch
+  ~/etc
+)
+
+# Go two levels deep under src/work (e.g. ~/src/work/freed/comms)
+DEEP_DIRS=(
+  ~/src/work
+)
+
+_cleanup() {
+  [[ -n "${HERDR_PICKER_PANE:-}" ]] && herdr pane close "$HERDR_PICKER_PANE" > /dev/null 2>&1 || true
+}
+trap _cleanup EXIT
+
+# ── Workspace label derivation ───────────────────────────────────────────────
+
+_ws_label() {
+  local dir="$1"
+  local parent base
+  parent=$(basename "$(dirname "$dir")")
+  base=$(basename "$dir")
+  for d in "${DEEP_DIRS[@]}"; do
+    d="${d/#\~/$HOME}"
+    if [[ "$dir" == "$d"/* ]] && [[ "$(echo "$dir" | tr -cd '/' | wc -c)" -gt "$(echo "$d" | tr -cd '/' | wc -c)" ]]; then
+      base="${parent}-${base}"
+      break
+    fi
+  done
+  echo "$base" | tr '.:' '--'
+}
+
+# focus-or-create, tracking last workspace via herdr-ctl
+_switch() {
+  local dir="$1" label ws_id
+  label=$(_ws_label "$dir")
+  ws_id=$(herdr workspace list | jq -r --arg l "$label" \
+    '.result.workspaces[] | select(.label == $l) | .workspace_id' | head -1)
+  if [[ -n "$ws_id" ]]; then
+    ~/bin/herdr-ctl ws-focus "$ws_id"
+  else
+    current=$(~/bin/herdr-ctl focused workspace)
+    mkdir -p "${XDG_STATE_HOME:-$HOME/.local/state}/herdr"
+    echo "$current" > "${XDG_STATE_HOME:-$HOME/.local/state}/herdr/last-workspace"
+    herdr workspace create --cwd "$dir" --label "$label" --focus > /dev/null
+  fi
+}
+
+# ── Direct jump mode ────────────────────────────────────────────────────────
+
+if [[ $# -eq 1 ]]; then
+  _switch "$1"
+  exit 0
+fi
+
+# ── Build candidate list ────────────────────────────────────────────────────
+
+# Active herdr workspaces: label -> "tabs panes"
+ws_json=$(herdr workspace list)
+declare -A active_ws=()
+while IFS=$'\t' read -r label tabs; do
+  [[ -n "$label" ]] && active_ws["$label"]="$tabs"
+done < <(echo "$ws_json" | jq -r '.result.workspaces[] | "\(.label)\t\(.tab_count)"')
+
+# Collect all candidate dirs
+all_dirs=$(
+  {
+    for d in "${PROJECT_DIRS[@]}"; do
+      find "$d" -mindepth 1 -maxdepth 1 -type d 2>/dev/null
+    done
+    for d in "${DEEP_DIRS[@]}"; do
+      find "$d" -mindepth 2 -maxdepth 2 -type d 2>/dev/null
+    done
+    for d in "${PROJECT_DIRS[@]}"; do
+      [[ -d "$d" ]] && echo "$d"
+    done
+  } | sort -u
+)
+
+# Filter to git repos (or dirs with an active workspace), stamp by last commit
+stamped=""
+while IFS= read -r dir; do
+  [[ -z "$dir" ]] && continue
+  [[ -d "$dir/.git" ]] || [[ -n "${active_ws[$(_ws_label "$dir")]+x}" ]] || continue
+  echo "$dir"
+done <<< "$all_dirs" | xargs -P8 -I{} bash -c '
+  dir="$1"
+  epoch=$(git -C "$dir" log -1 --format=%ct 2>/dev/null || echo 0)
+  echo "$epoch $dir"
+' _ {} | sort -rn > /tmp/herdr-sessionizer-$$
+
+# Build formatted list: active workspaces first, then rest by recency
+formatted=""
+declare -a seen=()
+
+while IFS= read -r line; do
+  [[ -z "$line" ]] && continue
+  dir="${line#* }"
+  label=$(_ws_label "$dir")
+  if [[ -n "${active_ws[$label]+x}" ]]; then
+    formatted+="● ${dir/#$HOME/\~}  [${active_ws[$label]}t]"$'\n'
+    seen+=("$dir")
+  fi
+done < /tmp/herdr-sessionizer-$$
+
+while IFS= read -r line; do
+  [[ -z "$line" ]] && continue
+  dir="${line#* }"
+  skip=""
+  for s in "${seen[@]}"; do [[ "$s" == "$dir" ]] && skip=1 && break; done
+  [[ -n "$skip" ]] && continue
+  formatted+="  ${dir/#$HOME/\~}"$'\n'
+done < /tmp/herdr-sessionizer-$$
+
+rm -f /tmp/herdr-sessionizer-$$
+
+# ── Preview script (passed inline to fzf) ───────────────────────────────────
+
+preview_cmd='
+dir=$(echo {} | sed "s/^[● ]*//" | sed "s/  \[.*$//" | sed "s|~|$HOME|")
+printf "\033[1;36m%s\033[0m\n" "$(basename "$dir")"
+printf "\033[2m%s\033[0m\n\n" "$dir"
+
+# git info
+if [ -d "$dir/.git" ]; then
+  branch=$(git -C "$dir" branch --show-current 2>/dev/null)
+  dirty=$(git -C "$dir" status --porcelain 2>/dev/null | head -5)
+  ahead=$(git -C "$dir" rev-list --count @{upstream}..HEAD 2>/dev/null || echo 0)
+  behind=$(git -C "$dir" rev-list --count HEAD..@{upstream} 2>/dev/null || echo 0)
+
+  if [ -n "$dirty" ]; then
+    printf "\033[33m⎇  %s ✗\033[0m" "$branch"
+  else
+    printf "\033[32m⎇  %s ✓\033[0m" "$branch"
+  fi
+  [ "$ahead" != "0" ] && printf " ↑%s" "$ahead"
+  [ "$behind" != "0" ] && printf " ↓%s" "$behind"
+  printf "\n\n"
+
+  printf "\033[2m── recent commits ──\033[0m\n"
+  git -C "$dir" log --oneline --no-decorate -5 2>/dev/null
+  printf "\n"
+
+  if [ -n "$dirty" ]; then
+    printf "\033[2m── changes ──\033[0m\n"
+    echo "$dirty"
+    total=$(git -C "$dir" status --porcelain 2>/dev/null | wc -l | tr -d " ")
+    [ "$total" -gt 5 ] && printf "  ... +%s more\n" "$((total - 5))"
+    printf "\n"
+  fi
+fi
+
+# herdr workspace info
+label=$(basename "$dir" | tr ".:/" "---")
+ws=$(herdr workspace list 2>/dev/null | jq -r --arg l "$label" ".result.workspaces[] | select(.label == \$l) | .workspace_id" | head -1)
+if [ -n "$ws" ]; then
+  printf "\033[2m── herdr tabs ──\033[0m\n"
+  herdr tab list --workspace "$ws" 2>/dev/null | jq -r ".result.tabs[] | \"  \(.number): \(.label) [\(.pane_count)p]\(if .focused then \" (active)\" else \"\" end)\""
+  printf "\n"
+fi
+
+# heartbeat task
+if [ -f "$dir/NEXT_TASK.md" ]; then
+  task=$(cat "$dir/NEXT_TASK.md")
+  printf "\033[2m── next task ──\033[0m\n"
+  printf "\033[35m%s\033[0m\n" "$task"
+fi
+'
+
+# ── Run fzf ──────────────────────────────────────────────────────────────────
+
+selected=$(echo "$formatted" | fzf \
+  --ansi \
+  --prompt="project> " \
+  --reverse \
+  --border=rounded \
+  --border-label=" workspaces " \
+  --border-label-pos=3 \
+  --preview="$preview_cmd" \
+  --preview-window=right:50%:wrap \
+  --color="pointer:#e7349c,prompt:#1ad0d6,hl:#e7349c,hl+:#e7349c,border:#5a5d62,label:#1ad0d6" \
+) || exit 0
+
+# ── Parse selection and switch ───────────────────────────────────────────────
+
+selected=$(echo "$selected" | sed 's/^[● ]*//' | sed 's/  \[.*$//')
+selected="${selected/#\~/$HOME}"
+
+[[ -z "$selected" ]] && exit 0
+
+_switch "$selected"

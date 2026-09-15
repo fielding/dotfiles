@@ -74,7 +74,7 @@ fi
 MODE="${MODE:-$(cat /tmp/skhd_mode 2>/dev/null || echo "default")}"
 
 case "$MODE" in
-  switcher|swap|tree|layout|meet|tmux) ;;
+  switcher|swap|tree|layout|meet|herdr) ;;
   *) MODE="default" ;;
 esac
 
@@ -86,7 +86,7 @@ case "$MODE" in
   tree)     COLOR=$COLOR_AMBER;  LABEL="SIZE" ;;
   layout)   COLOR=$COLOR_PURPLE; LABEL="LAYOUT" ;;
   meet)     COLOR=$COLOR_ORANGE; LABEL="MEET" ;;
-  tmux)     COLOR=$COLOR_HUMAN;  LABEL="TMUX" ;;
+  herdr)    COLOR=$COLOR_HUMAN;  LABEL="HERDR" ;;
   *)        COLOR=$COLOR_PINK;   LABEL="DEFAULT" ;;
 esac
 
@@ -95,7 +95,7 @@ case "$MODE" in
     CHIPS=("^F|switch|$COLOR_CYAN" "^M|meet|$COLOR_ORANGE" "^hjkl|focus|$COLOR_PINK" "⌘⇧↩|term|$COLOR_PINK")
     ;;
   switcher)
-    CHIPS=("m|move|$COLOR_BLUE" "l|layout|$COLOR_PURPLE" "s|size|$COLOR_AMBER" "t|tmux|$COLOR_HUMAN" "g|meet|$COLOR_ORANGE" "o|tidy|$COLOR_CYAN" "↩|term|$COLOR_CYAN" "⇧0-9|send|$COLOR_CYAN")
+    CHIPS=("m|move|$COLOR_BLUE" "l|layout|$COLOR_PURPLE" "s|size|$COLOR_AMBER" "t|herdr|$COLOR_HUMAN" "g|meet|$COLOR_ORANGE" "o|tidy|$COLOR_CYAN" "↩|term|$COLOR_CYAN" "⇧0-9|send|$COLOR_CYAN")
     ;;
   swap)
     CHIPS=("hjkl|swap|$COLOR_BLUE" "⇧hjkl|warp|$COLOR_BLUE" "y|flip-y|$COLOR_BLUE" "x|flip-x|$COLOR_BLUE" "s|stack|$COLOR_BLUE")
@@ -109,8 +109,8 @@ case "$MODE" in
   meet)
     CHIPS=("d|mic|$COLOR_ORANGE" "e|cam|$COLOR_ORANGE" "q|leave|$COLOR_ORANGE")
     ;;
-  tmux)
-    CHIPS=("f|pick|$COLOR_HUMAN" "⎵|last|$COLOR_HUMAN" "np|sess←→|$COLOR_HUMAN" "hl|win←→|$COLOR_HUMAN" "1-9|win#|$COLOR_HUMAN" "c|new|$COLOR_HUMAN" "d|close|$COLOR_HUMAN" "r|rename|$COLOR_HUMAN")
+  herdr)
+    CHIPS=("f|pick|$COLOR_HUMAN" "⎵|last|$COLOR_HUMAN" "np|ws←→|$COLOR_HUMAN" "hl|tab←→|$COLOR_HUMAN" "1-9|tab#|$COLOR_HUMAN" "c|new|$COLOR_HUMAN" "d|close|$COLOR_HUMAN" "r|rename|$COLOR_HUMAN")
     ;;
   *)
     CHIPS=()

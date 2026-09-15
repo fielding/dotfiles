@@ -1,0 +1,146 @@
+#!/usr/bin/env bash
+# herdr-ctl — glue between skhd and the herdr socket API.
+#
+# herdr's CLI addresses everything by id (w1, w1:t2, w1:p3), so every
+# keybind-shaped operation ("focus tab 3", "next workspace") needs a
+# resolve-then-act step. This wraps those steps so skhd bindings stay
+# one-liners, mirroring how tmux mode used tmux's own -t targets.
+#
+# Usage:
+#   herdr-ctl focused <workspace|tab|pane>   # print focused id
+#   herdr-ctl ws-focus <id|last|next|prev>   # switch workspace (tracks last)
+#   herdr-ctl ws-new                         # prompt for name, create workspace
+#   herdr-ctl ws-close                       # close focused workspace
+#   herdr-ctl tab-focus <N|next|prev>        # tab within focused workspace
+#   herdr-ctl tab-new                        # new tab in focused workspace
+#   herdr-ctl tab-close                      # close focused tab (guards last)
+#   herdr-ctl rename <workspace|tab>         # dialog-prompt rename
+#   herdr-ctl split <right|down>             # split focused pane
+#   herdr-ctl picker <script> [args...]      # run fzf script in a temp pane
+
+set -euo pipefail
+
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/herdr"
+LAST_WS_FILE="$STATE_DIR/last-workspace"
+
+_focused() {
+  case "$1" in
+    workspace) herdr workspace list | jq -r '.result.workspaces[] | select(.focused) | .workspace_id' ;;
+    tab)       herdr tab list       | jq -r '.result.tabs[]       | select(.focused) | .tab_id' ;;
+    pane)      herdr pane list      | jq -r '.result.panes[]      | select(.focused) | .pane_id' ;;
+    *) echo "herdr-ctl: focused: workspace|tab|pane" >&2; exit 2 ;;
+  esac
+}
+
+# osascript text prompt; empty output = cancelled
+_prompt() {
+  local title="$1" default="${2:-}"
+  osascript -e "text returned of (display dialog \"$title\" default answer \"$default\" with title \"herdr\")" 2>/dev/null || true
+}
+
+cmd="${1:-}"; shift || true
+
+case "$cmd" in
+  focused)
+    _focused "${1:?workspace|tab|pane}"
+    ;;
+
+  ws-focus)
+    target="${1:?id|last|next|prev}"
+    current=$(_focused workspace)
+    case "$target" in
+      last)
+        target=$(cat "$LAST_WS_FILE" 2>/dev/null || true)
+        [[ -z "$target" || "$target" == "$current" ]] && exit 0
+        ;;
+      next|prev)
+        # wrap around by workspace number
+        dir=$([[ "$target" == "next" ]] && echo 1 || echo -1)
+        target=$(herdr workspace list | jq -r --arg cur "$current" --argjson d "$dir" '
+          .result.workspaces | sort_by(.number) as $ws | ($ws | length) as $n
+          | ($ws | map(.workspace_id) | index($cur)) as $i
+          | $ws[(($i + $d + $n) % $n)].workspace_id')
+        ;;
+    esac
+    [[ "$target" == "$current" ]] && exit 0
+    mkdir -p "$STATE_DIR"
+    echo "$current" > "$LAST_WS_FILE"
+    herdr workspace focus "$target" > /dev/null
+    ;;
+
+  ws-new)
+    name=$(_prompt "New workspace name:")
+    [[ -z "$name" ]] && exit 0
+    current=$(_focused workspace)
+    mkdir -p "$STATE_DIR"
+    echo "$current" > "$LAST_WS_FILE"
+    herdr workspace create --label "$name" --cwd "$HOME" --focus > /dev/null
+    ;;
+
+  ws-close)
+    herdr workspace close "$(_focused workspace)" > /dev/null
+    ;;
+
+  tab-focus)
+    target="${1:?N|next|prev}"
+    ws=$(_focused workspace)
+    case "$target" in
+      next|prev)
+        dir=$([[ "$target" == "next" ]] && echo 1 || echo -1)
+        tab=$(herdr tab list --workspace "$ws" | jq -r --argjson d "$dir" '
+          .result.tabs | sort_by(.number) as $tabs | ($tabs | length) as $n
+          | ($tabs | map(.focused) | index(true)) as $i
+          | $tabs[(($i + $d + $n) % $n)].tab_id')
+        ;;
+      *)
+        tab=$(herdr tab list --workspace "$ws" | jq -r --argjson n "$target" '
+          .result.tabs[] | select(.number == $n) | .tab_id')
+        ;;
+    esac
+    [[ -z "$tab" ]] && exit 0
+    herdr tab focus "$tab" > /dev/null
+    ;;
+
+  tab-new)
+    herdr tab create --focus > /dev/null
+    ;;
+
+  tab-close)
+    ws=$(_focused workspace)
+    count=$(herdr tab list --workspace "$ws" | jq '.result.tabs | length')
+    if (( count > 1 )); then
+      herdr tab close "$(_focused tab)" > /dev/null
+    else
+      herdr notification show "last tab" --body "use x to close the workspace" --sound none
+    fi
+    ;;
+
+  rename)
+    kind="${1:?workspace|tab}"
+    id=$(_focused "$kind")
+    label=$(herdr "$kind" get "$id" | jq -r ".result.$kind.label // empty")
+    name=$(_prompt "Rename $kind:" "$label")
+    [[ -z "$name" ]] && exit 0
+    herdr "$kind" rename "$id" "$name" > /dev/null
+    ;;
+
+  split)
+    dirn="${1:?right|down}"
+    herdr pane split "$(_focused pane)" --direction "$dirn" --focus > /dev/null
+    ;;
+
+  picker)
+    # display-popup replacement: run an fzf script in a temporary bottom
+    # split; the script closes its own pane via HERDR_PICKER_PANE.
+    script="${1:?script}"; shift || true
+    fp=$(_focused pane)
+    np=$(herdr pane split "$fp" --direction down --ratio 0.45 --focus \
+      | jq -r '.result.pane.pane_id')
+    herdr pane run "$np" "HERDR_PICKER_PANE=$np $script $*" > /dev/null
+    ;;
+
+  *)
+    echo "herdr-ctl: unknown command '$cmd'" >&2
+    exit 2
+    ;;
+esac
