@@ -37,6 +37,10 @@ yabai), `clang-format`, `dircolors`, `eslint`, `grc`, `iterm2` (replaced
 by ghostty), `khd` (replaced by skhd), `mpv`, `neovim`, `readline`,
 `ruby`, `spaceship`, `vint`.
 
+Not stow packages: `bootstrap/` (LaunchAgent templates rendered by
+`bootstrap.sh`), `docs/` (keybinding catalog), `scripts/`, and the Swift
+sources for `holdpeek/` and `mouseless/` (each built with its `build.sh`).
+
 ## Installation
 
 ### Fresh machine
@@ -67,7 +71,8 @@ Phases (run a subset with `--only`/`--skip`, list with `--list`):
 | `mlx`        | Apple-Silicon local-model stack (`mlx-lm` via `uv`)              |
 
 `--agents cadence,glean,weather,sync-tix-to-vault` picks which LaunchAgents
-get installed (those four are the default; `ollama` is opt-in). `--no-agents`
+get installed (those four are the default; `ollama`, `mouse-tap`, and
+`holdpeek` are opt-in). `--no-agents`
 skips them. `--yes` runs non-interactively (keeps the current hostname).
 
 **SIP / yabai:** full scripting-addition support needs SIP partially

@@ -40,8 +40,8 @@ TIMEZONE="America/Chicago"
 # Active stow packages (mirror of README's "Active packages" table).
 STOW_PACKAGES=(bin borders claude codex fastfetch fonts gate ghostty git homebrew \
                karabiner shell sketchybar skhd terminfo tmux vim yabai zsh)
-# LaunchAgents installed by default. ollama + pilot are opt-in (--agents):
-# local models live on the M4, and pilot is the disabled screenpipe rig.
+# LaunchAgents installed by default. ollama, mouse-tap, and holdpeek are
+# opt-in (--agents): local models live on the M4.
 DEFAULT_AGENTS=(cadence glean weather sync-tix-to-vault)
 
 # --- flags ------------------------------------------------------------------
@@ -458,7 +458,7 @@ phase_agents() {
     launchctl unload "$out" >/dev/null 2>&1 || true
     if launchctl load -w "$out" >/dev/null 2>&1; then ok "Loaded $label"; else warn "could not load $label"; fi
   done
-  info "Available agents: cadence glean weather sync-tix-to-vault ollama"
+  info "Available agents: cadence glean weather sync-tix-to-vault ollama mouse-tap holdpeek"
 }
 
 # ============================================================================
