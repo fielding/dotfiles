@@ -65,7 +65,7 @@ switcher < s ; tree      # s = Size
 switcher < g ; meet      # g = Google Meet
 switcher < t ; herdr     # t = Terminal (herdr)
 
-## organize windows (LLM-powered)
+## organize windows (Folio registry + Jev for ambiguous windows; see yabai-organize --help)
 switcher < o : skl switcher o organize; ~/bin/yabai-organize &; \
     sketchybar --trigger keybind_flash ACTION="organize"
 

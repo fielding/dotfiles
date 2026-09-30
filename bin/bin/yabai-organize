@@ -1,287 +1,2448 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.10"
+# dependencies = []
+# ///
+"""yabai-organize — sort windows into workspaces.
 
-# yabai-organize — LLM-powered window organizer
-# Gathers window state, asks a model to sort them, executes the plan.
-#
-# Backend is picked from the model name:
-#   gpt-*/codex-* → local cliproxyapi (OpenAI-compatible, ChatGPT Pro OAuth)
-#   claude-*      → Anthropic API
-#   anything else → local ollama
-# Override the model with YABAI_ORGANIZE_MODEL.
+Folio tells us what projects exist. Deterministic evidence tells us what we can
+prove. Jev resolves bounded semantic ambiguity. Deterministic code decides what
+to do with the answer.
 
-MODEL="${YABAI_ORGANIZE_MODEL:-gpt-5.5}"
-EFFORT="${YABAI_ORGANIZE_EFFORT:-low}"
-OPENAI_URL="${YABAI_ORGANIZE_OPENAI_URL:-http://localhost:8317/v1}"
-OLLAMA_URL="${OLLAMA_HOST:-http://localhost:11434}"
-LOG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/yabai-organize"
+    gather_state → load_folio_projects → classify_fixed_windows
+    → resolve_exact_project_evidence → generate_candidates
+    → resolve_ambiguous_windows (Jev, then the optional generative fallback)
+    → route_general_browsers → apply_app_defaults → evict_misplaced
+    → allocate_project_slots → build_plan → validate_plan → execute_plan
+    → update_sketchybar → log_run
 
-case "$MODEL" in
-  gpt-*|codex-*) BACKEND=openai ;;
-  claude-*)      BACKEND=anthropic ;;
-  *)             BACKEND=ollama ;;
-esac
+Workspaces: 1 main · 2–5 project slots · 6 notes · 7 scratch · 8 inbox · 9 media · 10 comms
 
-if [ "$BACKEND" = anthropic ]; then
-  API_KEY="${ANTHROPIC_API_KEY:-$(security find-generic-password -s "ANTHROPIC_API_KEY" -w 2>/dev/null)}"
-  [ -z "$API_KEY" ] && { echo "error: no ANTHROPIC_API_KEY" >&2; exit 1; }
-elif [ "$BACKEND" = openai ]; then
-  # cliproxyapi key lives in its conf; don't hardcode it in a tracked script
-  API_KEY="${YABAI_ORGANIZE_API_KEY:-$(grep -A1 '^api-keys:' /opt/homebrew/etc/cliproxyapi.conf 2>/dev/null | sed -n '2s/.*"\(.*\)".*/\1/p')}"
-  [ -z "$API_KEY" ] && { echo "error: no API key for $OPENAI_URL (set YABAI_ORGANIZE_API_KEY)" >&2; exit 1; }
-fi
+Usage:
+    yabai-organize [--dry-run] [--shadow] [--no-jev] [--no-legacy] [--json] [-v]
+                   [--threshold X] [--dump-state FILE] [--state FILE]
+    yabai-organize --report [--days N]
 
-# ── Gather ───────────────────────────────────────────────────────────────────
+Environment:
+    JEV_CONFIDENCE_THRESHOLD       accept a Jev choice at or above this (default 0.7)
+    JEV_MODEL                      Jev model route (default jev-latest)
+    JEV_URL                        where Jev is served: TypeSafe https://api.typesafe.ai/v1/systemone (default)
+                                   or Venice https://api.venice.ai/api/v1/decisions (also config jev_url)
+    JEV_API_KEY                    or the Keychain item named by config jev_api_key_keychain
+                                   (TYPESAFE_API_KEY by default; VENICE_API_KEY when served by Venice)
+    YABAI_ORGANIZE_SHADOW=1        Jev answers are logged but never move a window
+    YABAI_ORGANIZE_LEGACY_MODEL    the old generative model, run as a shadow on every ambiguous window
+                                   after the desktop is organized; its answers only reach the log
+                                   (default gpt-5.5 at openai_url; empty disables)
+    YABAI_ORGANIZE_OPENAI_URL      OpenAI-compatible base URL (default http://localhost:8317/v1)
+    YABAI_ORGANIZE_API_KEY         key for that endpoint (else the Keychain item named by
+                                   legacy_api_key_keychain, else cliproxyapi.conf for localhost:8317)
+    YABAI_ORGANIZE_CONFIG          JSON overriding DEFAULT_RULES: app routing lists, thresholds, and the
+                                   legacy_model / openai_url / jev_model settings above (skhd starts us
+                                   with a bare environment, so prefer this file over exported variables)
+                                   (default ~/.config/yabai-organize/config.json)
 
-# Only the fields the LLM needs: id, app, title, space
-WINDOWS=$(yabai -m query --windows | jq '[.[] | {id, app, title, space}]')
-SPACES=$(yabai -m query --spaces | jq '[.[] | {index, label}]')
+Logs:  ~/.local/share/yabai-organize/runs.jsonl   one record per run: decisions, shadow answers, corrections
+       ~/.local/share/yabai-organize/usage.jsonl  one token-usage line per model call
+State: ~/.local/state/yabai-organize/slots.json   sticky slot → project reference
+       ~/.local/state/yabai-organize/last-run.json where the last live run left every window, so the
+                                                   next run can log what you moved back (corrections)
 
-# Known project names
-PROJECTS=$(ls ~/notes/projects/ 2>/dev/null | grep -v '\.md$' | tr '\n' ' ')
-# Git repos up to 2 levels deep, relative to ~/src (catches nested ones like work/venice/outerface)
-SRC_DIRS=$(find ~/src/hack ~/src/work -maxdepth 3 -name .git 2>/dev/null | sed "s|$HOME/src/||; s|/\.git$||" | sort | tr '\n' ' ')
+Tests: python3 -m unittest discover -s ~/etc/tests/yabai_organize
+"""
+from __future__ import annotations
 
-# Listening ports → process name (maps localhost:5173 in browser to a project)
-PORTS=$(lsof -iTCP -sTCP:LISTEN -P 2>/dev/null | awk 'NR>1 {print $1, $9}' | sort -u | head -20)
+import argparse
+import calendar
+import json
+import os
+import re
+import shutil
+import socket
+import subprocess
+import sys
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+from dataclasses import dataclass, field, replace
+from collections.abc import Callable, Iterable
+from typing import Any
 
-# Terminal CWDs — yabai can't tell us which Ghostty window is which surface,
-# but listing each surface's working directory + foreground command lets the
-# model correlate spinner/status titles with projects.
-TERM_SESSIONS=$(
-  GPID=$(ps -axo pid,command | awk '/Ghostty\.app\/Contents\/MacOS\/ghostty/ {print $1; exit}')
-  [ -n "$GPID" ] && for L in $(ps -axo pid,ppid | awk -v g="$GPID" '$2==g {print $1}'); do
-    pid=$L
-    for _ in 1 2 3 4 5 6; do
-      kid=$(ps -axo pid,ppid | awk -v p="$pid" '$2==p {print $1}' | head -1)
-      [ -z "$kid" ] && break
-      pid=$kid
-    done
-    cwd=$(lsof -a -p "$pid" -d cwd -Fn 2>/dev/null | sed -n 's/^n//p')
-    cmd=$(ps -o command= -p "$pid" 2>/dev/null | cut -c1-60)
-    [ -n "$cwd" ] && echo "- cwd=$cwd cmd=$cmd"
-  done
+HOME = os.path.expanduser("~")
+TOOL = "yabai-organize"
+# skhd and launchd start us with a bare PATH; these are where the tools we shell out to live.
+EXTRA_PATH = ("/opt/homebrew/bin", f"{HOME}/.cargo/bin", f"{HOME}/bin", "/usr/local/bin")
+LOG_DIR = os.environ.get("YABAI_ORGANIZE_LOG_DIR") or os.path.join(
+    os.environ.get("XDG_DATA_HOME", f"{HOME}/.local/share"), TOOL
+)
+STATE_DIR = os.environ.get("YABAI_ORGANIZE_STATE_DIR") or os.path.join(
+    os.environ.get("XDG_STATE_HOME", f"{HOME}/.local/state"), TOOL
 )
 
-# tmux sessions → cwd (session names show up in terminal titles)
-TMUX_SESSIONS=$(tmux list-panes -a -F '- session=#{session_name} cwd=#{pane_current_path} cmd=#{pane_current_command}' 2>/dev/null)
+# ── Workspace model ───────────────────────────────────────────────────────────
 
-# ── Prompt ───────────────────────────────────────────────────────────────────
+SPACE_MAIN = 1
+PROJECT_SLOTS = (2, 3, 4, 5)
+SPACE_NOTES = 6
+SPACE_SCRATCH = 7
+SPACE_INBOX = 8
+SPACE_MEDIA = 9
+SPACE_COMMS = 10
+ALL_SPACES = tuple(range(1, 11))
+DEFAULT_SLOT_LABELS = {2: "p1", 3: "p2", 4: "p3", 5: "p4"}
+# yabairc sets these at startup; they do not survive display changes, so every run re-asserts them.
+FIXED_LABELS = {SPACE_MAIN: "main", SPACE_NOTES: "notes", SPACE_SCRATCH: "scratch",
+                SPACE_INBOX: "inbox", SPACE_MEDIA: "media", SPACE_COMMS: "comms"}
+UNKNOWN = "unknown"
 
-read -r -d '' SYSTEM_PROMPT <<'PROMPT' || true
-You sort windows into workspaces. Return ONLY valid JSON — no markdown, no explanation.
-
-SPACES: 1=main, 2-5=project slots (p1-p4), 6=notes, 7=scratch, 8=inbox, 9=media, 10=comms
-
-FIXED ROUTING:
-- main(1): the HUB terminal — the Ghostty window attached to tmux (title like "tmux:N [ cmd ]" or matching a tmux session name). It hosts many tabs across projects; it is NOT a project window. Always main(1).
-- main(1): Chrome, when exactly ONE Chrome window exists — it lives with the hub. When MULTIPLE Chrome windows exist: windows tied to a project (title/localhost port) go to that project's slot; the general-purpose one stays on main(1).
-- comms(10): Slack, Gather, Signal, AyuGram, Telegram, Messages, Discord — always
-- notes(6): Obsidian — ALWAYS, regardless of which note is open. Also Notion, nvim/vim editing notes or research.
-- media(9): Docker, media players
-- inbox(8): random/unrelated stuff
-- NordVPN and other VPN panels: never include in moves — yabai cannot move them.
-
-PROJECT SLOTS (2-5):
-- Identify distinct projects from window titles. Each project gets ONE dedicated slot.
-- Different projects MUST go on different spaces — never merge two projects into one slot.
-- Two windows are the same project ONLY if they share the same repo/directory root.
-- A browser tab mentioning a project name goes with that project, but similar-sounding names (e.g. "sigil" vs "ripguard") are SEPARATE projects.
-- "[~/src/hack/review]" or "~/src/hack/review" → project "review-crew"
-- "[~/etc]" or "~/etc" → project "dotfiles"
-- "[~/src/work/freed/comms]" → project "freed"
-- Match paths against KNOWN PROJECTS list. Use the project name as the label.
-- Labels use the repo/leaf directory name, NEVER the parent or org directory: "work/venice/outerface" → label "outerface", not "venice".
-- Terminals with CWD in brackets like "[~/path]" are Claude Code sessions — the path IS the project.
-- Chrome titles with project names ("Freed Comms - Google Chrome") go with that project.
-- Running commands hint at projects ("pnpm elevenlabs:listen" → freed).
-- Browser tabs on localhost/127.0.0.1 with a port? Match the port to LISTENING PORTS to find the project.
-- TERMINAL SESSIONS lists each terminal's working directory + running command, and TMUX SESSIONS lists tmux session names with their cwd. Use these to resolve windows whose titles lack a path:
-  - A spinner title ("✳ <task>", "⠐ <task>") is a Claude Code session; its <task> text describes work happening in one of the claude cwds. If exactly ONE session's cwd plausibly matches the task topic, that cwd is the window's project. If multiple could match, leave the window alone.
-  - tmux-titled Ghostty windows are the HUB (see FIXED ROUTING) — main(1), do NOT assign them to a project slot even if the tmux cwd points at a project.
-- >4 projects? Prioritize by window count. Overflow → scratch(7).
-
-RULES:
-- ALWAYS move windows to their correct space when you can confidently identify the project.
-- Leave ambiguous windows (no CWD, unclear title) where they are.
-- Label p1-p4 with project names. Unused slots get default labels (p1/p2/p3/p4).
-- Include labels for ALL slots 2-5.
-
-RESPONSE FORMAT:
-{"labels":{"2":"name","3":"name","4":"p3","5":"p4"},"moves":[{"id":123,"space":2}]}
-
-Only include moves for windows that need to change. Empty moves array is fine.
-PROMPT
-
-# ── Call API ─────────────────────────────────────────────────────────────────
-
-USER_MSG="spaces: $SPACES
-
-known_projects: $PROJECTS
-src_dirs: $SRC_DIRS
-
-listening_ports:
-$PORTS
-
-terminal_sessions:
-$TERM_SESSIONS
-
-tmux_sessions:
-$TMUX_SESSIONS
-
-windows:
-$WINDOWS"
-
-# JSON schema for the plan — ollama enforces this via structured outputs
-read -r -d '' PLAN_SCHEMA <<'SCHEMA' || true
-{
-  "type": "object",
-  "properties": {
-    "labels": {"type": "object", "additionalProperties": {"type": "string"}},
-    "moves": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {"id": {"type": "integer"}, "space": {"type": "integer"}},
-        "required": ["id", "space"]
-      }
-    }
-  },
-  "required": ["labels", "moves"]
+DEFAULT_RULES: dict[str, Any] = {
+    "comms_apps": ["Slack", "Gather", "Signal", "AyuGram", "Telegram", "Messages", "Discord"],
+    "notes_apps": ["Obsidian", "Notion"],
+    "media_apps": ["Docker", "Docker Desktop", "Music", "Spotify", "VLC", "IINA", "QuickTime Player",
+                   "Plex", "TV", "Podcasts"],
+    "inbox_apps": ["Finder", "Preview", "System Settings", "System Preferences", "Activity Monitor",
+                   "Console", "Calculator", "Font Book", "Dictionary", "App Store"],
+    # yabai cannot move these panels; the rest of the ignore set is derived from can-move/role.
+    "ignored_apps": ["NordVPN", "Mullvad VPN", "ProtonVPN", "Tailscale", "WireGuard"],
+    "terminal_apps": ["Ghostty", "Terminal", "iTerm2", "kitty", "Alacritty", "WezTerm"],
+    "browser_apps": ["Google Chrome", "Chromium", "Brave Browser", "Safari", "Firefox", "Arc", "Zen"],
+    # Apps whose windows can plausibly belong to a project and so may be put to Jev.
+    "project_apps": ["Zed", "Code", "Visual Studio Code", "Cursor", "Xcode", "IntelliJ IDEA",
+                     "Sublime Text", "Linear", "Figma", "TablePlus", "Postman", "Insomnia",
+                     "GitHub Desktop", "Fork", "Tower", "Warp"],
+    # A browser window whose page title matches one of these is media wherever it sits.
+    "media_title_patterns": [r"\bYouTube\b", r"\bNetflix\b", r"\bTwitch\b", r"\bSpotify\b", r"\bSoundCloud\b",
+                             r"\bVimeo\b", r"\bPlex\b", r"\bApple Music\b", r"\bHBO\b", r"\bDisney\+", r"\bCrunchyroll\b",
+                             r"Live on Kick\b", r"\bkick\.com\b"],
+    "agent_commands": ["claude", "codex", "gemini", "aider", "opencode", "amp", "cursor-agent"],
+    "remote_commands": ["ssh", "mosh", "mosh-client", "et"],
+    "spinner_chars": "✳✻✽✶✢·◐◓◑◒⠐⠂⠈⠠⠄⠁●○◉◎✦✧⏳*",
+    "confidence_threshold": 0.7,
+    "max_candidates": 8,
+    # Folio anchor prose sent to the model as each candidate's description (0 disables). Projects whose
+    # Folio disclosure is not listed get no prose, only slug/title/status.
+    "description_chars": 400,
+    "description_disclosures": ["public", "private", "restricted"],
+    # Chrome profile email domain → Folio realm. A hint for ranking candidates, never a decision.
+    "browser_profile_realms": {},
+    # Chrome tabs (read through Apple Events; needs a one-time Automation grant). A window with at least
+    # generic_browser_tabs tabs is a general-purpose browser and is left alone; a window where at least
+    # browser_tab_share of the tabs provably belong to one project goes to that project.
+    "read_browser_tabs": True,
+    "generic_browser_tabs": 5,
+    "browser_tab_share": 0.25,
+    "git_hosts": ["github.com", "gitlab.com", "bitbucket.org", "codeberg.org"],
+    # Apps whose windows say nothing useful in their title. `hint` is shown to the model alongside the live
+    # project candidates; `default_space` is where the window goes when no project can be tied to it.
+    "app_hints": {},                        # e.g. {"Prism Launcher": {"hint": "Minecraft launcher", "default_space": 9}}
+    "title_hints": [],                      # same shape keyed by title regex, for apps that report a generic name like "java"
+    "home_terminal_space": None,            # where a shell sitting in $HOME belongs (e.g. 1); None leaves it
+    "vault_roots": [f"{HOME}/notes"],
+    "source_roots": [f"{HOME}/src"],
+    "herdr_window_title": "{hostname}: {workspace}",
+    # Shadow model settings; the environment variables of the same purpose override these.
+    "legacy_model": "gpt-5.5",
+    "legacy_backend": "openai",                 # "openai" (any compatible endpoint via openai_url) or "anthropic"
+    "openai_url": "http://localhost:8317/v1",   # any OpenAI-compatible endpoint, e.g. https://api.venice.ai/api/v1
+    "legacy_api_key_keychain": None,            # Keychain item holding the key for openai_url (env YABAI_ORGANIZE_API_KEY wins)
+    "legacy_json_mode": True,                   # send response_format json_object; turn off for models that reject it
+    "jev_model": "jev-latest",
+    # Where Jev is served. TypeSafe directly, or Venice's decisions endpoint (same request/response contract,
+    # except Venice wants criteria descriptions as strings, which the client renders automatically).
+    "jev_url": "https://api.typesafe.ai/v1/systemone",
+    "jev_api_key_keychain": "TYPESAFE_API_KEY",
 }
-SCHEMA
 
-if [ "$BACKEND" = anthropic ]; then
-  PAYLOAD=$(jq -n \
-    --arg model "$MODEL" \
-    --arg system "$SYSTEM_PROMPT" \
-    --arg user "$USER_MSG" \
-    '{
-      model: $model,
-      max_tokens: 1024,
-      temperature: 0,
-      system: $system,
-      messages: [{role: "user", content: $user}]
-    }')
+STATUS_RANK = {"active": 0, "maintained": 1, "paused": 2, "dormant": 3, "completed": 4, "cancelled": 5}
 
-  RESPONSE=$(curl -s https://api.anthropic.com/v1/messages \
-    -H "x-api-key: $API_KEY" \
-    -H "anthropic-version: 2023-06-01" \
-    -H "content-type: application/json" \
-    -d "$PAYLOAD")
+TMUX_HUB_RE = re.compile(r"^tmux:\d+")
+REMOTE_TITLE_RE = re.compile(r"^[\w.-]+@[\w.-]+[: ]")
+PATH_TITLE_RE = re.compile(r"^\[?(?P<p>(?:~|…|\.\.\.|/)(?:/?[^\s\]]*)?)\]?$")
+LOCALHOST_RE = re.compile(r"(?:localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\]):(\d{2,5})")
+BROWSER_SUFFIX_RE = re.compile(
+    r"\s+[-–—]\s+(?:Google Chrome|Chromium|Brave|Mozilla Firefox|Safari|Arc|Zen Browser)\b.*$"
+)
+# Chrome appends " - <Profile name> (<account email domain>)" when several profiles exist.
+BROWSER_PROFILE_RE = re.compile(r"\s+[-–—]\s+(?:Google Chrome|Chromium|Brave)\s+[-–—]\s+[^()]+\(([^()]+)\)\s*$")
 
-  USAGE=$(echo "$RESPONSE" | jq '{
-    model: .model,
-    input_tokens: .usage.input_tokens,
-    output_tokens: .usage.output_tokens,
-    cache_creation_input_tokens: (.usage.cache_creation_input_tokens // 0),
-    cache_read_input_tokens: (.usage.cache_read_input_tokens // 0)
-  }' 2>/dev/null)
-  PLAN=$(echo "$RESPONSE" | jq -r '.content[0].text // empty')
-elif [ "$BACKEND" = openai ]; then
-  PAYLOAD=$(jq -n \
-    --arg model "$MODEL" \
-    --arg system "$SYSTEM_PROMPT" \
-    --arg user "$USER_MSG" \
-    --arg effort "$EFFORT" \
-    '{
-      model: $model,
-      reasoning_effort: $effort,
-      response_format: {type: "json_object"},
-      messages: [
-        {role: "system", content: $system},
-        {role: "user", content: $user}
-      ]
-    }')
 
-  RESPONSE=$(curl -s "$OPENAI_URL/chat/completions" \
-    -H "Authorization: Bearer $API_KEY" \
-    -H "content-type: application/json" \
-    -d "$PAYLOAD")
+def warn(msg: str) -> None:
+    print(f"{TOOL}: {msg}", file=sys.stderr)
 
-  USAGE=$(echo "$RESPONSE" | jq '{
-    model: .model,
-    input_tokens: .usage.prompt_tokens,
-    output_tokens: .usage.completion_tokens,
-    cache_creation_input_tokens: 0,
-    cache_read_input_tokens: (.usage.prompt_tokens_details.cached_tokens // 0)
-  }' 2>/dev/null)
-  PLAN=$(echo "$RESPONSE" | jq -r '.choices[0].message.content // empty')
-else
-  PAYLOAD=$(jq -n \
-    --arg model "$MODEL" \
-    --arg system "$SYSTEM_PROMPT" \
-    --arg user "$USER_MSG" \
-    --argjson schema "$PLAN_SCHEMA" \
-    '{
-      model: $model,
-      stream: false,
-      format: $schema,
-      options: {temperature: 0, num_ctx: 8192},
-      messages: [
-        {role: "system", content: $system},
-        {role: "user", content: $user}
-      ]
-    }')
 
-  RESPONSE=$(curl -s "$OLLAMA_URL/api/chat" -d "$PAYLOAD")
+def which(name: str) -> str | None:
+    path = os.pathsep.join([os.environ.get("PATH", ""), *EXTRA_PATH])
+    return shutil.which(name, path=path)
 
-  USAGE=$(echo "$RESPONSE" | jq '{
-    model: .model,
-    input_tokens: .prompt_eval_count,
-    output_tokens: .eval_count,
-    cache_creation_input_tokens: 0,
-    cache_read_input_tokens: 0
-  }' 2>/dev/null)
-  PLAN=$(echo "$RESPONSE" | jq -r '.message.content // empty')
-fi
 
-# ── Log usage for thinktax ───────────────────────────────────────────────────
+def run_out(cmd: list[str], timeout: float = 5.0) -> str:
+    """stdout of a command, or "" when it is missing, fails, or hangs. Callers treat "" as no evidence."""
+    exe = which(cmd[0])
+    if exe is None:
+        return ""
+    try:
+        return subprocess.run([exe, *cmd[1:]], capture_output=True, text=True, timeout=timeout).stdout
+    except (OSError, subprocess.TimeoutExpired):
+        return ""
 
-mkdir -p "$LOG_DIR"
-TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-echo "$USAGE" | jq -c --arg ts "$TS" '. + {ts: $ts, tool: "yabai-organize"}' >> "$LOG_DIR/usage.jsonl" 2>/dev/null
 
-# ── Parse response ───────────────────────────────────────────────────────────
+def load_rules(path: str | None = None) -> dict[str, Any]:
+    rules = json.loads(json.dumps(DEFAULT_RULES))
+    path = path or os.environ.get("YABAI_ORGANIZE_CONFIG") or f"{HOME}/.config/{TOOL}/config.json"
+    try:
+        with open(path, encoding="utf-8") as fh:
+            overrides = json.load(fh)
+        if not isinstance(overrides, dict):
+            raise ValueError("config must be a JSON object")
+        rules.update(overrides)
+    except FileNotFoundError:
+        pass
+    except (OSError, ValueError) as exc:
+        warn(f"ignoring config {path}: {exc}")
+    return rules
 
-[ -z "$PLAN" ] && { echo "error: no response" >&2; echo "$RESPONSE" | jq . >&2; exit 1; }
 
-# Strip markdown fences if present (claude path; ollama schema output is clean)
-PLAN=$(echo "$PLAN" | sed '/^```/d')
-# Strip stray control chars small local models sometimes emit (keep newlines)
-PLAN=$(echo "$PLAN" | tr -d '\000-\011\013-\037')
-echo "$PLAN" | jq . >/dev/null 2>&1 || { echo "error: bad JSON" >&2; echo "$PLAN" >&2; exit 1; }
+def tilde(path: str | None) -> str | None:
+    if path and path.startswith(HOME):
+        return "~" + path[len(HOME):]
+    return path
 
-# ── Execute ──────────────────────────────────────────────────────────────────
 
-# Build a lookup of current window positions for skip detection
-CURRENT=$(echo "$WINDOWS" | jq -r '.[] | "\(.id) \(.space)"')
+# ── Desktop state ─────────────────────────────────────────────────────────────
 
-# Apply labels
-echo "$PLAN" | jq -r '.labels // {} | to_entries[] | "\(.key) \(.value)"' | while IFS=' ' read -r idx label; do
-  [ -z "$idx" ] && continue
-  yabai -m space "$idx" --label "$label" 2>/dev/null && echo "label: $idx → $label"
-done
+@dataclass(frozen=True)
+class Window:
+    id: int
+    pid: int
+    app: str
+    title: str
+    space: int
+    can_move: bool = True
+    role: str = "AXWindow"
+    subrole: str = "AXStandardWindow"
+    minimized: bool = False
 
-# Apply moves
-echo "$PLAN" | jq -r '.moves[]? | "\(.id) \(.space)"' | while IFS=' ' read -r wid target; do
-  current=$(echo "$CURRENT" | awk -v id="$wid" '$1 == id {print $2}')
-  [ "$current" = "$target" ] && continue
-  info=$(echo "$WINDOWS" | jq -r --argjson id "$wid" '.[] | select(.id == $id) | "\(.app): \(.title[0:40])"')
-  yabai -m window "$wid" --space "$target" 2>/dev/null && echo "move: $info → $target" || echo "fail: $info → $target"
-done
+    @classmethod
+    def from_yabai(cls, w: dict[str, Any]) -> Window:
+        return cls(
+            id=int(w["id"]), pid=int(w.get("pid", 0)), app=str(w.get("app", "")), title=str(w.get("title") or ""),
+            space=int(w.get("space", 0)), can_move=bool(w.get("can-move", True)), role=str(w.get("role", "")),
+            subrole=str(w.get("subrole", "")), minimized=bool(w.get("is-minimized", False)),
+        )
 
-# Refresh sketchybar labels (single batch command)
-BAR_ARGS=()
-for i in 1 2 3 4 5 6 7 8 9 10; do
-  label=$(echo "$SPACES" | jq -r --argjson i "$i" '.[] | select(.index == $i) | .label // empty')
-  # If we just set a new label, use that instead
-  new_label=$(echo "$PLAN" | jq -r --arg i "$i" '.labels[$i] // empty')
-  [ -n "$new_label" ] && label="$new_label"
-  case "$label" in p1|p2|p3|p4|"") display="" ;; *) display=$(echo "$label" | tr '[:lower:]' '[:upper:]') ;; esac
-  BAR_ARGS+=(--set "space.$i" label="$display")
-done
-sketchybar "${BAR_ARGS[@]}" 2>/dev/null
+    @property
+    def short(self) -> str:
+        title = self.title if len(self.title) <= 40 else self.title[:39] + "…"
+        return f"{self.app}: {title}"
 
-MOVE_COUNT=$(echo "$PLAN" | jq '.moves | length')
-echo "done ($MOVE_COUNT moves, $(echo "$USAGE" | jq -r '"\(.input_tokens)+\(.output_tokens) tokens"'))"
+
+@dataclass(frozen=True)
+class Space:
+    index: int
+    label: str
+    uuid: str = ""      # stable across Mission Control reorders; indices are not
+
+
+@dataclass
+class Session:
+    """One live terminal: a Ghostty surface (keyed by tty) or a herdr pane."""
+    id: str
+    cwd: str | None
+    command: str
+    source: str                 # "ghostty" | "herdr"
+    title: str = ""
+    agent: str | None = None
+    is_hub: bool = False        # runs the herdr/tmux client: hosts many projects, is not one
+    remote: bool = False        # ssh/mosh: the local cwd says nothing about the work
+    workspace: str = ""         # herdr workspace label
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "id": self.id, "cwd": self.cwd, "command": self.command, "source": self.source, "title": self.title,
+            "agent": self.agent, "is_hub": self.is_hub, "remote": self.remote, "workspace": self.workspace,
+        }
+
+
+@dataclass(frozen=True)
+class Tab:
+    title: str
+    url: str
+
+
+@dataclass(frozen=True)
+class ListeningPort:
+    port: int
+    pid: int
+    process: str
+    cwd: str | None
+
+
+@dataclass
+class DesktopState:
+    windows: list[Window]
+    spaces: list[Space]
+    sessions: list[Session] = field(default_factory=list)
+    ports: list[ListeningPort] = field(default_factory=list)
+    hostnames: list[str] = field(default_factory=list)
+    herdr_workspaces: list[str] = field(default_factory=list)
+    repo_dirs: list[str] = field(default_factory=list)
+    tabs: dict[int, list[Tab]] = field(default_factory=dict)      # browser window id → its tabs, when readable
+
+    def label_of(self, index: int) -> str:
+        for s in self.spaces:
+            if s.index == index:
+                return s.label
+        return ""
+
+    def window(self, wid: int) -> Window | None:
+        for w in self.windows:
+            if w.id == wid:
+                return w
+        return None
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "windows": [w.__dict__ for w in self.windows],
+            "spaces": [s.__dict__ for s in self.spaces],
+            "sessions": [s.to_dict() for s in self.sessions],
+            "ports": [p.__dict__ for p in self.ports],
+            "hostnames": self.hostnames,
+            "herdr_workspaces": self.herdr_workspaces,
+            "repo_dirs": self.repo_dirs,
+            "tabs": {str(wid): [t.__dict__ for t in tabs] for wid, tabs in self.tabs.items()},
+        }
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> DesktopState:
+        windows = [Window.from_yabai(w) if "can-move" in w else Window(**w) for w in d.get("windows", [])]
+        spaces = [Space(int(s["index"]), str(s.get("label") or ""), str(s.get("uuid") or "")) for s in d.get("spaces", [])]
+        sessions = [Session(**s) for s in d.get("sessions", [])]
+        ports = [ListeningPort(**p) for p in d.get("ports", [])]
+        tabs = {int(wid): [Tab(**t) for t in items] for wid, items in (d.get("tabs") or {}).items()}
+        return cls(windows, spaces, sessions, ports, list(d.get("hostnames", [])),
+                   list(d.get("herdr_workspaces", [])), list(d.get("repo_dirs", [])), tabs)
+
+
+# ── Gathering (live desktop) ──────────────────────────────────────────────────
+
+@dataclass(frozen=True)
+class Proc:
+    pid: int
+    ppid: int
+    pgid: int
+    tpgid: int
+    tty: str
+    command: str
+
+
+def snapshot_processes() -> list[Proc]:
+    procs: list[Proc] = []
+    for line in run_out(["ps", "-axo", "pid=,ppid=,pgid=,tpgid=,tty=,command="]).splitlines():
+        parts = line.split(None, 5)
+        if len(parts) < 6:
+            continue
+        try:
+            procs.append(Proc(int(parts[0]), int(parts[1]), int(parts[2]), int(parts[3]), parts[4], parts[5]))
+        except ValueError:
+            continue
+    return procs
+
+
+def cwd_of_pids(pids: Iterable[int]) -> dict[int, str]:
+    """One batched lsof call: `p<pid>` lines introduce a process, `n<path>` lines carry its cwd."""
+    pids = sorted(set(pids))
+    if not pids:
+        return {}
+    out = run_out(["lsof", "-a", "-d", "cwd", "-Fpn", "-p", ",".join(map(str, pids))], timeout=10)
+    result: dict[int, str] = {}
+    current: int | None = None
+    for line in out.splitlines():
+        if line.startswith("p"):
+            try:
+                current = int(line[1:])
+            except ValueError:
+                current = None
+        elif line.startswith("n") and current is not None:
+            result[current] = line[1:]
+    return result
+
+
+def command_tokens(command: str) -> list[str]:
+    tokens = []
+    for tok in command.split():
+        base = os.path.basename(tok.lstrip("-"))
+        if base:
+            tokens.append(base)
+    return tokens
+
+
+def ghostty_sessions(procs: list[Proc], rules: dict[str, Any]) -> list[Session]:
+    """One Session per Ghostty surface, described by the foreground process group on its tty."""
+    ghostty = {p.pid for p in procs if "/Ghostty.app/Contents/MacOS/ghostty" in p.command}
+    if not ghostty:
+        return []
+    by_tty: dict[str, list[Proc]] = {}
+    for p in procs:
+        if p.tty != "??":
+            by_tty.setdefault(p.tty, []).append(p)
+    agents = set(rules["agent_commands"])
+    remotes = set(rules["remote_commands"])
+    surfaces = [p for p in procs if p.ppid in ghostty and p.tty != "??"]
+    leaves: dict[str, Proc] = {}
+    for surface in surfaces:
+        tty_procs = by_tty.get(surface.tty, [])
+        fg = [p for p in tty_procs if p.pgid == surface.tpgid] or [p for p in tty_procs if p.pid != surface.pid]
+        if not fg:
+            continue
+        parents = {p.ppid for p in fg}
+        leaf_candidates = [p for p in fg if p.pid not in parents] or fg
+        leaves[surface.tty] = leaf_candidates[-1]
+    cwds = cwd_of_pids(p.pid for p in leaves.values())
+    sessions = []
+    for tty, leaf in sorted(leaves.items()):
+        tokens = command_tokens(leaf.command)
+        cwd = cwds.get(leaf.pid)
+        if cwd is None:
+            # The zsh precmd hook in ~/.shell_functions mirrors $PWD here; used only when lsof has nothing.
+            try:
+                with open(f"/tmp/tty_cwd_dev_{tty}", encoding="utf-8") as fh:
+                    cwd = fh.read().strip() or None
+            except OSError:
+                cwd = None
+        agent = next((t for t in tokens if t in agents), None)
+        sessions.append(Session(
+            id=f"ghostty:{tty}", cwd=cwd, command=" ".join(leaf.command.split()[:4])[:80], source="ghostty",
+            agent=agent, is_hub=bool(tokens) and tokens[0] in ("herdr", "tmux"),
+            remote=bool(tokens) and tokens[0] in remotes,
+        ))
+    return sessions
+
+
+def herdr_state() -> tuple[list[str], list[Session]]:
+    """(workspace labels, one Session per pane). Empty when herdr is not installed or not running."""
+    if which("herdr") is None:
+        return [], []
+    try:
+        workspaces = json.loads(run_out(["herdr", "workspace", "list"], timeout=3) or "{}")
+        panes = json.loads(run_out(["herdr", "pane", "list"], timeout=3) or "{}")
+    except ValueError:
+        return [], []
+    labels: dict[str, str] = {}
+    for ws in (workspaces.get("result") or {}).get("workspaces", []) or []:
+        labels[str(ws.get("workspace_id"))] = str(ws.get("label") or "")
+    sessions = []
+    for pane in (panes.get("result") or {}).get("panes", []) or []:
+        agent = pane.get("agent") or None
+        sessions.append(Session(
+            id=f"herdr:{pane.get('pane_id')}", cwd=pane.get("foreground_cwd") or pane.get("cwd"),
+            command=str(agent or ""), source="herdr", title=str(pane.get("terminal_title") or ""),
+            agent=agent, workspace=labels.get(str(pane.get("workspace_id")), ""),
+        ))
+    return [label for label in labels.values() if label], sessions
+
+
+def listening_ports() -> list[ListeningPort]:
+    out = run_out(["lsof", "-iTCP", "-sTCP:LISTEN", "-P", "-n", "-Fpcn"], timeout=10)
+    entries: list[tuple[int, str, int]] = []
+    pid, proc = 0, ""
+    for line in out.splitlines():
+        if line.startswith("p"):
+            try:
+                pid = int(line[1:])
+            except ValueError:
+                pid = 0
+        elif line.startswith("c"):
+            proc = line[1:]
+        elif line.startswith("n") and pid:
+            port = line.rsplit(":", 1)[-1]
+            if port.isdigit():
+                entries.append((pid, proc, int(port)))
+    cwds = cwd_of_pids(e[0] for e in entries)
+    seen: set[int] = set()
+    ports = []
+    for pid, proc, port in entries:
+        if port in seen:
+            continue
+        seen.add(port)
+        ports.append(ListeningPort(port=port, pid=pid, process=proc, cwd=cwds.get(pid)))
+    return sorted(ports, key=lambda p: p.port)
+
+
+# Whole-application array properties: one Apple Event per property instead of one per tab, which is the
+# difference between ~130ms and ~2s for fifty tabs.
+CHROME_TABS_JXA = (
+    'const c = Application("Google Chrome"); const names = c.windows.name(), active = c.windows.activeTabIndex(), '
+    'titles = c.windows.tabs.title(), urls = c.windows.tabs.url(); '
+    'JSON.stringify(names.map((n, i) => ({name: n, active: active[i], titles: titles[i], urls: urls[i]})))'
+)
+
+
+def chrome_tabs(windows: list[Window]) -> dict[int, list[Tab]]:
+    """Tabs of every Chrome window, keyed by yabai window id. Chrome only exposes windows by their active
+    tab, so a yabai window is matched when exactly one Chrome window has that active tab title; anything
+    ambiguous (two "New Tab" windows) gets no tab evidence rather than the wrong evidence."""
+    chrome_windows = [w for w in windows if w.app == "Google Chrome"]
+    if not chrome_windows:
+        return {}
+    try:
+        raw = json.loads(run_out(["osascript", "-l", "JavaScript", "-e", CHROME_TABS_JXA], timeout=6) or "[]")
+    except ValueError:
+        return {}
+    if not isinstance(raw, list):
+        return {}
+    by_active: dict[str, list[list[Tab]]] = {}
+    for entry in raw:
+        if not isinstance(entry, dict):
+            continue
+        titles, urls = entry.get("titles") or [], entry.get("urls") or []
+        tabs = [Tab(str(t or ""), str(u or "")) for t, u in zip(titles, urls, strict=False)]
+        if not tabs:
+            continue
+        active = int(entry.get("active") or 1) - 1
+        active_title = tabs[active].title if 0 <= active < len(tabs) else str(entry.get("name") or "")
+        by_active.setdefault(active_title.strip(), []).append(tabs)
+    result: dict[int, list[Tab]] = {}
+    for w in chrome_windows:
+        page = BROWSER_SUFFIX_RE.sub("", w.title).strip()
+        matches = by_active.get(page, [])
+        if len(matches) == 1:
+            result[w.id] = matches[0]
+    return result
+
+
+def find_repo_dirs(roots: Iterable[str], max_depth: int = 3) -> list[str]:
+    """Git checkouts under the source roots: observational evidence for elided titles, never a project list."""
+    found: list[str] = []
+    for root in roots:
+        root = os.path.expanduser(root)
+        if not os.path.isdir(root):
+            continue
+        base_depth = root.rstrip("/").count("/")
+        for dirpath, dirnames, _ in os.walk(root):
+            if ".git" in dirnames or os.path.exists(os.path.join(dirpath, ".git")):
+                found.append(dirpath)
+                dirnames[:] = []
+                continue
+            if dirpath.count("/") - base_depth >= max_depth:
+                dirnames[:] = []
+            dirnames[:] = [d for d in dirnames if not d.startswith(".")]
+    return sorted(found)
+
+
+class Stopwatch:
+    """Wall-clock milliseconds per named step, for the run record's `timings`."""
+
+    def __init__(self) -> None:
+        self.ms: dict[str, int] = {}
+        self._started = time.monotonic()
+
+    def lap(self, name: str, fn: Callable[[], Any]) -> Any:
+        started = time.monotonic()
+        try:
+            return fn()
+        finally:
+            self.ms[name] = self.ms.get(name, 0) + int((time.monotonic() - started) * 1000)
+
+    def total(self) -> int:
+        return int((time.monotonic() - self._started) * 1000)
+
+
+def gather_state(rules: dict[str, Any], watch: Stopwatch | None = None) -> DesktopState:
+    watch = watch or Stopwatch()
+    try:
+        raw_windows = json.loads(watch.lap("gather.yabai", lambda: run_out(["yabai", "-m", "query", "--windows"])) or "[]")
+        raw_spaces = json.loads(watch.lap("gather.yabai", lambda: run_out(["yabai", "-m", "query", "--spaces"])) or "[]")
+    except ValueError:
+        raw_windows, raw_spaces = [], []
+    if not raw_windows or not raw_spaces:
+        raise SystemExit(f"{TOOL}: yabai returned no windows/spaces (is yabai running?)")
+    windows = [Window.from_yabai(w) for w in raw_windows]
+    spaces = [Space(int(s["index"]), str(s.get("label") or ""), str(s.get("uuid") or "")) for s in raw_spaces]
+    host = socket.gethostname()
+    hostnames = sorted({host, host.split(".")[0]})
+    herdr_labels, herdr_sessions = watch.lap("gather.herdr", herdr_state)
+    sessions = watch.lap("gather.processes", lambda: ghostty_sessions(snapshot_processes(), rules)) + herdr_sessions
+    return DesktopState(
+        windows=windows, spaces=spaces, sessions=sessions, ports=watch.lap("gather.ports", listening_ports),
+        hostnames=hostnames, herdr_workspaces=herdr_labels,
+        repo_dirs=watch.lap("gather.repos", lambda: find_repo_dirs(rules["source_roots"])),
+        tabs=watch.lap("gather.tabs", lambda: chrome_tabs(windows)) if rules.get("read_browser_tabs", True) else {},
+    )
+
+
+# ── Folio: the project registry ───────────────────────────────────────────────
+
+@dataclass(frozen=True)
+class Project:
+    reference: str
+    slug: str
+    title: str
+    realm: str
+    domain: str
+    status: str
+    category: str | None
+    location: str
+
+    @property
+    def rank(self) -> tuple[int, int]:
+        """Status is a prior for ordering ties, never a filter."""
+        return (1 if self.location == "archived" else 0, STATUS_RANK.get(self.status, 9))
+
+
+class FolioCLI:
+    """Thin adapter over the `folio` binary. Every method returns the parsed `data` envelope, or None
+    when folio is missing or unusable. Non-zero exits still carry statuses (unresolved/invalid), so the
+    exit code is ignored in favour of the JSON body."""
+
+    def __init__(self, binary: str | None = None, timeout: float = 5.0) -> None:
+        self.binary = binary or which("folio")
+        self.timeout = timeout
+        self._show: dict[str, dict[str, Any] | None] = {}
+        self.calls = 0
+        self.elapsed_ms = 0.0
+
+    @property
+    def available(self) -> bool:
+        return self.binary is not None
+
+    def _run(self, *args: str) -> dict[str, Any] | None:
+        if self.binary is None:
+            return None
+        started = time.monotonic()
+        try:
+            proc = subprocess.run([self.binary, *args, "--json"], capture_output=True, text=True, timeout=self.timeout)
+            doc = json.loads(proc.stdout)
+        except (OSError, subprocess.TimeoutExpired, ValueError):
+            return None
+        finally:
+            self.calls += 1
+            self.elapsed_ms += (time.monotonic() - started) * 1000
+        if not isinstance(doc, dict):
+            return None
+        return doc.get("data") if isinstance(doc.get("data"), dict) else None
+
+    def list_all(self) -> list[dict[str, Any]] | None:
+        data = self._run("list", "--all")
+        return data.get("entries") if data else None
+
+    def show(self, reference: str) -> dict[str, Any] | None:
+        if reference not in self._show:
+            self._show[reference] = self._run("show", reference)
+        return self._show[reference]
+
+    def resolve_path(self, path: str) -> dict[str, Any] | None:
+        return self._run("resolve", "--path", path)
+
+    def resolve_vault_path(self, path: str) -> dict[str, Any] | None:
+        return self._run("resolve", "--vault-path", path)
+
+    def resolve_repository(self, repository: str) -> dict[str, Any] | None:
+        return self._run("resolve", "--repository", repository)
+
+
+class Registry:
+    def __init__(self, projects: Iterable[Project]) -> None:
+        self.projects: dict[str, Project] = {p.reference: p for p in projects}
+        self._by_slug: dict[str, list[Project]] = {}
+        for p in self.projects.values():
+            self._by_slug.setdefault(p.slug.lower(), []).append(p)
+
+    @classmethod
+    def from_entries(cls, entries: Iterable[dict[str, Any]]) -> Registry:
+        projects = []
+        for e in entries:
+            if e.get("kind") != "project" or not e.get("reference"):
+                continue
+            projects.append(Project(
+                reference=str(e["reference"]), slug=str(e.get("slug") or e["reference"].rsplit("/", 1)[-1]),
+                title=str(e.get("title") or e.get("slug") or ""), realm=str(e.get("realm") or ""),
+                domain=str(e.get("domain") or e["reference"].split("/", 1)[0]), status=str(e.get("status") or ""),
+                category=e.get("category"), location=str(e.get("location") or "active"),
+            ))
+        return cls(projects)
+
+    @classmethod
+    def from_folio(cls, folio: FolioCLI) -> Registry | None:
+        entries = folio.list_all()
+        return cls.from_entries(entries) if entries is not None else None
+
+    def get(self, reference: str) -> Project | None:
+        return self.projects.get(reference)
+
+    def unique_slug(self, token: str) -> Project | None:
+        hits = self._by_slug.get(token.lower(), [])
+        if len(hits) == 1:
+            return hits[0]
+        live = [p for p in hits if p.location != "archived"]
+        return live[0] if len(live) == 1 else None
+
+    def label_for(self, reference: str) -> str:
+        p = self.get(reference)
+        return p.slug if p else reference.rsplit("/", 1)[-1]
+
+    def in_domain(self, domain: str) -> list[Project]:
+        return [p for p in self.projects.values() if p.domain == domain]
+
+
+# ── Path → project resolution ─────────────────────────────────────────────────
+
+@dataclass(frozen=True)
+class Resolution:
+    kind: str = "none"              # "project" | "domain" | "none"
+    reference: str | None = None
+    method: str = ""
+    repository: str | None = None
+    relative_path: str | None = None
+    detail: str = ""
+
+    @property
+    def project(self) -> str | None:
+        return self.reference if self.kind == "project" else None
+
+
+@dataclass(frozen=True)
+class GitInfo:
+    toplevel: str
+    remotes: dict[str, str]         # remote name → canonical host/namespace/repository
+
+
+def normalize_remote(url: str) -> str | None:
+    url = url.strip()
+    if not url or url.startswith(("/", ".", "file://")):
+        return None
+    m = re.match(r"^(?:https?|ssh|git)://(?:[^@/]+@)?([\w.-]+)(?::\d+)?/(.+)$", url) or \
+        re.match(r"^(?:[\w.-]+@)?([\w.-]+):(.+)$", url) or \
+        re.match(r"^([\w.-]+)/(.+)$", url)
+    if not m:
+        return None
+    host, path = m.group(1), m.group(2).strip("/")
+    if path.endswith(".git"):
+        path = path[:-4]
+    if "/" not in path or "." not in host:
+        return None
+    return f"{host}/{path}"
+
+
+def git_probe(path: str) -> GitInfo | None:
+    top = run_out(["git", "-C", path, "rev-parse", "--show-toplevel"]).strip()
+    if not top:
+        return None
+    remotes: dict[str, str] = {}
+    for line in run_out(["git", "-C", top, "remote", "-v"]).splitlines():
+        parts = line.split()
+        if len(parts) >= 2 and parts[0] not in remotes:
+            canon = normalize_remote(parts[1])
+            if canon:
+                remotes[parts[0]] = canon
+    return GitInfo(top, remotes)
+
+
+def anchor_overview(path: str, limit: int) -> str:
+    """The Overview section of a Folio anchor note (or its first prose) as one plain line, wikilinks and
+    code ticks stripped, cut at `limit` characters on a word boundary."""
+    try:
+        with open(path, encoding="utf-8") as fh:
+            text = fh.read()
+    except OSError:
+        return ""
+    if text.startswith("---"):
+        end = text.find("\n---", 3)
+        if end != -1:
+            text = text[end + 4:]
+    lines = text.splitlines()
+    picked: list[str] = []
+    capture = False
+    for line in lines:
+        if line.startswith("#"):
+            if capture:
+                break
+            capture = line.lstrip("# ").lower().startswith("overview")
+            continue
+        if capture and line.strip():
+            picked.append(line.strip().lstrip("-* ").strip())
+    if not picked:
+        for line in lines:
+            if line.strip() and not line.startswith("#"):
+                picked.append(line.strip().lstrip("-* ").strip())
+            if len(" ".join(picked)) > limit:
+                break
+    out = " ".join(picked)
+    out = re.sub(r"\[\[(?:[^\]|]+\|)?([^\]]+)\]\]", r"\1", out)     # [[target|alias]] → alias
+    out = re.sub(r"`([^`]*)`", r"\1", out)
+    out = re.sub(r"\s+", " ", out).strip()
+    if len(out) > limit:
+        out = out[:limit].rsplit(" ", 1)[0].rstrip(",;:") + "…"
+    return out
+
+
+class ProjectResolver:
+    """Path → Folio owner. Folio does the routing (git root → remote → longest route prefix). The
+    fallbacks here only cover evidence Folio rejects: non-canonical or missing `origin` remotes, and
+    repositories nobody has routed yet, where the checkout or repository name matching a unique slug is
+    still exact evidence."""
+
+    def __init__(self, folio: FolioCLI, registry: Registry, vault_roots: Iterable[str],
+                 git: Callable[[str], GitInfo | None] = git_probe, description_chars: int = 400,
+                 description_disclosures: Iterable[str] = ("public", "private", "restricted")) -> None:
+        self.folio = folio
+        self.registry = registry
+        self.vault_roots = [os.path.realpath(os.path.expanduser(r)) for r in vault_roots]
+        self.git = git
+        self.description_chars = description_chars
+        self.description_disclosures = set(description_disclosures)
+        self._memo: dict[str, Resolution] = {}
+        self._routes: dict[str, list[dict[str, Any]]] = {}
+        self._descriptions: dict[str, str] = {}
+
+    def description(self, reference: str) -> str:
+        """What the project is, from its Folio anchor note; "" when disabled, undisclosed or unavailable."""
+        if reference not in self._descriptions:
+            data = self.folio.show(reference) or {}
+            disclosure = (data.get("effective") or {}).get("disclosure")
+            allowed = self.description_chars > 0 and (disclosure is None or disclosure in self.description_disclosures)
+            anchor = data.get("anchor")
+            self._descriptions[reference] = anchor_overview(anchor, self.description_chars) if allowed and anchor else ""
+        return self._descriptions[reference]
+
+    @staticmethod
+    def canonical(path: str) -> str:
+        return os.path.realpath(os.path.expanduser(path))
+
+    def in_vault(self, path: str) -> bool:
+        canon = self.canonical(path)
+        return any(canon == root or canon.startswith(root.rstrip("/") + "/") for root in self.vault_roots)
+
+    def resolve_cwd(self, path: str | None) -> Resolution:
+        if not path:
+            return Resolution()
+        canon = self.canonical(path)
+        if canon not in self._memo:
+            self._memo[canon] = self._resolve(canon)
+        return self._memo[canon]
+
+    def _resolve(self, canon: str) -> Resolution:
+        if self.in_vault(canon):
+            res = self._from_folio(self.folio.resolve_vault_path(canon), "folio:vault-path")
+            if res.kind != "none":
+                return res
+        data = self.folio.resolve_path(canon)
+        res = self._from_folio(data, "folio:path")
+        if res.kind != "none":
+            return res
+        status = (data or {}).get("status")
+        if status == "unresolved":
+            # Folio read the repository but no route claims it.
+            return self._by_name(((data or {}).get("reason") or {}).get("repository"), "repo-name")
+        if status == "ambiguous":
+            return Resolution(detail="ambiguous")
+        info = self.git(canon) if os.path.isdir(canon) else None
+        if info is None:
+            return Resolution()
+        rel = os.path.relpath(canon, info.toplevel)
+        rel = "" if rel == "." else rel
+        for name in sorted(info.remotes, key=lambda n: (n != "origin", n)):
+            repo = info.remotes[name]
+            res = self._from_folio(self.folio.resolve_repository(repo), "folio:repository")
+            if res.kind == "project":
+                return replace(res, repository=repo, relative_path=rel)
+            if res.kind == "domain":
+                prefixed = self.route_prefix_owner(repo, rel, res.reference or "")
+                if prefixed:
+                    return Resolution("project", prefixed.reference, "route-prefix", repo, rel)
+                return replace(res, repository=repo, relative_path=rel)
+            named = self._by_name(repo, "repo-name")
+            if named.kind == "project":
+                return named
+        return self._by_name(os.path.basename(info.toplevel), "dir-name")
+
+    def resolve_repository(self, repository: str, relative_path: str = "") -> Resolution:
+        """Canonical `host/namespace/repo` (+ optional in-repo path) → owner, with the same fallbacks as paths."""
+        key = f"repo:{repository}#{relative_path}"
+        if key in self._memo:
+            return self._memo[key]
+        res = self._from_folio(self.folio.resolve_repository(repository), "folio:repository")
+        if res.kind == "domain" and relative_path:
+            owner = self.route_prefix_owner(repository, relative_path, res.reference or "")
+            if owner:
+                res = Resolution("project", owner.reference, "route-prefix", repository, relative_path)
+        if res.kind == "none":
+            res = self._by_name(repository, "repo-name")
+        self._memo[key] = res
+        return res
+
+    def _from_folio(self, data: dict[str, Any] | None, method: str) -> Resolution:
+        if not data or data.get("status") != "resolved":
+            return Resolution()
+        owner = data.get("owner") or {}
+        reason = data.get("reason") or {}
+        kind, ref = owner.get("kind"), owner.get("reference")
+        if kind not in ("project", "domain") or not ref:
+            return Resolution()
+        method = f"folio:{reason['type']}" if reason.get("type") else method
+        return Resolution(kind, ref, method, reason.get("repository"), reason.get("relative_path"))
+
+    def _by_name(self, name: str | None, method: str) -> Resolution:
+        if not name:
+            return Resolution()
+        project = self.registry.unique_slug(name.rstrip("/").rsplit("/", 1)[-1])
+        if project is None:
+            return Resolution()
+        return Resolution("project", project.reference, method, repository=name if "/" in name else None)
+
+    def routes_of(self, reference: str) -> list[dict[str, Any]]:
+        if reference not in self._routes:
+            data = self.folio.show(reference) or {}
+            self._routes[reference] = [r for r in (data.get("routes") or []) if isinstance(r, dict)]
+        return self._routes[reference]
+
+    def projects_in_repository(self, repository: str, domain: str) -> list[Project]:
+        return [p for p in self.registry.in_domain(domain)
+                if any(r.get("repository") == repository for r in self.routes_of(p.reference))]
+
+    def route_prefix_owner(self, repository: str, relative_path: str, domain: str) -> Project | None:
+        best: tuple[int, Project] | None = None
+        for p in self.projects_in_repository(repository, domain):
+            for route in self.routes_of(p.reference):
+                prefix = route.get("prefix")
+                if route.get("repository") != repository or not prefix:
+                    continue
+                covers = relative_path == prefix or relative_path.startswith(prefix.rstrip("/") + "/")
+                if covers and (best is None or len(prefix) > best[0]):
+                    best = (len(prefix), p)
+        return best[1] if best else None
+
+
+# ── Decisions ─────────────────────────────────────────────────────────────────
+
+@dataclass
+class Decision:
+    window_id: int
+    app: str
+    title: str
+    space: int
+    outcome: str                        # "ignored" | "fixed" | "project" | "unresolved"
+    target: int | None = None
+    project: str | None = None
+    resolution: str = ""                # which rule/evidence decided this
+    detail: dict[str, Any] = field(default_factory=dict)
+    candidates: list[str] = field(default_factory=list)
+    selected: str | None = None
+    confidence: float | None = None
+    accepted: bool | None = None
+
+    def to_log(self) -> dict[str, Any]:
+        rec: dict[str, Any] = {
+            "window_id": self.window_id, "app": self.app, "title": self.title[:80], "space": self.space,
+            "outcome": self.outcome, "resolution": self.resolution,
+        }
+        for key in ("target", "project", "selected", "confidence", "accepted"):
+            if getattr(self, key) is not None:
+                rec[key] = getattr(self, key)
+        if self.candidates:
+            rec["candidates"] = self.candidates
+        if self.detail:
+            rec["detail"] = self.detail
+        return rec
+
+
+@dataclass
+class Pending:
+    """A window whose owning project is a genuinely open semantic question."""
+    window: Window
+    kind: str                                   # "session" | "project"
+    reason: str
+    sessions: list[Session] = field(default_factory=list)
+    seeds: dict[str, list[str]] = field(default_factory=dict)      # reference → why it is a candidate
+    candidates: list[tuple[Project, list[str]]] = field(default_factory=list)
+    context: dict[str, Any] = field(default_factory=dict)          # extra facts about the window shown to the model
+
+
+def decision_for(w: Window, outcome: str, **kw: Any) -> Decision:
+    return Decision(window_id=w.id, app=w.app, title=w.title, space=w.space, outcome=outcome, **kw)
+
+
+def fixed_target(app: str, rules: dict[str, Any]) -> tuple[int, str] | None:
+    for key, space in (("comms_apps", SPACE_COMMS), ("notes_apps", SPACE_NOTES),
+                       ("media_apps", SPACE_MEDIA), ("inbox_apps", SPACE_INBOX)):
+        if app in rules[key]:
+            return space, key[: -len("_apps")]
+    return None
+
+
+def is_ignored(w: Window, rules: dict[str, Any]) -> bool:
+    return w.app in rules["ignored_apps"] or not w.can_move or w.role != "AXWindow"
+
+
+def herdr_title_regex(hostnames: Iterable[str], fmt: str) -> re.Pattern[str]:
+    hosts = "|".join(re.escape(h) for h in sorted(set(hostnames), key=len, reverse=True)) or r"[\w.-]+"
+    pattern = re.escape(fmt)
+    for token, sub in (("hostname", f"(?:{hosts})"), ("workspace", "(?P<workspace>.+?)"),
+                       ("tab", ".*?"), ("pane", ".*?"), ("terminal_title", ".*?")):
+        pattern = pattern.replace(re.escape("{" + token + "}"), sub)
+    return re.compile("^" + pattern + "$")
+
+
+def is_hub_title(title: str, state: DesktopState, rules: dict[str, Any]) -> bool:
+    if TMUX_HUB_RE.match(title):
+        return True
+    m = herdr_title_regex(state.hostnames, rules["herdr_window_title"]).match(title)
+    if not m:
+        return False
+    # The workspace token is usually a herdr workspace label, but herdr also renders other text there
+    # (e.g. `~` while no workspace is focused), so a live herdr client on some surface is proof enough.
+    workspace = m.groupdict().get("workspace")
+    return workspace in state.herdr_workspaces or any(s.is_hub for s in state.sessions)
+
+
+def is_media_title(page_title: str, rules: dict[str, Any]) -> bool:
+    return any(re.search(pat, page_title, re.I) for pat in rules.get("media_title_patterns", []))
+
+
+def classify_fixed_windows(state: DesktopState, rules: dict[str, Any]) -> dict[int, Decision]:
+    decisions: dict[int, Decision] = {}
+    browsers_per_app: dict[str, int] = {}
+    for w in state.windows:
+        if w.app in rules["browser_apps"]:
+            browsers_per_app[w.app] = browsers_per_app.get(w.app, 0) + 1
+    for w in state.windows:
+        if is_ignored(w, rules):
+            decisions[w.id] = decision_for(w, "ignored", resolution="ignored", detail={"can_move": w.can_move, "role": w.role})
+            continue
+        fixed = fixed_target(w.app, rules)
+        if fixed:
+            decisions[w.id] = decision_for(w, "fixed", target=fixed[0], resolution=f"fixed:{fixed[1]}")
+            continue
+        if w.app in rules["terminal_apps"] and is_hub_title(w.title.strip(), state, rules):
+            decisions[w.id] = decision_for(w, "fixed", target=SPACE_MAIN, resolution="fixed:hub")
+            continue
+        generic = len(state.tabs.get(w.id, [])) >= int(rules["generic_browser_tabs"])
+        if w.app in rules["browser_apps"] and not generic and is_media_title(BROWSER_SUFFIX_RE.sub("", w.title), rules):
+            decisions[w.id] = decision_for(w, "fixed", target=SPACE_MEDIA, resolution="media:title")
+            continue
+        if w.app in rules["browser_apps"] and browsers_per_app.get(w.app) == 1:
+            # A lone browser window is the general-purpose one by definition; it lives with the hub.
+            decisions[w.id] = decision_for(w, "fixed", target=SPACE_MAIN, resolution="fixed:browser-single")
+    return decisions
+
+
+# ── Exact evidence ────────────────────────────────────────────────────────────
+
+def word_present(text: str, needle: str) -> bool:
+    return re.search(r"(?<![\w.-])" + re.escape(needle) + r"(?![\w.-])", text) is not None
+
+
+def lexical_matches(text: str, registry: Registry) -> tuple[list[Project], list[Project]]:
+    """(strong, weak). Strong: the full reference, a multi-token slug, or a multi-word title appears —
+    near-zero false positives. Weak: a single-word slug appears; common words ("box", "resume") make
+    that suggestive only, so weak hits become Jev candidates rather than decisions."""
+    low = text.lower()
+    strong, weak = [], []
+    for p in registry.projects.values():
+        slug, title = p.slug.lower(), p.title.lower()
+        if word_present(low, p.reference.lower()):
+            strong.append(p)
+        elif word_present(low, slug):
+            (strong if any(c in slug for c in "-._") else weak).append(p)
+        elif " " in title and word_present(low, title):
+            strong.append(p)
+    return strong, weak
+
+
+def browser_profile_domain(title: str) -> str | None:
+    m = BROWSER_PROFILE_RE.search(title)
+    if not m:
+        return None
+    account = m.group(1).strip().lower()
+    return account.rsplit("@", 1)[-1] if account else None
+
+
+def resolve_url(url: str, ports: dict[int, ListeningPort], resolver: ProjectResolver, rules: dict[str, Any]) -> Resolution:
+    """What a URL proves: a local port maps to a serving process's cwd; a git-host URL maps to a
+    repository (and, for tree/blob links, a path inside it) that Folio routes. Everything else proves nothing."""
+    try:
+        parts = urllib.parse.urlsplit(url)
+    except ValueError:
+        return Resolution()
+    host = (parts.hostname or "").lower()
+    if host in ("localhost", "127.0.0.1", "::1", "0.0.0.0") and parts.port in ports:
+        return resolver.resolve_cwd(ports[parts.port].cwd)
+    if host in rules["git_hosts"]:
+        segments = [seg for seg in parts.path.split("/") if seg]
+        if len(segments) >= 2:
+            repo = f"{host}/{segments[0]}/{segments[1].removesuffix('.git')}"
+            rel = "/".join(segments[4:]) if len(segments) > 4 and segments[2] in ("tree", "blob") else ""
+            return resolver.resolve_repository(repo, rel)
+    return Resolution()
+
+
+def tab_projects(tabs: list[Tab], ports: dict[int, ListeningPort], resolver: ProjectResolver, registry: Registry,
+                 rules: dict[str, Any]) -> dict[str, int]:
+    """How many tabs provably belong to each project, by URL first and unambiguous title second."""
+    counts: dict[str, int] = {}
+    for tab in tabs:
+        res = resolve_url(tab.url, ports, resolver, rules)
+        project = res.project
+        if project is None:
+            strong, _ = lexical_matches(tab.title, registry)
+            project = strong[0].reference if len(strong) == 1 else None
+        if project:
+            counts[project] = counts.get(project, 0) + 1
+    return counts
+
+
+def tab_share_owner(counts: dict[str, int], total: int, share: float) -> str | None:
+    """The single project holding at least `share` of the tabs and more than any other; None otherwise."""
+    if not counts or total <= 0:
+        return None
+    ranked = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
+    best, n = ranked[0]
+    if n / total < share or (len(ranked) > 1 and ranked[1][1] == n):
+        return None
+    return best
+
+
+def is_spinner(title: str, rules: dict[str, Any]) -> bool:
+    return len(title) > 2 and title[0] in rules["spinner_chars"] and title[1] == " "
+
+
+def title_path(title: str, state: DesktopState) -> str | None:
+    """A title that is just a path: `~/etc`, `/Users/x/y`, `[~/src/hack/review]` (Claude Code) or the
+    elided `…/src/hack/fite`. Elided prefixes are recovered from live session cwds, then $HOME, then
+    known checkouts, only when exactly one candidate fits."""
+    m = PATH_TITLE_RE.match(title)
+    if not m:
+        return None
+    p = m.group("p")
+    if p.startswith("~"):
+        return os.path.expanduser(p) if p == "~" or p.startswith("~/") else None
+    if p.startswith("/"):
+        return p
+    suffix = p[1:] if p.startswith("…") else p[3:]
+    if not suffix.startswith("/"):
+        return None
+    hits = sorted({s.cwd for s in state.sessions if s.cwd and (s.cwd == suffix or s.cwd.endswith(suffix))})
+    if len(hits) == 1:
+        return hits[0]
+    if hits:
+        return None
+    guess = HOME + suffix
+    if os.path.isdir(guess):
+        return guess
+    repo_hits = sorted({d for d in state.repo_dirs if d.endswith(suffix)})
+    return repo_hits[0] if len(repo_hits) == 1 else None
+
+
+def path_tokens(title: str, state: DesktopState) -> list[str]:
+    """Absolute directories mentioned anywhere in a title (editors: `main.rs — ~/src/hack/ripguard`)."""
+    found = []
+    for tok in re.split(r"[\s\[\]()<>\"']+", title):
+        tok = tok.rstrip(",;:")
+        if tok.startswith(("~/", "/")) and len(tok) > 2:
+            path = os.path.expanduser(tok)
+            if os.path.isdir(path) or path in state.repo_dirs:
+                found.append(path)
+    return found
+
+
+def repo_dir_tokens(title: str, state: DesktopState) -> list[str]:
+    """Checkout directories whose basename appears as a whole word in the title."""
+    low = title.lower()
+    by_name: dict[str, set[str]] = {}
+    for d in state.repo_dirs:
+        by_name.setdefault(os.path.basename(d).lower(), set()).add(d)
+    hits = []
+    for name, dirs in by_name.items():
+        if len(name) >= 3 and word_present(low, name):
+            hits.extend(sorted(dirs))
+    return hits
+
+
+def project_decision(w: Window, res: Resolution, method: str, extra: dict[str, Any] | None = None) -> Decision:
+    detail = {"method": res.method or method}
+    if res.repository:
+        detail["repository"] = res.repository
+    if extra:
+        detail.update(extra)
+    return decision_for(w, "project", project=res.reference, resolution=method, detail=detail)
+
+
+def resolve_exact_project_evidence(
+    state: DesktopState, decisions: dict[int, Decision], resolver: ProjectResolver,
+    registry: Registry, rules: dict[str, Any],
+) -> tuple[dict[int, Decision], list[Pending]]:
+    """Prove what can be proved from paths, ports, sessions and exact names; queue the rest as Pending
+    (semantic questions) or settle them as unresolved when no honest question exists."""
+    pending: list[Pending] = []
+    terminals, browsers, project_apps = set(rules["terminal_apps"]), set(rules["browser_apps"]), set(rules["project_apps"])
+    ports = {p.port: p for p in state.ports}
+
+    def settle(w: Window, res: Resolution, method: str, extra: dict[str, Any] | None = None) -> bool:
+        if res.kind == "project":
+            decisions[w.id] = project_decision(w, res, method, extra)
+            return True
+        if res.kind == "domain" and res.repository and res.reference:
+            siblings = resolver.projects_in_repository(res.repository, res.reference)
+            if siblings:
+                seeds = {p.reference: [f"routed into {res.repository}"] for p in siblings}
+                pending.append(Pending(w, "project", f"{method} resolves to domain {res.reference}", seeds=seeds))
+                return True
+            decisions[w.id] = decision_for(w, "unresolved", resolution=method,
+                                           detail={"domain": res.reference, "note": "domain has no routed projects"})
+            return True
+        return False
+
+    def strong_lexical(w: Window, text: str, method: str) -> bool:
+        strong, _ = lexical_matches(text, registry)
+        if len(strong) == 1:
+            decisions[w.id] = decision_for(w, "project", project=strong[0].reference, resolution=method,
+                                           detail={"matched": strong[0].slug})
+            return True
+        return False
+
+    for w in state.windows:
+        if w.id in decisions:
+            continue
+        title = w.title.strip()
+
+        if w.app in terminals:
+            path = title_path(title, state)
+            if path and settle(w, resolver.resolve_cwd(path), "title-path", {"cwd": tilde(path)}):
+                continue
+            if path and resolver.in_vault(path):
+                # Editing notes outside any project's folder is a notes context, not a project.
+                decisions[w.id] = decision_for(w, "fixed", target=SPACE_NOTES, resolution="notes:vault-path", detail={"cwd": tilde(path)})
+                continue
+            if path and rules.get("home_terminal_space") and resolver.canonical(path) == resolver.canonical(HOME):
+                decisions[w.id] = decision_for(w, "fixed", target=int(rules["home_terminal_space"]), resolution="default:home-terminal")
+                continue
+            if path:
+                decisions[w.id] = decision_for(w, "unresolved", resolution="title-path", detail={"cwd": tilde(path), "note": "path has no project"})
+                continue
+            if is_spinner(title, rules):
+                agents = [s for s in state.sessions if s.source == "ghostty" and s.agent and not s.is_hub and not s.remote]
+                if len(agents) == 1:
+                    res = resolver.resolve_cwd(agents[0].cwd)
+                    if settle(w, res, "session:unique", {"session": agents[0].id, "cwd": tilde(agents[0].cwd)}):
+                        continue
+                if strong_lexical(w, title[2:], "title:lexical"):
+                    continue
+                if len(agents) > 1:
+                    pending.append(Pending(w, "session", "agent spinner; several agent sessions", sessions=agents))
+                    continue
+                note = "single agent session has no project" if agents else "no live agent session"
+                decisions[w.id] = decision_for(w, "unresolved", resolution="spinner", detail={"note": note})
+                continue
+            if REMOTE_TITLE_RE.match(title):
+                decisions[w.id] = decision_for(w, "unresolved", resolution="remote", detail={"note": "remote session"})
+                continue
+            if strong_lexical(w, title, "title:lexical"):
+                continue
+            decisions[w.id] = decision_for(w, "unresolved", resolution="terminal", detail={"note": "title not attributable"})
+            continue
+
+        if w.app in browsers:
+            tabs = state.tabs.get(w.id, [])
+            if tabs:
+                counts = tab_projects(tabs, ports, resolver, registry, rules)
+                owner = tab_share_owner(counts, len(tabs), float(rules["browser_tab_share"]))
+                if owner:
+                    decisions[w.id] = decision_for(w, "project", project=owner, resolution="tabs:share",
+                                                   detail={"matched": counts[owner], "tabs": len(tabs), "others": {k: v for k, v in counts.items() if k != owner}})
+                    continue
+                if len(tabs) >= int(rules["generic_browser_tabs"]):
+                    decisions[w.id] = decision_for(w, "unresolved", resolution="browser:generic",
+                                                   detail={"tabs": len(tabs), "note": "general-purpose browser window; left alone"})
+                    continue
+            m = LOCALHOST_RE.search(title)
+            if m and int(m.group(1)) in ports:
+                port = ports[int(m.group(1))]
+                res = resolver.resolve_cwd(port.cwd)
+                if settle(w, res, "port", {"port": port.port, "process": port.process, "cwd": tilde(port.cwd)}):
+                    continue
+            page = BROWSER_SUFFIX_RE.sub("", title)
+            if strong_lexical(w, page, "title:lexical"):
+                continue
+            _, weak = lexical_matches(page, registry)
+            context: dict[str, Any] = {}
+            if tabs:
+                context["tabs"] = [{"title": t.title[:80], "site": re.sub(r"^https?://", "", t.url)[:60]} for t in tabs[:8]]
+            domain = browser_profile_domain(title)
+            if domain:
+                context["profile"] = domain
+                realm = rules["browser_profile_realms"].get(domain)
+                if realm:
+                    context["realm"] = realm
+            pending.append(Pending(w, "project", "browser title", seeds={p.reference: ["word in title"] for p in weak}, context=context))
+            continue
+
+        if w.app in project_apps:
+            paths = path_tokens(title, state) or repo_dir_tokens(title, state)
+            resolved = {resolver.resolve_cwd(p) for p in paths}
+            projects = {r.reference for r in resolved if r.kind == "project"}
+            if len(projects) == 1:
+                res = next(r for r in resolved if r.kind == "project")
+                decisions[w.id] = project_decision(w, res, "title-path", {"paths": [tilde(p) for p in paths]})
+                continue
+            if strong_lexical(w, title, "title:lexical"):
+                continue
+            _, weak = lexical_matches(title, registry)
+            pending.append(Pending(w, "project", "editor title", seeds={p.reference: ["word in title"] for p in weak}))
+            continue
+
+        hint = window_hint(w, rules)
+        if hint.get("hint"):
+            # Only apps with something to say about themselves are worth a model question; an entry with
+            # just a default_space goes straight there in apply_app_defaults.
+            _, weak = lexical_matches(title, registry)
+            pending.append(Pending(w, "project", "app hint", seeds={p.reference: ["word in title"] for p in weak}, context={"hint": hint["hint"]}))
+            continue
+        decisions[w.id] = decision_for(w, "unresolved", resolution="other-app", detail={"note": "not a project-bearing app"})
+    return decisions, pending
+
+
+# ── Candidates ────────────────────────────────────────────────────────────────
+
+def live_projects(state: DesktopState, decisions: dict[int, Decision], resolver: ProjectResolver,
+                  registry: Registry) -> dict[str, list[str]]:
+    """Projects with any connection to the live desktop, each with the evidence that connects them."""
+    live: dict[str, list[str]] = {}
+    for s in state.sessions:
+        if s.remote or not s.cwd:
+            continue
+        res = resolver.resolve_cwd(s.cwd)
+        if res.kind == "project" and res.reference:
+            live.setdefault(res.reference, []).append(f"live session in {tilde(s.cwd)}")
+    for label in state.herdr_workspaces:
+        p = registry.unique_slug(label)
+        if p:
+            live.setdefault(p.reference, []).append(f"herdr workspace {label}")
+    for slot in PROJECT_SLOTS:
+        label = state.label_of(slot)
+        p = registry.unique_slug(label) if label and label not in DEFAULT_SLOT_LABELS.values() else None
+        if p:
+            live.setdefault(p.reference, []).append(f"occupies slot {slot}")
+    for d in decisions.values():
+        if d.outcome == "project" and d.project:
+            live.setdefault(d.project, []).append(f"open window: {d.app}")
+    return live
+
+
+def generate_candidates(pending: list[Pending], state: DesktopState, decisions: dict[int, Decision],
+                        resolver: ProjectResolver, registry: Registry, rules: dict[str, Any]) -> list[Pending]:
+    """Bound every project question to a small set with a real connection to the desktop. Windows for
+    which no candidate exists are settled as unresolved here — there is nothing to ask."""
+    live = live_projects(state, decisions, resolver, registry)
+    kept: list[Pending] = []
+    for p in pending:
+        if p.kind == "session":
+            kept.append(p)
+            continue
+        scored: dict[str, tuple[int, list[str]]] = {}
+        for ref, why in p.seeds.items():
+            if registry.get(ref):
+                scored[ref] = (3, list(why))
+        for ref, why in live.items():
+            score, reasons = scored.get(ref, (0, []))
+            scored[ref] = (max(score, 2 if any(r.startswith("live session") for r in why) else 1), reasons + why)
+        realm = p.context.get("realm")
+        if realm:
+            for ref, (score, reasons) in list(scored.items()):
+                if registry.projects[ref].realm == realm:
+                    scored[ref] = (score + 1, reasons + [f"browser profile {p.context.get('profile')}"])
+        ranked = sorted(scored.items(), key=lambda kv: (-kv[1][0], registry.projects[kv[0]].rank, kv[0]))
+        p.candidates = [(registry.projects[ref], reasons) for ref, (_, reasons) in ranked[: rules["max_candidates"]]]
+        if p.candidates:
+            kept.append(p)
+        else:
+            decisions[p.window.id] = decision_for(p.window, "unresolved", resolution="no-candidates", detail={"note": p.reason})
+    return kept
+
+
+# ── Semantic layer ────────────────────────────────────────────────────────────
+
+@dataclass(frozen=True)
+class ChoiceResult:
+    choice: str
+    confidence: float
+    probabilities: dict[str, float]
+
+
+class OracleError(Exception):
+    pass
+
+
+def keychain_secret(service: str) -> str | None:
+    out = run_out(["security", "find-generic-password", "-s", service, "-w"]).strip()
+    return out or None
+
+
+def http_json(url: str, body: dict[str, Any], headers: dict[str, str], timeout: float) -> dict[str, Any]:
+    req = urllib.request.Request(url, data=json.dumps(body).encode("utf-8"), method="POST",
+                                 headers={"Content-Type": "application/json", "Accept": "application/json",
+                                          "User-Agent": f"{TOOL}/2", **headers})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        detail = exc.read()[:200].decode("utf-8", "replace")
+        raise OracleError(f"HTTP {exc.code} from {url}: {detail}") from exc
+    except (urllib.error.URLError, TimeoutError, ValueError, OSError) as exc:
+        raise OracleError(f"{url}: {exc}") from exc
+
+
+def render_criterion(value: Any) -> str:
+    """A candidate description as one readable line: `cwd: ~/x; project: a/b; evidence: p, q`."""
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        return value
+    if isinstance(value, dict):
+        parts = []
+        for key, item in value.items():
+            if item in (None, "", [], {}):
+                continue
+            rendered = ", ".join(str(x) for x in item) if isinstance(item, list) else render_criterion(item)
+            parts.append(f"{key}: {rendered}")
+        return "; ".join(parts)
+    if isinstance(value, list):
+        return ", ".join(render_criterion(x) for x in value)
+    return str(value)
+
+
+class JevOracle:
+    """Jev over the System One contract: `POST` with {state, model, questions}, answers keyed by question
+    name with choice/probabilities/confidence. Served by TypeSafe (`/v1/systemone`) or Venice
+    (`/api/v1/decisions`); Venice only accepts string criteria, so descriptions are rendered to text
+    there. One call answers every pending window."""
+
+    name = "jev"
+    DEFAULT_URL = "https://api.typesafe.ai/v1/systemone"
+
+    def __init__(self, api_key: str, model: str = "jev-latest", url: str = DEFAULT_URL, string_criteria: bool | None = None,
+                 timeout: float = 20.0, transport: Callable[..., dict[str, Any]] = http_json) -> None:
+        self.api_key = api_key
+        self.model = model
+        self.url = url
+        self.string_criteria = ("venice.ai" in url) if string_criteria is None else string_criteria
+        self.timeout = timeout
+        self.transport = transport
+
+    @classmethod
+    def from_config(cls, rules: dict[str, Any], model: str | None = None) -> JevOracle | None:
+        url = os.environ.get("JEV_URL", "").strip() or str(rules.get("jev_url") or cls.DEFAULT_URL)
+        keychain_item = str(rules.get("jev_api_key_keychain") or "TYPESAFE_API_KEY")
+        key = (os.environ.get("JEV_API_KEY", "").strip() or keychain_secret(keychain_item)
+               or (os.environ.get("TYPESAFE_API_KEY", "").strip() if "typesafe.ai" in url else None))
+        if not key:
+            return None
+        model = model or os.environ.get("JEV_MODEL") or str(rules.get("jev_model") or "jev-latest")
+        return cls(key, model=model, url=url)
+
+    def ask(self, state: dict[str, Any], questions: dict[str, dict[str, Any]]) -> tuple[dict[str, ChoiceResult], dict[str, Any]]:
+        def criteria(q: dict[str, Any]) -> dict[str, Any]:
+            return {k: render_criterion(v) for k, v in q["criteria"].items()} if self.string_criteria else q["criteria"]
+
+        body = {
+            "state": state,
+            "model": self.model,
+            "questions": {name: {"type": "choice", "instructions": q["instructions"], "criteria": criteria(q)}
+                          for name, q in questions.items()},
+        }
+        doc = self.transport(self.url, body, {"Authorization": f"Bearer {self.api_key}"}, self.timeout)
+        answers = doc.get("answers") if isinstance(doc, dict) else None
+        if not isinstance(answers, dict):
+            raise OracleError("response has no answers")
+        results: dict[str, ChoiceResult] = {}
+        for name, ans in answers.items():
+            if not isinstance(ans, dict) or ans.get("type") != "choice":
+                continue
+            try:
+                results[name] = ChoiceResult(str(ans["choice"]), float(ans["confidence"]),
+                                             {str(k): float(v) for k, v in (ans.get("probabilities") or {}).items()})
+            except (KeyError, TypeError, ValueError) as exc:
+                raise OracleError(f"malformed answer for {name}: {exc}") from exc
+        usage = doc.get("usage") or {}
+        return results, {"model": doc.get("model", self.model), "input_tokens": usage.get("input_tokens"),
+                         "output_tokens": usage.get("output_tokens"), "endpoint": urllib.parse.urlsplit(self.url).hostname}
+
+
+class GenerativeOracle:
+    """The old generative backends, answering the same bounded Choice questions as Jev. They run as a
+    shadow only: their answers are logged for evaluation and never move a window. Confidence is
+    self-reported, so it is weaker evidence than Jev's calibrated value.
+
+    The default backend is any OpenAI-compatible chat-completions endpoint (Venice, cliproxyapi, ollama's
+    /v1, ...) chosen by `openai_url`; `backend="anthropic"` talks to the Anthropic Messages API directly."""
+
+    def __init__(self, model: str, openai_url: str | None = None, api_key: str | None = None,
+                 keychain_item: str | None = None, json_mode: bool = True, backend: str = "openai",
+                 timeout: float = 60.0, transport: Callable[..., dict[str, Any]] = http_json) -> None:
+        self.model = model
+        self.name = f"legacy:{model}"
+        self.timeout = timeout
+        self.transport = transport
+        self.json_mode = json_mode
+        if backend == "anthropic":
+            self.backend = "anthropic"
+            self.url = "https://api.anthropic.com/v1/messages"
+            self.api_key = api_key or os.environ.get("ANTHROPIC_API_KEY") or keychain_secret(keychain_item or "ANTHROPIC_API_KEY")
+        else:
+            self.backend = "openai"
+            self.url = (openai_url or os.environ.get("YABAI_ORGANIZE_OPENAI_URL") or "http://localhost:8317/v1").rstrip("/")
+            self.api_key = (api_key or os.environ.get("YABAI_ORGANIZE_API_KEY")
+                            or (keychain_secret(keychain_item) if keychain_item else None)
+                            or (self._cliproxy_key() if "localhost:8317" in self.url else None)
+                            or ("ollama" if "11434" in self.url else None))
+
+    @property
+    def reasoning_model(self) -> bool:
+        return self.model.startswith(("gpt-", "codex-", "o1", "o3", "o4"))
+
+    @staticmethod
+    def _cliproxy_key() -> str | None:
+        try:
+            with open("/opt/homebrew/etc/cliproxyapi.conf", encoding="utf-8") as fh:
+                lines = fh.read().splitlines()
+        except OSError:
+            return None
+        for i, line in enumerate(lines):
+            if line.startswith("api-keys:") and i + 1 < len(lines):
+                m = re.search(r'"([^"]+)"', lines[i + 1])
+                return m.group(1) if m else None
+        return None
+
+    def ask(self, state: dict[str, Any], questions: dict[str, dict[str, Any]]) -> tuple[dict[str, ChoiceResult], dict[str, Any]]:
+        if not self.api_key:
+            raise OracleError(f"no API key for {self.backend} backend")
+        system = ("You classify macOS windows. For each question pick exactly one option key. Reply with JSON only, "
+                  'shaped {"answers": {"<question>": {"choice": "<option key>", "confidence": <0..1>}}}. '
+                  'Choose "unknown" whenever the evidence does not clearly support one option.')
+        user = json.dumps({"state": state, "questions": {n: {"instructions": q["instructions"], "options": q["criteria"]}
+                                                         for n, q in questions.items()}})
+        if self.backend == "anthropic":
+            doc = self.transport(self.url, {"model": self.model, "max_tokens": 1024, "temperature": 0, "system": system,
+                                            "messages": [{"role": "user", "content": user}]},
+                                 {"x-api-key": self.api_key, "anthropic-version": "2023-06-01"}, self.timeout)
+            text = "".join(part.get("text", "") for part in doc.get("content", []) if isinstance(part, dict))
+            usage = doc.get("usage") or {}
+            meta = {"model": doc.get("model", self.model), "input_tokens": usage.get("input_tokens"),
+                    "output_tokens": usage.get("output_tokens")}
+        else:
+            body: dict[str, Any] = {"model": self.model, "temperature": 0,
+                                    "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}]}
+            if self.json_mode:
+                body["response_format"] = {"type": "json_object"}
+            if self.reasoning_model:
+                body["reasoning_effort"] = os.environ.get("YABAI_ORGANIZE_EFFORT", "low")
+            if "venice.ai" in self.url:
+                # Venice prepends its own persona prompt unless told not to; it would only dilute the JSON contract.
+                body["venice_parameters"] = {"include_venice_system_prompt": False, "strip_thinking_response": True}
+            doc = self.transport(f"{self.url}/chat/completions", body, {"Authorization": f"Bearer {self.api_key}"}, self.timeout)
+            text = ((doc.get("choices") or [{}])[0].get("message") or {}).get("content", "")
+            usage = doc.get("usage") or {}
+            meta = {"model": doc.get("model", self.model), "input_tokens": usage.get("prompt_tokens"),
+                    "output_tokens": usage.get("completion_tokens")}
+        text = re.sub(r"^```(?:json)?|```$", "", text.strip(), flags=re.M).strip()
+        try:
+            answers = json.loads(text).get("answers", {})
+        except (ValueError, AttributeError) as exc:
+            raise OracleError(f"fallback returned non-JSON: {exc}") from exc
+        results: dict[str, ChoiceResult] = {}
+        for name, q in questions.items():
+            ans = answers.get(name) if isinstance(answers, dict) else None
+            if not isinstance(ans, dict) or ans.get("choice") not in q["criteria"]:
+                continue
+            try:
+                conf = max(0.0, min(1.0, float(ans.get("confidence", 0.5))))
+            except (TypeError, ValueError):
+                conf = 0.5
+            results[name] = ChoiceResult(str(ans["choice"]), conf, {str(ans["choice"]): conf})
+        return results, meta
+
+
+def build_questions(pending: list[Pending], registry: Registry, resolver: ProjectResolver) -> tuple[dict[str, Any], dict[str, dict[str, Any]], dict[str, dict[str, Any]]]:
+    """(state, questions, meta). Labels are option keys; meta maps them back to sessions/references."""
+    state: dict[str, Any] = {"windows": {}}
+    questions: dict[str, dict[str, Any]] = {}
+    meta: dict[str, dict[str, Any]] = {}
+    for p in pending:
+        name = f"w{p.window.id}"
+        state["windows"][name] = {"app": p.window.app, "title": p.window.title, **p.context}
+        criteria: dict[str, Any] = {}
+        labels: dict[str, Any] = {}
+        if p.kind == "session":
+            for i, s in enumerate(p.sessions, 1):
+                label = f"session_{i}"
+                res = resolver.resolve_cwd(s.cwd)
+                about = resolver.description(res.reference) if res.kind == "project" and res.reference else ""
+                criteria[label] = {"cwd": tilde(s.cwd), "project": res.reference if res.kind == "project" else None,
+                                   "command": s.command, **({"title": s.title} if s.title else {}),
+                                   **({"about": about} if about else {})}
+                labels[label] = s
+            criteria[UNKNOWN] = "No listed session clearly matches the window title."
+            instructions = (f"Window {name} is a terminal showing a coding-agent status line as its title. "
+                            "Which listed terminal session is most likely producing that title? Judge by whether the "
+                            "title's task fits the session's working directory and project.")
+        else:
+            slugs = [c.slug for c, _ in p.candidates]
+            for project, reasons in p.candidates:
+                label = project.slug if slugs.count(project.slug) == 1 else project.reference
+                about = resolver.description(project.reference)
+                criteria[label] = {"reference": project.reference, "title": project.title, "realm": project.realm,
+                                   "status": project.status, "evidence": sorted(set(reasons)),
+                                   **({"about": about} if about else {})}
+                labels[label] = project.reference
+            criteria[UNKNOWN] = "The title does not clearly refer to any listed project."
+            instructions = (f"Which listed project is window {name} about? Judge only from the window title; "
+                            "pick a project only when the title clearly refers to it.")
+        questions[name] = {"instructions": instructions, "criteria": criteria}
+        meta[name] = {"pending": p, "labels": labels}
+    return state, questions, meta
+
+
+def apply_answers(meta: dict[str, dict[str, Any]], results: dict[str, ChoiceResult], threshold: float,
+                  resolver: ProjectResolver, source: str) -> dict[int, Decision]:
+    """Confidence-gate every answer and turn accepted ones into project decisions deterministically
+    (session → cwd → Folio). Rejected answers become unresolved decisions that still carry the answer."""
+    out: dict[int, Decision] = {}
+    for name, m in meta.items():
+        p: Pending = m["pending"]
+        labels: dict[str, Any] = m["labels"]
+        w = p.window
+        d = decision_for(w, "unresolved", resolution=source, candidates=[k for k in labels], accepted=False,
+                         detail={"question": p.kind, "reason": p.reason})
+        r = results.get(name)
+        if r is None:
+            d.detail["note"] = "no answer"
+            out[w.id] = d
+            continue
+        d.selected, d.confidence = r.choice, round(r.confidence, 3)
+        d.detail["probabilities"] = {k: round(v, 3) for k, v in r.probabilities.items()}
+        if r.choice in labels:
+            # Recorded even when rejected, so corrections can later say whether the answer was right.
+            implied = labels[r.choice]
+            if isinstance(implied, Session):
+                implied = resolver.resolve_cwd(implied.cwd).project
+            d.detail["implied_project"] = implied
+        if r.choice == UNKNOWN:
+            d.detail["note"] = "model chose unknown"
+        elif r.choice not in labels:
+            d.detail["note"] = "choice not among candidates"
+        elif r.confidence < threshold:
+            d.detail["note"] = f"confidence below threshold {threshold}"
+        elif p.kind == "session":
+            s: Session = labels[r.choice]
+            res = resolver.resolve_cwd(s.cwd)
+            d.detail.update({"session": s.id, "cwd": tilde(s.cwd)})
+            if res.kind == "project":
+                d.outcome, d.project, d.accepted = "project", res.reference, True
+                d.detail["method"] = res.method
+            else:
+                d.detail["note"] = "chosen session has no project"
+        else:
+            d.outcome, d.project, d.accepted = "project", labels[r.choice], True
+        out[w.id] = d
+    return out
+
+
+@dataclass
+class OracleRun:
+    name: str
+    questions: int
+    elapsed_ms: int
+    meta: dict[str, Any] = field(default_factory=dict)
+    error: str | None = None
+    shadow: bool = False
+
+
+def consult(oracle: Any, targets: list[Pending], registry: Registry, resolver: ProjectResolver,
+            threshold: float, shadow: bool) -> tuple[dict[int, Decision], OracleRun]:
+    state, questions, meta = build_questions(targets, registry, resolver)
+    started = time.monotonic()
+    try:
+        results, info = oracle.ask(state, questions)
+        run = OracleRun(oracle.name, len(questions), int((time.monotonic() - started) * 1000), info, shadow=shadow)
+    except OracleError as exc:
+        run = OracleRun(oracle.name, len(questions), int((time.monotonic() - started) * 1000), error=str(exc), shadow=shadow)
+        return {}, run
+    return apply_answers(meta, results, threshold, resolver, oracle.name), run
+
+
+def resolve_ambiguous_windows(
+    pending: list[Pending], decisions: dict[int, Decision], registry: Registry, resolver: ProjectResolver,
+    oracles: list[Any], threshold: float,
+) -> list[OracleRun]:
+    """Ask each authoritative oracle in turn about whatever is still open. Accepted answers become
+    project decisions; everything else is settled as unresolved."""
+    runs: list[OracleRun] = []
+    open_items = list(pending)
+    for oracle in oracles:
+        if not open_items:
+            break
+        answered, run = consult(oracle, open_items, registry, resolver, threshold, shadow=False)
+        runs.append(run)
+        still_open = []
+        for p in open_items:
+            d = answered.get(p.window.id)
+            if d is not None and d.outcome == "project":
+                decisions[p.window.id] = d
+            else:
+                still_open.append(p)
+                if d is not None:
+                    decisions[p.window.id] = d
+        open_items = still_open
+    for p in open_items:
+        if p.window.id not in decisions:
+            decisions[p.window.id] = decision_for(p.window, "unresolved", resolution="no-oracle", detail={"reason": p.reason},
+                                                  candidates=[c.reference for c, _ in p.candidates] or [s.id for s in p.sessions])
+    return runs
+
+
+def observe(plan: Plan, oracle: Any, registry: Registry, resolver: ProjectResolver, threshold: float) -> OracleRun:
+    """Ask a shadow oracle about every ambiguous window and keep its answers for evaluation only. Runs
+    after the desktop is organized so it never delays a move and can never cause one."""
+    answered, run = consult(oracle, plan.pending, registry, resolver, threshold, shadow=True)
+    plan.shadow.extend(answered.values())
+    return run
+
+
+def route_general_browsers(state: DesktopState, decisions: dict[int, Decision], rules: dict[str, Any]) -> None:
+    """With several browser windows, the one left unresolved is the general-purpose one and lives on
+    main; with several unresolved there is no way to tell, so they stay put."""
+    for app in rules["browser_apps"]:
+        wins = [w for w in state.windows if w.app == app]
+        if len(wins) < 2:
+            continue
+        loose = [w for w in wins if decisions.get(w.id) and decisions[w.id].outcome == "unresolved"
+                 and decisions[w.id].resolution != "browser:generic"]
+        if len(loose) == 1:
+            w = loose[0]
+            decisions[w.id] = decision_for(w, "fixed", target=SPACE_MAIN, resolution="browser:general",
+                                           detail={"note": "only unresolved browser window"})
+
+
+def window_hint(w: Window, rules: dict[str, Any]) -> dict[str, Any]:
+    """The configured hint for a window: by app name first, then by title pattern (java → Minecraft)."""
+    hint = (rules.get("app_hints") or {}).get(w.app)
+    if hint:
+        return hint
+    for entry in rules.get("title_hints") or []:
+        try:
+            if re.search(entry.get("pattern", ""), w.title):
+                return entry
+        except re.error:
+            continue
+    return {}
+
+
+def apply_app_defaults(state: DesktopState, decisions: dict[int, Decision], rules: dict[str, Any]) -> None:
+    """A hinted app that no project claimed goes to its configured default space. This is the user's
+    rule for that app, not a guess, so it sits between the semantic layer and eviction."""
+    existing = {sp.index for sp in state.spaces}
+    for w in state.windows:
+        d = decisions.get(w.id)
+        hint = window_hint(w, rules)
+        target = hint.get("default_space")
+        if d is None or d.outcome != "unresolved" or not target or int(target) not in existing:
+            continue
+        decisions[w.id] = decision_for(w, "fixed", target=int(target), resolution=f"default:{w.app}",
+                                       detail={"was": d.resolution, **({"selected": d.selected, "confidence": d.confidence} if d.selected else {})})
+
+
+SPACE_APP_LISTS = {SPACE_NOTES: "notes_apps", SPACE_MEDIA: "media_apps", SPACE_COMMS: "comms_apps"}
+
+
+def evict_misplaced(state: DesktopState, decisions: dict[int, Decision], rules: dict[str, Any]) -> None:
+    """Notes, media and comms have a purpose. An unresolved window there whose app has nothing to do
+    with that purpose is misplaced and goes to inbox. Main, scratch, inbox and the project slots stay
+    permissive: a window there may well be where the user wants it, and the corrections log is how we
+    find out."""
+    for w in state.windows:
+        d = decisions.get(w.id)
+        key = SPACE_APP_LISTS.get(w.space)
+        if d is None or d.outcome != "unresolved" or key is None or w.app in rules[key] or d.resolution == "browser:generic":
+            continue
+        decisions[w.id] = decision_for(w, "fixed", target=SPACE_INBOX, resolution=f"evict:{FIXED_LABELS[w.space]}",
+                                       detail={"note": f"{w.app} does not belong on {FIXED_LABELS[w.space]}", "was": d.resolution})
+
+
+# ── Slot allocation ───────────────────────────────────────────────────────────
+
+@dataclass
+class SlotPlan:
+    assignments: dict[int, str | None]          # slot → project reference
+    labels: dict[int, str]                      # slot → label to show
+    overflow: list[str]
+    retained: list[str]
+
+    def slot_of(self, reference: str) -> int | None:
+        for slot, ref in self.assignments.items():
+            if ref == reference:
+                return slot
+        return None
+
+
+def load_slot_state() -> dict[int, str]:
+    try:
+        with open(os.path.join(STATE_DIR, "slots.json"), encoding="utf-8") as fh:
+            raw = json.load(fh)
+        return {int(k): str(v) for k, v in raw.items() if int(k) in PROJECT_SLOTS}
+    except (OSError, ValueError, AttributeError):
+        return {}
+
+
+def save_slot_state(assignments: dict[int, str | None], prior: dict[int, str | None]) -> None:
+    merged = {slot: ref for slot, ref in prior.items() if ref}
+    merged.update({slot: ref for slot, ref in assignments.items() if ref})
+    os.makedirs(STATE_DIR, exist_ok=True)
+    with open(os.path.join(STATE_DIR, "slots.json"), "w", encoding="utf-8") as fh:
+        json.dump({str(k): v for k, v in sorted(merged.items())}, fh, indent=2)
+
+
+def prior_assignments(state: DesktopState, stored: dict[int, str], registry: Registry) -> dict[int, str | None]:
+    """What each slot currently holds, from its live label (the user may have relabelled) disambiguated
+    by the stored reference. None marks a non-default label we cannot map to a project."""
+    prior: dict[int, str | None] = {}
+    for slot in PROJECT_SLOTS:
+        label = state.label_of(slot)
+        if not label or label in DEFAULT_SLOT_LABELS.values():
+            continue
+        stored_ref = stored.get(slot)
+        if stored_ref and registry.label_for(stored_ref) == label:
+            prior[slot] = stored_ref
+            continue
+        p = registry.unique_slug(label)
+        prior[slot] = p.reference if p else None
+    return prior
+
+
+def allocate_project_slots(project_windows: dict[str, list[int]], state: DesktopState, prior: dict[int, str | None],
+                           registry: Registry, unresolved_by_space: dict[int, int]) -> SlotPlan:
+    """Sticky, deterministic. A project keeps its slot while it has windows; freed slots are handed out
+    to remaining projects by window count, then status, then reference. Each project prefers the slot
+    its windows already sit on, then empty slots, then stale-labelled empties, then slots that still
+    hold unresolved windows."""
+    def priority(ref: str) -> tuple[int, tuple[int, int], str]:
+        p = registry.get(ref)
+        return (-len(project_windows[ref]), p.rank if p else (9, 9), ref)
+
+    needed = sorted(project_windows, key=priority)
+    assignments: dict[int, str | None] = {}
+    retained = []
+    for slot in PROJECT_SLOTS:
+        ref = prior.get(slot)
+        if ref and ref in project_windows and ref not in assignments.values():
+            assignments[slot] = ref
+            retained.append(ref)
+    remaining = [ref for ref in needed if ref not in assignments.values()]
+    overflow: list[str] = []
+    for ref in remaining:
+        free = [s for s in PROJECT_SLOTS if s not in assignments]
+        if not free:
+            overflow.append(ref)
+            continue
+        already_here = {w.space for w in state.windows if w.id in project_windows[ref]}
+
+        def preference(slot: int, here: set[int] = already_here) -> tuple[bool, bool, bool, int]:
+            return (slot not in here, unresolved_by_space.get(slot, 0) > 0, slot in prior, slot)
+
+        assignments[min(free, key=preference)] = ref
+    labels: dict[int, str] = {}
+    for slot in PROJECT_SLOTS:
+        ref = assignments.get(slot)
+        # Unassigned slots keep whatever they show: a default, nothing, or a stale project label that
+        # stays sticky until some project needs the slot.
+        labels[slot] = registry.label_for(ref) if ref else state.label_of(slot)
+        assignments.setdefault(slot, None)
+    return SlotPlan(assignments, labels, overflow, retained)
+
+
+# ── Plan ──────────────────────────────────────────────────────────────────────
+
+@dataclass(frozen=True)
+class Move:
+    window_id: int
+    app: str
+    title: str
+    from_space: int
+    to_space: int
+
+
+@dataclass
+class Plan:
+    moves: list[Move]
+    labels: dict[int, str]                  # only spaces whose label changes (slots and fixed spaces)
+    slots: SlotPlan
+    decisions: dict[int, Decision]
+    pending: list[Pending] = field(default_factory=list)     # the semantic questions this run posed
+    shadow: list[Decision] = field(default_factory=list)     # answers from shadow oracles; never applied
+
+
+def build_plan(state: DesktopState, decisions: dict[int, Decision], slots: SlotPlan) -> Plan:
+    moves = []
+    existing = {sp.index for sp in state.spaces}
+    for w in state.windows:
+        d = decisions.get(w.id)
+        if d is None:
+            continue
+        if d.outcome == "fixed":
+            target = d.target
+        elif d.outcome == "project" and d.project:
+            target = slots.slot_of(d.project) or SPACE_SCRATCH
+        else:
+            continue
+        if target is not None and target not in existing:
+            # A display went away and took a space with it. Leave these windows alone and say so,
+            # rather than failing the whole plan for an environmental gap yabairc will repair.
+            d.detail["skipped"] = f"space {target} does not exist"
+            d.target = None
+            continue
+        d.target = target
+        if target is not None and target != w.space:
+            moves.append(Move(w.id, w.app, w.title, w.space, target))
+    labels = {slot: label for slot, label in slots.labels.items() if label != state.label_of(slot)}
+    labels.update({index: label for index, label in FIXED_LABELS.items()
+                   if index in existing and state.label_of(index) != label})
+    return Plan(moves, labels, slots, decisions)
+
+
+def validate_plan(plan: Plan, state: DesktopState, rules: dict[str, Any], registry: Registry) -> list[str]:
+    errors: list[str] = []
+    ids = {w.id for w in state.windows}
+    space_indexes = {s.index for s in state.spaces}
+    seen: set[int] = set()
+    for m in plan.moves:
+        d = plan.decisions.get(m.window_id)
+        if m.window_id not in ids:
+            errors.append(f"move references unknown window {m.window_id}")
+            continue
+        if m.window_id in seen:
+            errors.append(f"window {m.window_id} moved twice")
+        seen.add(m.window_id)
+        if m.to_space not in ALL_SPACES or m.to_space not in space_indexes:
+            errors.append(f"window {m.window_id}: target space {m.to_space} does not exist")
+        w = state.window(m.window_id)
+        if w is None or m.from_space != w.space or m.from_space == m.to_space:
+            errors.append(f"window {m.window_id}: move {m.from_space}→{m.to_space} does not match current space")
+        if d is None:
+            errors.append(f"window {m.window_id}: move without decision")
+            continue
+        if d.outcome in ("ignored", "unresolved") or (d.accepted is False):
+            errors.append(f"window {m.window_id}: {d.outcome} window must not move")
+        if w is not None and is_ignored(w, rules):
+            errors.append(f"window {m.window_id}: ignored window ({w.app}) must not move")
+        if w is not None:
+            fixed = fixed_target(w.app, rules)
+            if fixed and m.to_space != fixed[0]:
+                errors.append(f"window {m.window_id}: {w.app} is fixed to {fixed[0]} but targeted {m.to_space}")
+            if w.app in rules["terminal_apps"] and is_hub_title(w.title.strip(), state, rules) and m.to_space != SPACE_MAIN:
+                errors.append(f"window {m.window_id}: hub terminal must stay on main")
+        if d.outcome == "fixed" and m.to_space != d.target:
+            errors.append(f"window {m.window_id}: fixed target {d.target} but move targets {m.to_space}")
+        if d.outcome == "project" and d.project:
+            expected = plan.slots.slot_of(d.project) or SPACE_SCRATCH
+            if m.to_space != expected:
+                errors.append(f"window {m.window_id}: project {d.project} belongs on {expected}, not {m.to_space}")
+    refs_seen: dict[str, int] = {}
+    for slot, ref in plan.slots.assignments.items():
+        if slot not in PROJECT_SLOTS:
+            errors.append(f"assignment to non-slot space {slot}")
+        if ref is None:
+            continue
+        if ref in refs_seen:
+            errors.append(f"project {ref} assigned to slots {refs_seen[ref]} and {slot}")
+        refs_seen[ref] = slot
+        if plan.slots.labels.get(slot) != registry.label_for(ref):
+            errors.append(f"slot {slot} label {plan.slots.labels.get(slot)!r} does not match {ref}")
+    for ref in plan.slots.overflow:
+        if ref in refs_seen:
+            errors.append(f"project {ref} both allocated and overflowed")
+    targets_by_project: dict[str, set[int]] = {}
+    for d in plan.decisions.values():
+        if d.outcome == "project" and d.project and d.target is not None:
+            targets_by_project.setdefault(d.project, set()).add(d.target)
+    for ref, targets in targets_by_project.items():
+        if len(targets) > 1:
+            errors.append(f"project {ref} windows target several spaces {sorted(targets)}")
+    for index, label in plan.labels.items():
+        if index in FIXED_LABELS:
+            if label != FIXED_LABELS[index]:
+                errors.append(f"space {index} may only be labelled {FIXED_LABELS[index]!r}, not {label!r}")
+        elif index not in PROJECT_SLOTS:
+            errors.append(f"label change on unknown space {index}")
+        if not label:
+            errors.append(f"empty label for space {index}")
+    return errors
+
+
+# ── Execution ─────────────────────────────────────────────────────────────────
+
+def execute_plan(plan: Plan, dry_run: bool) -> list[str]:
+    failures = []
+    if dry_run:
+        return failures
+    for index, label in sorted(plan.labels.items()):
+        if subprocess.run([which("yabai") or "yabai", "-m", "space", str(index), "--label", label],
+                          capture_output=True).returncode != 0:
+            failures.append(f"label {index} → {label}")
+    for m in plan.moves:
+        if subprocess.run([which("yabai") or "yabai", "-m", "window", str(m.window_id), "--space", str(m.to_space)],
+                          capture_output=True).returncode != 0:
+            failures.append(f"move {m.window_id} → {m.to_space}")
+    return failures
+
+
+def update_sketchybar(state: DesktopState, plan: Plan) -> None:
+    exe = which("sketchybar")
+    if exe is None:
+        return
+    args = [exe]
+    for index in ALL_SPACES:
+        label = plan.labels.get(index) or plan.slots.labels.get(index) or state.label_of(index)
+        display = "" if not label or label in DEFAULT_SLOT_LABELS.values() else label.upper()
+        args += ["--set", f"space.{index}", f"label={display}"]
+    subprocess.run(args, capture_output=True)
+
+
+def log_run(record: dict[str, Any], usage_lines: list[dict[str, Any]]) -> None:
+    try:
+        os.makedirs(LOG_DIR, exist_ok=True)
+        with open(os.path.join(LOG_DIR, "runs.jsonl"), "a", encoding="utf-8") as fh:
+            fh.write(json.dumps(record, ensure_ascii=False) + "\n")
+        if usage_lines:
+            with open(os.path.join(LOG_DIR, "usage.jsonl"), "a", encoding="utf-8") as fh:
+                for line in usage_lines:
+                    fh.write(json.dumps(line) + "\n")
+    except OSError as exc:
+        warn(f"could not write log: {exc}")
+
+
+# ── Corrections: what the user did after the last run ─────────────────────────
+
+LAST_RUN_FILE = "last-run.json"
+
+
+def snapshot_windows(state: DesktopState, plan: Plan, ts: str) -> dict[str, Any]:
+    """Where a live run left every window plus what each oracle said about it, keyed by window id."""
+    shadow_by_window: dict[int, dict[str, Any]] = {}
+    for d in plan.shadow:
+        shadow_by_window.setdefault(d.window_id, {})[d.resolution] = {
+            "selected": d.selected, "confidence": d.confidence, "accepted": d.accepted,
+            "implied_project": d.detail.get("implied_project")}
+    windows = {}
+    for w in state.windows:
+        d = plan.decisions.get(w.id)
+        if d is None:
+            continue
+        windows[str(w.id)] = {
+            "app": w.app, "title": w.title[:80], "space": d.target if d.target is not None else w.space,
+            "outcome": d.outcome, "project": d.project, "resolution": d.resolution,
+            "selected": d.selected, "confidence": d.confidence, "accepted": d.accepted,
+            "implied_project": d.detail.get("implied_project"), "shadow": shadow_by_window.get(w.id, {}),
+        }
+    return {"ts": ts, "labels": {str(k): v for k, v in plan.slots.labels.items()},
+            "spaces": {str(sp.index): sp.uuid for sp in state.spaces if sp.uuid}, "windows": windows}
+
+
+def load_last_run() -> dict[str, Any] | None:
+    try:
+        with open(os.path.join(STATE_DIR, LAST_RUN_FILE), encoding="utf-8") as fh:
+            data = json.load(fh)
+        return data if isinstance(data, dict) and "windows" in data else None
+    except (OSError, ValueError):
+        return None
+
+
+def save_last_run(snapshot: dict[str, Any]) -> None:
+    os.makedirs(STATE_DIR, exist_ok=True)
+    with open(os.path.join(STATE_DIR, LAST_RUN_FILE), "w", encoding="utf-8") as fh:
+        json.dump(snapshot, fh, indent=1)
+
+
+def detect_corrections(state: DesktopState, last: dict[str, Any] | None, registry: Registry) -> list[dict[str, Any]]:
+    """Windows whose space changed since the last live run, read as feedback: a window we placed that
+    moved away, or a window we left alone that now sits on a project slot. Each record carries what
+    Jev and the shadow model had said, and whether the user's placement agrees with them."""
+    if not last:
+        return []
+    slot_projects: dict[int, str | None] = {}
+    for slot in PROJECT_SLOTS:
+        label = state.label_of(slot)
+        p = registry.unique_slug(label) if label and label not in DEFAULT_SLOT_LABELS.values() else None
+        slot_projects[slot] = p.reference if p else None
+    # Mission Control reorders renumber spaces but keep their UUIDs and windows; follow the UUID so a
+    # reorder is not mistaken for the user moving every window on that space.
+    index_by_uuid = {sp.uuid: sp.index for sp in state.spaces if sp.uuid}
+    previous_uuids = last.get("spaces") or {}
+
+    def where_now(prev_index: int | None) -> int | None:
+        uuid = previous_uuids.get(str(prev_index))
+        return index_by_uuid.get(uuid, prev_index) if uuid else prev_index
+
+    corrections = []
+    for w in state.windows:
+        prev = last["windows"].get(str(w.id))
+        if prev is None:
+            continue
+        from_space = where_now(prev.get("space"))
+        if from_space == w.space:
+            continue
+        now_project = slot_projects.get(w.space)
+        rec: dict[str, Any] = {
+            "window_id": w.id, "app": w.app, "title": w.title[:80], "since": last.get("ts"),
+            "from_space": from_space, "to_space": w.space, "now_project": now_project,
+            "previous": {k: prev.get(k) for k in ("outcome", "project", "resolution", "selected", "confidence", "accepted")},
+            "kind": "moved-away" if prev.get("outcome") in ("project", "fixed") else "user-placed",
+        }
+        verdicts = {}
+        if prev.get("implied_project") and now_project:
+            verdicts[prev.get("resolution") or "primary"] = prev["implied_project"] == now_project
+        for name, ans in (prev.get("shadow") or {}).items():
+            if ans.get("implied_project") and now_project:
+                verdicts[name] = ans["implied_project"] == now_project
+        if verdicts:
+            rec["agreed"] = verdicts
+        corrections.append(rec)
+    return corrections
+
+
+# ── Report: what the log says about the models ────────────────────────────────
+
+def load_runs(path: str, days: float | None) -> list[dict[str, Any]]:
+    runs = []
+    cutoff = time.time() - days * 86400 if days else None
+    try:
+        with open(path, encoding="utf-8") as fh:
+            for line in fh:
+                try:
+                    rec = json.loads(line)
+                except ValueError:
+                    continue
+                if cutoff and calendar.timegm(time.strptime(rec.get("ts", "1970-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ")) < cutoff:
+                    continue
+                runs.append(rec)
+    except OSError:
+        pass
+    return runs
+
+
+def _bucket(conf: float | None) -> str:
+    if conf is None:
+        return "n/a"
+    for top, name in ((0.5, "<0.5"), (0.7, "0.5-0.7"), (0.9, "0.7-0.9")):
+        if conf < top:
+            return name
+    return "0.9+"
+
+
+def report(runs: list[dict[str, Any]], thresholds: Iterable[float] = (0.5, 0.6, 0.7, 0.8, 0.9)) -> str:
+    """Plain-text summary: how windows got resolved, how Jev and the shadow model behaved on the same
+    questions, and what the corrections say about which confidence threshold would have been right."""
+    from collections import Counter
+    out: list[str] = []
+    if not runs:
+        return "no runs logged"
+    modes = Counter(r.get("mode") for r in runs)
+    out.append(f"runs: {len(runs)} ({', '.join(f'{m} {n}' for m, n in modes.most_common())}); "
+               f"moves: {sum(len(r.get('moves', [])) for r in runs)}; "
+               f"validation failures: {sum(1 for r in runs if not (r.get('validation') or {}).get('ok', True))}")
+    errors = Counter(o["name"] for r in runs for o in r.get("oracles", []) if o.get("error"))
+    if errors:
+        out.append("oracle errors: " + ", ".join(f"{k} {v}" for k, v in errors.most_common()))
+
+    resolutions = Counter(d.get("resolution") for r in runs for d in r.get("decisions", []))
+    out.append("")
+    out.append("how windows were resolved:")
+    for name, n in resolutions.most_common(15):
+        out.append(f"  {n:>5}  {name}")
+
+    def model_lines(label: str, answers: list[dict[str, Any]]) -> None:
+        if not answers:
+            return
+        named = [a for a in answers if a.get("selected") not in (None, UNKNOWN)]
+        unknown = [a for a in answers if a.get("selected") == UNKNOWN]
+        accepted = [a for a in answers if a.get("accepted")]
+        out.append("")
+        out.append(f"{label}: {len(answers)} answers, {len(unknown)} unknown, {len(named)} named, {len(accepted)} accepted")
+        for kind, group in (("named", named), ("unknown", unknown)):
+            if group:
+                buckets = Counter(_bucket(a.get("confidence")) for a in group)
+                out.append(f"  {kind:<8} confidence: " + "  ".join(f"{b} ×{buckets[b]}" for b in ("<0.5", "0.5-0.7", "0.7-0.9", "0.9+") if buckets[b]))
+
+    jev = [d for r in runs for d in r.get("decisions", []) if d.get("resolution") == "jev"]
+    jev += [d for r in runs for d in r.get("shadow", []) if d.get("resolution") == "jev"]
+    model_lines("jev", jev)
+    legacy_names = sorted({d.get("resolution") for r in runs for d in r.get("shadow", []) if str(d.get("resolution", "")).startswith("legacy:")})
+    for name in legacy_names:
+        answers = [d for r in runs for d in r.get("shadow", []) if d.get("resolution") == name]
+        model_lines(name, answers)
+        agree = Counter()
+        for r in runs:
+            jev_by_window = {d["window_id"]: d for d in r.get("decisions", []) + r.get("shadow", []) if d.get("resolution") == "jev"}
+            for d in r.get("shadow", []):
+                if d.get("resolution") != name or d["window_id"] not in jev_by_window:
+                    continue
+                j = jev_by_window[d["window_id"]]
+                a, b = j.get("detail", {}).get("implied_project"), d.get("detail", {}).get("implied_project")
+                if j.get("selected") == UNKNOWN and d.get("selected") == UNKNOWN:
+                    agree["both unknown"] += 1
+                elif a and a == b:
+                    agree["same project"] += 1
+                elif j.get("selected") == UNKNOWN or d.get("selected") == UNKNOWN:
+                    agree["one unknown"] += 1
+                else:
+                    agree["different projects"] += 1
+        if agree:
+            out.append("  vs jev: " + ", ".join(f"{k} {v}" for k, v in agree.most_common()))
+
+    corrections = [c for r in runs for c in r.get("corrections", [])]
+    if corrections:
+        kinds = Counter(c.get("kind") for c in corrections)
+        out.append("")
+        out.append(f"corrections: {len(corrections)} (" + ", ".join(f"{k} {v}" for k, v in kinds.most_common()) + ")")
+        grades: dict[str, Counter] = {}
+        for c in corrections:
+            for name, right in (c.get("agreed") or {}).items():
+                grades.setdefault(name, Counter())["right" if right else "wrong"] += 1
+        for name, g in sorted(grades.items()):
+            out.append(f"  {name}: {g['right']} right, {g['wrong']} wrong")
+        graded_jev = [c for c in corrections if "jev" in (c.get("agreed") or {}) and (c.get("previous") or {}).get("confidence") is not None]
+        if graded_jev:
+            out.append("  if the jev threshold had been…")
+            for t in thresholds:
+                acc = [c for c in graded_jev if c["previous"]["confidence"] >= t]
+                right = sum(1 for c in acc if c["agreed"]["jev"])
+                out.append(f"    {t:.1f}: accepted {len(acc)} → {right} right, {len(acc) - right} wrong")
+
+    def stats(values: list[int | float]) -> str:
+        if not values:
+            return "n/a"
+        ordered = sorted(values)
+        median = ordered[len(ordered) // 2]
+        p95 = ordered[min(len(ordered) - 1, int(len(ordered) * 0.95))]
+        return f"median {median:.0f}ms, p95 {p95:.0f}ms, n={len(ordered)}"
+
+    timed = [r for r in runs if r.get("timings")]
+    if timed:
+        out.append("")
+        out.append("latency per path:")
+        for key, label in (("desktop_ready", "desktop organized (everything the user waits for)"), ("gather", "  gather state"),
+                           ("gather.tabs", "    of which Chrome tabs"), ("folio", "  folio calls"),
+                           ("deterministic", "  deterministic classification + allocation (incl. folio)"), ("execute", "  yabai/sketchybar execution"),
+                           ("total", "whole run incl. shadow models")):
+            values = [r["timings"][key] for r in timed if key in r["timings"]]
+            if values:
+                out.append(f"  {label:<52} {stats(values)}")
+        by_model: dict[str, list[int]] = {}
+        tokens: dict[str, list[int]] = {}
+        for r in runs:
+            for o in r.get("oracles", []):
+                if o.get("error") is None:
+                    by_model.setdefault(o["name"], []).append(o.get("elapsed_ms", 0))
+                    meta = o.get("meta") or {}
+                    if meta.get("input_tokens") is not None:
+                        tokens.setdefault(o["name"], []).append(int(meta["input_tokens"]) + int(meta.get("output_tokens") or 0))
+        for name, values in sorted(by_model.items()):
+            tok = f", avg {sum(tokens[name]) / len(tokens[name]):.0f} tokens/call" if tokens.get(name) else ""
+            out.append(f"  {name:<52} {stats(values)}{tok}")
+
+    stuck = Counter((d.get("app"), d.get("title", "")[:40]) for r in runs for d in r.get("decisions", []) if d.get("outcome") == "unresolved")
+    if stuck:
+        out.append("")
+        out.append("most often left unresolved:")
+        for (app, title), n in stuck.most_common(8):
+            out.append(f"  {n:>5}  {app}: {title}")
+    return "\n".join(out)
+
+
+# ── Orchestration ─────────────────────────────────────────────────────────────
+
+def organize(state: DesktopState, registry: Registry | None, resolver: ProjectResolver | None, rules: dict[str, Any],
+             oracles: list[Any], threshold: float, stored_slots: dict[int, str]) -> tuple[Plan, list[OracleRun]]:
+    """The whole pipeline up to (but excluding) execution; nothing here touches the desktop."""
+    decisions = classify_fixed_windows(state, rules)
+    runs: list[OracleRun] = []
+    pending: list[Pending] = []
+    if registry is None or resolver is None:
+        registry = Registry([])
+        for w in state.windows:
+            decisions.setdefault(w.id, decision_for(w, "unresolved", resolution="no-folio", detail={"note": "Folio unavailable"}))
+    else:
+        decisions, pending = resolve_exact_project_evidence(state, decisions, resolver, registry, rules)
+        pending = generate_candidates(pending, state, decisions, resolver, registry, rules)
+        runs = resolve_ambiguous_windows(pending, decisions, registry, resolver, oracles, threshold)
+    route_general_browsers(state, decisions, rules)
+    apply_app_defaults(state, decisions, rules)
+    evict_misplaced(state, decisions, rules)
+
+    project_windows: dict[str, list[int]] = {}
+    unresolved_by_space: dict[int, int] = {}
+    for w in state.windows:
+        d = decisions.get(w.id)
+        if d is None:
+            continue
+        if d.outcome == "project" and d.project:
+            project_windows.setdefault(d.project, []).append(w.id)
+        elif d.outcome in ("unresolved", "ignored"):
+            unresolved_by_space[w.space] = unresolved_by_space.get(w.space, 0) + 1
+    prior = prior_assignments(state, stored_slots, registry)
+    slots = allocate_project_slots(project_windows, state, prior, registry, unresolved_by_space)
+    plan = build_plan(state, decisions, slots)
+    plan.pending = pending
+    return plan, runs
+
+
+def parse_args(argv: list[str]) -> argparse.Namespace:
+    ap = argparse.ArgumentParser(prog=TOOL, description="Sort windows into workspaces (Folio + Jev).")
+    ap.add_argument("--dry-run", action="store_true", help="plan and log, move nothing")
+    ap.add_argument("--shadow", action="store_true", help="Jev is consulted and logged but never moves anything")
+    ap.add_argument("--no-jev", action="store_true", help="skip Jev; deterministic evidence only")
+    ap.add_argument("--no-legacy", action="store_true", help="skip the legacy model's shadow run")
+    ap.add_argument("--threshold", type=float, help="override JEV_CONFIDENCE_THRESHOLD")
+    ap.add_argument("--json", action="store_true", help="print the plan and decisions as JSON")
+    ap.add_argument("-v", "--verbose", action="store_true", help="print every decision, not just moves")
+    ap.add_argument("--report", action="store_true", help="summarise runs.jsonl (resolutions, Jev vs shadow, corrections, thresholds) and exit")
+    ap.add_argument("--days", type=float, help="with --report: only runs from the last N days")
+    ap.add_argument("--dump-state", metavar="FILE", help="write the gathered desktop state to FILE")
+    ap.add_argument("--state", metavar="FILE", help="use a previously dumped state instead of the live desktop (implies --dry-run)")
+    return ap.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = parse_args(sys.argv[1:] if argv is None else argv)
+    if args.report:
+        print(report(load_runs(os.path.join(LOG_DIR, "runs.jsonl"), args.days)))
+        return 0
+    rules = load_rules()
+    threshold = args.threshold if args.threshold is not None else float(
+        os.environ.get("JEV_CONFIDENCE_THRESHOLD") or rules["confidence_threshold"])
+    shadow_mode = args.shadow or os.environ.get("YABAI_ORGANIZE_SHADOW", "") not in ("", "0", "false")
+    dry_run = args.dry_run or bool(args.state)
+
+    watch = Stopwatch()
+    if args.state:
+        with open(args.state, encoding="utf-8") as fh:
+            state = DesktopState.from_dict(json.load(fh))
+    else:
+        state = watch.lap("gather", lambda: gather_state(rules, watch))
+    if args.dump_state:
+        with open(args.dump_state, "w", encoding="utf-8") as fh:
+            json.dump(state.to_dict(), fh, indent=2, ensure_ascii=False)
+
+    folio = FolioCLI()
+    registry = watch.lap("folio.registry", lambda: Registry.from_folio(folio)) if folio.available else None
+    if registry is None:
+        warn("Folio unavailable: only fixed routing will run")
+    resolver = ProjectResolver(folio, registry, rules["vault_roots"], description_chars=int(rules["description_chars"]),
+                               description_disclosures=rules["description_disclosures"]) if registry else None
+
+    jev = None if args.no_jev else JevOracle.from_config(rules)
+    if jev is None and not args.no_jev:
+        warn(f"Jev disabled: no API key (JEV_API_KEY or Keychain item {rules.get('jev_api_key_keychain')})")
+    legacy_model = "" if args.no_legacy else os.environ.get("YABAI_ORGANIZE_LEGACY_MODEL", str(rules["legacy_model"])).strip()
+    legacy = GenerativeOracle(legacy_model, openai_url=os.environ.get("YABAI_ORGANIZE_OPENAI_URL") or rules["openai_url"],
+                              keychain_item=rules.get("legacy_api_key_keychain") or None,
+                              json_mode=bool(rules.get("legacy_json_mode", True)),
+                              backend=str(rules.get("legacy_backend", "openai"))) if legacy_model else None
+
+    # Only Jev acts. In shadow mode not even Jev does; both models are then evaluation-only.
+    oracles = [jev] if (jev is not None and not shadow_mode) else []
+    observers = [o for o in ([jev if shadow_mode else None, legacy]) if o is not None]
+
+    corrections = detect_corrections(state, load_last_run(), registry or Registry([]))
+    plan, runs = watch.lap("decide", lambda: organize(state, registry, resolver, rules, oracles, threshold, load_slot_state()))
+    errors = validate_plan(plan, state, rules, registry or Registry([]))
+    mode = "state-file" if args.state else "dry-run" if dry_run else "shadow" if shadow_mode else "live"
+    failures = [] if errors else watch.lap("execute", lambda: execute_plan(plan, dry_run))
+    executed = not errors and not dry_run
+    if executed:
+        watch.lap("execute", lambda: update_sketchybar(state, plan))
+        save_slot_state(plan.slots.assignments, prior_assignments(state, load_slot_state(), registry or Registry([])))
+    desktop_ready_ms = watch.total()
+
+    # Shadow models run once the desktop is already organized: they cost latency, never correctness.
+    if plan.pending and registry is not None and resolver is not None:
+        for oracle in observers:
+            runs.append(observe(plan, oracle, registry, resolver, threshold))
+
+    # "decide" includes the authoritative model calls; the deterministic share is what remains.
+    model_ms = {r.name: r.elapsed_ms for r in runs}
+    timings = dict(watch.ms)
+    timings["deterministic"] = max(0, timings.get("decide", 0) - sum(r.elapsed_ms for r in runs if not r.shadow))
+    timings["desktop_ready"] = desktop_ready_ms
+    timings["total"] = watch.total()
+    timings["folio_calls"] = getattr(folio, "calls", 0)
+    timings["folio"] = int(getattr(folio, "elapsed_ms", 0))
+
+    ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    if executed:
+        save_last_run(snapshot_windows(state, plan, ts))
+    record = {
+        "ts": ts, "tool": TOOL, "mode": mode, "threshold": threshold, "windows": len(state.windows),
+        "moves": [m.__dict__ for m in plan.moves], "labels": plan.labels,
+        "slots": {str(k): v for k, v in sorted(plan.slots.assignments.items())}, "overflow": plan.slots.overflow,
+        "decisions": [d.to_log() for d in plan.decisions.values()],
+        "shadow": [d.to_log() for d in plan.shadow],
+        "corrections": corrections,
+        "oracles": [r.__dict__ for r in runs],
+        "timings": timings, "models_ms": model_ms,
+        "validation": {"ok": not errors, "errors": errors}, "failures": failures,
+    }
+    usage_lines = [{"ts": ts, "tool": TOOL, "backend": r.name, "model": r.meta.get("model"),
+                    "input_tokens": r.meta.get("input_tokens"), "output_tokens": r.meta.get("output_tokens"),
+                    "shadow": r.shadow} for r in runs if r.error is None]
+    log_run(record, usage_lines)
+
+    if args.json:
+        print(json.dumps(record, indent=2, ensure_ascii=False))
+    else:
+        print_summary(state, plan, runs, errors, failures, mode, args.verbose, corrections)
+        print(f"timing: desktop ready in {desktop_ready_ms}ms (gather {timings.get('gather', 0)}, folio {timings['folio']} in "
+              f"{timings['folio_calls']} calls, deterministic {timings['deterministic']}"
+              + "".join(f", {r.name} {r.elapsed_ms}" for r in runs) + f"); total {timings['total']}ms")
+    return 2 if errors else 0
+
+
+def print_summary(state: DesktopState, plan: Plan, runs: list[OracleRun], errors: list[str], failures: list[str],
+                  mode: str, verbose: bool, corrections: list[dict[str, Any]]) -> None:
+    prefix = "would " if mode in ("dry-run", "state-file") else ""
+    if errors:
+        print("validation failed; nothing moved:")
+        for e in errors:
+            print(f"  ! {e}")
+    for slot, label in sorted(plan.labels.items()):
+        print(f"{prefix}label: {slot} → {label}")
+    for m in plan.moves:
+        d = plan.decisions[m.window_id]
+        why = d.project or d.resolution
+        print(f"{prefix}move: {plan.decisions[m.window_id].app}: {m.title[:40]} → {m.to_space}  ({why} via {d.resolution})")
+    for ref in plan.slots.overflow:
+        print(f"overflow: {ref} → scratch")
+    for d in plan.decisions.values():
+        if "skipped" in d.detail:
+            print(f"skip: {d.app}: {d.title[:40]} ({d.detail['skipped']}; yabairc expects spaces 1–10)")
+    for d in plan.shadow:
+        print(f"shadow {d.resolution}: w{d.window_id} {d.title[:32]!r} → {d.selected} ({d.confidence}) {'accept' if d.accepted else 'reject'}")
+    for c in corrections:
+        agreed = " ".join(f"{k}={'✓' if v else '✗'}" for k, v in (c.get("agreed") or {}).items())
+        print(f"correction: {c['app']}: {c['title'][:32]} {c['from_space']}→{c['to_space']} ({c['kind']}"
+              f"{', now ' + c['now_project'] if c.get('now_project') else ''}) {agreed}".rstrip())
+    for r in runs:
+        status = f"error: {r.error}" if r.error else f"{r.meta.get('input_tokens')}+{r.meta.get('output_tokens')} tokens"
+        print(f"{'shadow ' if r.shadow else ''}{r.name}: {r.questions} question(s), {r.elapsed_ms}ms, {status}")
+    if verbose:
+        for w in state.windows:
+            d = plan.decisions.get(w.id)
+            if d is None or any(m.window_id == w.id for m in plan.moves):
+                continue
+            extra = d.project or d.detail.get("note") or d.detail.get("reason") or ""
+            print(f"keep: {w.short} [{w.space}] {d.outcome}/{d.resolution} {extra}")
+    for f in failures:
+        print(f"fail: {f}")
+    unresolved = sum(1 for d in plan.decisions.values() if d.outcome == "unresolved")
+    print(f"done ({mode}: {len(plan.moves)} moves, {len(plan.labels)} labels, {unresolved} left unchanged)")
+
+
+if __name__ == "__main__":
+    sys.exit(main())

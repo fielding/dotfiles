@@ -1,0 +1,441 @@
+{
+  "windows": [
+    {
+      "id": 855,
+      "pid": 1104,
+      "app": "Ghostty",
+      "title": "m5.local: ~",
+      "space": 1,
+      "can_move": true,
+      "role": "AXWindow",
+      "subrole": "AXStandardWindow",
+      "minimized": false
+    },
+    {
+      "id": 4584,
+      "pid": 1104,
+      "app": "Ghostty",
+      "title": "✳ Seeking.min.js analysis preparation",
+      "space": 1,
+      "can_move": true,
+      "role": "AXWindow",
+      "subrole": "AXStandardWindow",
+      "minimized": false
+    },
+    {
+      "id": 327,
+      "pid": 15832,
+      "app": "Slack",
+      "title": "Alex (DM) - Venice.ai - 5 new items - Slack",
+      "space": 9,
+      "can_move": true,
+      "role": "AXWindow",
+      "subrole": "AXStandardWindow",
+      "minimized": false
+    },
+    {
+      "id": 779,
+      "pid": 46713,
+      "app": "Telegram",
+      "title": "Telegram @ Fielding",
+      "space": 9,
+      "can_move": true,
+      "role": "AXWindow",
+      "subrole": "AXStandardWindow",
+      "minimized": false
+    },
+    {
+      "id": 13984,
+      "pid": 58864,
+      "app": "Problem Reporter",
+      "title": "",
+      "space": 9,
+      "can_move": false,
+      "role": "",
+      "subrole": "",
+      "minimized": false
+    },
+    {
+      "id": 8996,
+      "pid": 46713,
+      "app": "Telegram",
+      "title": "Save",
+      "space": 9,
+      "can_move": true,
+      "role": "AXWindow",
+      "subrole": "AXStandardWindow",
+      "minimized": false
+    },
+    {
+      "id": 12504,
+      "pid": 1104,
+      "app": "Ghostty",
+      "title": "…/notes/Projects/apprentice",
+      "space": 1,
+      "can_move": true,
+      "role": "AXWindow",
+      "subrole": "AXStandardWindow",
+      "minimized": false
+    },
+    {
+      "id": 12432,
+      "pid": 58864,
+      "app": "Problem Reporter",
+      "title": "",
+      "space": 9,
+      "can_move": false,
+      "role": "",
+      "subrole": "",
+      "minimized": false
+    },
+    {
+      "id": 4907,
+      "pid": 48724,
+      "app": "Google Chrome",
+      "title": "Quarterly Planning Notes | Docs - Google Chrome - Fielding (justfielding.com)",
+      "space": 2,
+      "can_move": true,
+      "role": "AXWindow",
+      "subrole": "AXStandardWindow",
+      "minimized": false
+    },
+    {
+      "id": 13408,
+      "pid": 48724,
+      "app": "Google Chrome",
+      "title": "Brainstorm Jev Projects - Google Chrome - Fielding (justfielding.com)",
+      "space": 3,
+      "can_move": true,
+      "role": "AXWindow",
+      "subrole": "AXStandardWindow",
+      "minimized": false
+    },
+    {
+      "id": 7226,
+      "pid": 48724,
+      "app": "Google Chrome",
+      "title": "Venice Chat - Venice Uncensored AI - Google Chrome - Fielding (venice.ai)",
+      "space": 4,
+      "can_move": true,
+      "role": "AXWindow",
+      "subrole": "AXStandardWindow",
+      "minimized": false
+    },
+    {
+      "id": 13041,
+      "pid": 6820,
+      "app": "Messages",
+      "title": "Sam",
+      "space": 5,
+      "can_move": true,
+      "role": "AXWindow",
+      "subrole": "AXStandardWindow",
+      "minimized": false
+    },
+    {
+      "id": 2726,
+      "pid": 46746,
+      "app": "Obsidian",
+      "title": "WEEKLY-NOTES - notes - Obsidian 1.13.7",
+      "space": 7,
+      "can_move": true,
+      "role": "AXWindow",
+      "subrole": "AXStandardWindow",
+      "minimized": false
+    },
+    {
+      "id": 2681,
+      "pid": 48724,
+      "app": "Google Chrome",
+      "title": "Policy Wording | example.com - Google Chrome - Fielding (justfielding.com)",
+      "space": 4,
+      "can_move": true,
+      "role": "AXWindow",
+      "subrole": "AXStandardWindow",
+      "minimized": false
+    },
+    {
+      "id": 14116,
+      "pid": 87808,
+      "app": "Finder",
+      "title": "/System/Library/CoreServices/Finder.app/Contents/Resources/MyLibraries/myDocuments.cannedSearch",
+      "space": 5,
+      "can_move": true,
+      "role": "AXWindow",
+      "subrole": "AXStandardWindow",
+      "minimized": false
+    },
+    {
+      "id": 6604,
+      "pid": 1104,
+      "app": "Ghostty",
+      "title": "…/src/hack/fite",
+      "space": 5,
+      "can_move": true,
+      "role": "AXWindow",
+      "subrole": "AXStandardWindow",
+      "minimized": false
+    },
+    {
+      "id": 6616,
+      "pid": 1104,
+      "app": "Ghostty",
+      "title": "…/etc/bin/bin",
+      "space": 5,
+      "can_move": true,
+      "role": "AXWindow",
+      "subrole": "AXStandardWindow",
+      "minimized": false
+    },
+    {
+      "id": 1443,
+      "pid": 411,
+      "app": "ChatGPT",
+      "title": "",
+      "space": 1,
+      "can_move": false,
+      "role": "",
+      "subrole": "",
+      "minimized": false
+    },
+    {
+      "id": 3296,
+      "pid": 16888,
+      "app": "Linear",
+      "title": "",
+      "space": 2,
+      "can_move": false,
+      "role": "",
+      "subrole": "",
+      "minimized": false
+    },
+    {
+      "id": 11904,
+      "pid": 48724,
+      "app": "Google Chrome",
+      "title": "wttr.in — Weather Report - Google Chrome - Fielding (venice.ai)",
+      "space": 9,
+      "can_move": true,
+      "role": "AXWindow",
+      "subrole": "AXStandardWindow",
+      "minimized": true
+    },
+    {
+      "id": 14803,
+      "pid": 298,
+      "app": "Prism Launcher",
+      "title": "Prism Launcher 11.1.0",
+      "space": 1,
+      "can_move": true,
+      "role": "AXWindow",
+      "subrole": "AXDialog",
+      "minimized": true
+    }
+  ],
+  "spaces": [
+    {
+      "index": 1,
+      "label": "main"
+    },
+    {
+      "index": 2,
+      "label": ""
+    },
+    {
+      "index": 3,
+      "label": ""
+    },
+    {
+      "index": 4,
+      "label": ""
+    },
+    {
+      "index": 5,
+      "label": ""
+    },
+    {
+      "index": 6,
+      "label": ""
+    },
+    {
+      "index": 7,
+      "label": ""
+    },
+    {
+      "index": 8,
+      "label": ""
+    },
+    {
+      "index": 9,
+      "label": ""
+    },
+    {
+      "index": 10,
+      "label": ""
+    }
+  ],
+  "sessions": [
+    {
+      "id": "ghostty:ttys002",
+      "cwd": "/Users/fielding/src/hack/Nwallet/src/app/api/cards/[id]",
+      "command": "herdr",
+      "source": "ghostty",
+      "title": "",
+      "agent": null,
+      "is_hub": true,
+      "remote": false,
+      "workspace": ""
+    },
+    {
+      "id": "ghostty:ttys010",
+      "cwd": "/Users/fielding/src/hack/fite",
+      "command": "-/bin/zsh",
+      "source": "ghostty",
+      "title": "",
+      "agent": null,
+      "is_hub": false,
+      "remote": false,
+      "workspace": ""
+    },
+    {
+      "id": "ghostty:ttys012",
+      "cwd": "/Users/fielding/Downloads",
+      "command": "claude --dangerously-skip-permissions",
+      "source": "ghostty",
+      "title": "",
+      "agent": "claude",
+      "is_hub": false,
+      "remote": false,
+      "workspace": ""
+    },
+    {
+      "id": "ghostty:ttys014",
+      "cwd": "/Users/fielding/etc/bin/bin",
+      "command": "-/bin/zsh",
+      "source": "ghostty",
+      "title": "",
+      "agent": null,
+      "is_hub": false,
+      "remote": false,
+      "workspace": ""
+    },
+    {
+      "id": "ghostty:ttys016",
+      "cwd": "/Users/fielding/notes/Projects/apprentice",
+      "command": "-/bin/zsh",
+      "source": "ghostty",
+      "title": "",
+      "agent": null,
+      "is_hub": false,
+      "remote": false,
+      "workspace": ""
+    },
+    {
+      "id": "herdr:w2:p1",
+      "cwd": "/Users/fielding/Documents/Codex/2026-09-11/i-actually-need-to-migrate-to",
+      "command": "claude",
+      "source": "herdr",
+      "title": "✳ M5 Mac handoff setup",
+      "agent": "claude",
+      "is_hub": false,
+      "remote": false,
+      "workspace": "i-actually-need-to-migrate-to"
+    },
+    {
+      "id": "herdr:w3:p1",
+      "cwd": "/Users/fielding/src/hack/Nwallet",
+      "command": "claude",
+      "source": "herdr",
+      "title": "✳ Nwallet staging handoff",
+      "agent": "claude",
+      "is_hub": false,
+      "remote": false,
+      "workspace": "Nwallet"
+    },
+    {
+      "id": "herdr:w4:p1",
+      "cwd": "/Users/fielding/notes/Projects/inference-proxy",
+      "command": "claude",
+      "source": "herdr",
+      "title": "✳ Inference proxy PR review",
+      "agent": "claude",
+      "is_hub": false,
+      "remote": false,
+      "workspace": "inference-proxy"
+    },
+    {
+      "id": "herdr:w5:p1",
+      "cwd": "/Users/fielding/src/work/venice/outerface",
+      "command": "claude",
+      "source": "herdr",
+      "title": "✳ Outerface handoff",
+      "agent": "claude",
+      "is_hub": false,
+      "remote": false,
+      "workspace": "outerface"
+    },
+    {
+      "id": "herdr:w6:p1",
+      "cwd": "/Users/fielding/etc",
+      "command": "claude",
+      "source": "herdr",
+      "title": "◐ yabai-organize refactor with Folio and Jev",
+      "agent": "claude",
+      "is_hub": false,
+      "remote": false,
+      "workspace": "etc"
+    }
+  ],
+  "ports": [
+    {
+      "port": 32222,
+      "pid": 62651,
+      "process": "OrbStack Helper",
+      "cwd": "/Users/fielding/notes/Projects/inference-proxy"
+    },
+    {
+      "port": 32925,
+      "pid": 62651,
+      "process": "OrbStack Helper",
+      "cwd": "/Users/fielding/notes/Projects/inference-proxy"
+    },
+    {
+      "port": 32933,
+      "pid": 62651,
+      "process": "OrbStack Helper",
+      "cwd": "/Users/fielding/notes/Projects/inference-proxy"
+    },
+    {
+      "port": 32934,
+      "pid": 62651,
+      "process": "OrbStack Helper",
+      "cwd": "/Users/fielding/notes/Projects/inference-proxy"
+    },
+    {
+      "port": 59226,
+      "pid": 62651,
+      "process": "OrbStack Helper",
+      "cwd": "/Users/fielding/notes/Projects/inference-proxy"
+    }
+  ],
+  "hostnames": [
+    "m5",
+    "m5.local"
+  ],
+  "herdr_workspaces": [
+    "i-actually-need-to-migrate-to",
+    "Nwallet",
+    "inference-proxy",
+    "outerface",
+    "etc"
+  ],
+  "repo_dirs": [
+    "/Users/fielding/src/hack/Nwallet",
+    "/Users/fielding/src/hack/colors/fite",
+    "/Users/fielding/src/hack/fite",
+    "/Users/fielding/src/hack/folio",
+    "/Users/fielding/src/hack/review-crew",
+    "/Users/fielding/src/hack/ripguard",
+    "/Users/fielding/src/work/venice/outerface"
+  ]
+}

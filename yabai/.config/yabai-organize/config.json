@@ -1,0 +1,18 @@
+{
+  "jev_url": "https://api.venice.ai/api/v1/decisions",
+  "jev_api_key_keychain": "VENICE_API_KEY",
+  "legacy_model": "claude-opus-4-8",
+  "legacy_backend": "openai",
+  "openai_url": "https://api.venice.ai/api/v1",
+  "legacy_api_key_keychain": "VENICE_API_KEY",
+  "legacy_json_mode": true,
+  "browser_profile_realms": {"venice.ai": "venice", "justfielding.com": "fielding"},
+  "app_hints": {
+    "Prism Launcher": {"hint": "Minecraft launcher: instances, mods, servers", "default_space": 9},
+    "1Password": {"default_space": 8}
+  },
+  "title_hints": [
+    {"pattern": "^Minecraft\\*? ", "hint": "Minecraft game client (Java edition reports its app as java)", "default_space": 9}
+  ],
+  "home_terminal_space": 1
+}

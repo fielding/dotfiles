@@ -43,3 +43,6 @@ bin/bin/zed
 
 # Karabiner app-generated config backups
 karabiner/.config/karabiner/automatic_backups/
+
+# Python bytecode caches (tests, py_compile)
+__pycache__/
