@@ -14,8 +14,6 @@ fi
 autoload -Uz compinit
 compinit -i -u
 
-# zplug uses `git` directly; temporarily unalias so it doesn't call `nit`
-unalias git 2>/dev/null
 if [ -n "${ZPLUG_HOME:-}" ] \
    && [ -r "$ZPLUG_HOME/init.zsh" ] \
    && [ -d "$ZPLUG_HOME/log" ] && [ -w "$ZPLUG_HOME/log" ] \
@@ -44,12 +42,6 @@ if [ -n "${ZPLUG_HOME:-}" ] \
   fi
 
   zplug load
-fi
-if command -v nit >/dev/null 2>&1; then
-  alias git='nit' g='nit'
-else
-  unalias git 2>/dev/null
-  alias g='git'
 fi
 
 PURE_PROMPT_SYMBOL_COLOR=red

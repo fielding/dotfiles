@@ -23,7 +23,6 @@ brew "git-delta"
 brew "git-filter-repo"
 brew "git-lfs"
 brew "glow"
-brew "fielding/tap/nit"
 brew "imagemagick"
 brew "libpq", link: true
 brew "neovim"

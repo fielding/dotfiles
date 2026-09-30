@@ -1,10 +1,5 @@
 alias b='brew'
-if command -v nit >/dev/null 2>&1; then
-  alias git='nit'
-  alias g='nit'
-else
-  alias g='git'
-fi
+alias g='git'
 alias gcal='gcalcli'
 alias kb='keybase'
 alias vim='nvim'
