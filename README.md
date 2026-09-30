@@ -11,6 +11,7 @@ is a stow package; running `stow <name>` symlinks its contents into `~`.
 |--------------|--------------------------------------------------------------------|
 | `bin`        | personal scripts (`tmux-sessionizer`, `sync-tix-to-vault`, …)      |
 | `borders`    | JankyBorders — window outlines tinted by skhd mode                 |
+| `ccstatusline` | Claude Code status line layout (`ccstatusline`)                    |
 | `claude`     | Claude Code global settings, hooks, status line, themes            |
 | `codex`      | OpenAI Codex CLI config                                            |
 | `fastfetch`  | system info banner at shell startup                                |
@@ -84,7 +85,7 @@ there; reboot and `./bootstrap.sh --only yabai` afterward.
 brew install stow
 
 # Symlink the active set:
-stow bin borders claude codex fastfetch fonts ghostty git herdr homebrew \
+stow bin borders ccstatusline claude codex fastfetch fonts ghostty git herdr homebrew \
      karabiner neovim shell sketchybar skhd terminfo tmux vim yabai zed zsh
 
 # Compile terminfo entries (italic support in tmux):
