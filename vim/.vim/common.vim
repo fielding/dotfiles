@@ -111,8 +111,9 @@ inoremap <C-U> <C-G>u<C-U>
 " spacebar unhighlights search text
 noremap <silent> <leader>/ :silent noh<Bar>echo<CR>
 
-" tmux navigator backspace fix
-nnoremap <silent> <BS> :TmuxNavigateLeft<cr>
+" backspace moves to the window on the left (tmux-aware when the plugin is
+" loaded, plain window command in vanilla vim)
+nnoremap <silent> <expr> <BS> exists(':TmuxNavigateLeft') == 2 ? ":TmuxNavigateLeft\<CR>" : "\<C-w>h"
 
 " align blocks and keep them selected
 vmap < <gv
@@ -140,8 +141,8 @@ if has('autocmd')
 
   augroup vimrcEx
     au!
-    " trim trailing whitespace on save
-    autocmd BufWritePre * :FixWhitespace
+    " trim trailing whitespace on save (plugin command; skipped in vanilla vim)
+    autocmd BufWritePre * if exists(':FixWhitespace') == 2 | FixWhitespace | endif
     " restore cursor position
     autocmd BufReadPost *
       \ if line("'\"") > 1 && line("'\"") <= line("$") |
