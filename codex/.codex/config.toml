@@ -1,8 +1,7 @@
-model = "gpt-5.3-codex"
+model = "gpt-6-astra"
 approval_policy = "never"
 sandbox_mode = "danger-full-access"
-model_reasoning_effort = "high"
-model_reasoning_summary_format = "experimental"
+model_reasoning_effort = "medium"
 personality = "pragmatic"
 
 [sandbox_workspace_write]
