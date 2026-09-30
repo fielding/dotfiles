@@ -128,7 +128,9 @@ command Term split term://$SHELL
 command VTerm vsplit term://$SHELL
 
 " neovim terminal navigation
-tnoremap <Esc> <C-\><C-n>
+" <Esc> is deliberately not remapped: it has to reach the program running in
+" the terminal (zsh vi-mode, claude, codex, ...). Leave terminal mode with the
+" built-in <C-\><C-n>, or jump windows directly with <C-h/j/k/l>.
 tnoremap <C-h> <C-\><C-n><C-w>h
 tnoremap <C-j> <C-\><C-n><C-w>j
 tnoremap <C-k> <C-\><C-n><C-w>k
