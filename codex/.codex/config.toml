@@ -4,6 +4,9 @@ sandbox_mode = "danger-full-access"
 model_reasoning_effort = "medium"
 personality = "pragmatic"
 
+notify = ["/Users/fielding/etc/codex/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended"]
+service_tier = "default"
+
 [sandbox_workspace_write]
 network_access = true
 
@@ -20,3 +23,76 @@ inherit = "core"
 
 [mcp_servers.figma]
 url = "https://mcp.figma.com/mcp"
+
+[mcp_servers.node_repl]
+args = []
+command = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node_repl"
+startup_timeout_sec = 120
+
+[mcp_servers.node_repl.env]
+NODE_REPL_NATIVE_PIPE_CONNECT_TIMEOUT_MS = "1000"
+NODE_REPL_NODE_MODULE_DIRS = "/Applications/ChatGPT.app/Contents/Resources/cua_node/lib/node_modules"
+NODE_REPL_NODE_PATH = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node"
+NODE_REPL_TRUSTED_CODE_PATHS = "/Users/fielding/.codex:/Applications/ChatGPT.app/Contents/Resources/cua_node/lib/node_modules"
+CODEX_HOME = "/Users/fielding/.codex"
+BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
+BROWSER_USE_TINYSKY_ENABLED = "1"
+NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = "Control the in-app browser in conjunction with the Browser Plugin."
+NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME = "Control the Chrome browser in conjunction with the Chrome Plugin. Prefer this method of controlling Chrome over alternatives (such as Computer Use) unless the user explicitly mentions an alternative."
+BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "prod"
+BROWSER_USE_CODEX_APP_VERSION = "26.908.70816"
+NODE_REPL_TRUSTED_SERVICES = '{"browser":"/Users/fielding/.codex/plugins/cache/openai-bundled/browser/26.908.70816/scripts/browser-service.mjs"}'
+CODEX_CLI_PATH = "/Applications/ChatGPT.app/Contents/Resources/codex"
+
+[mcp_servers.cua_repl]
+command = "/Applications/ChatGPT.app/Contents/MacOS/ChatGPT"
+enabled = false
+
+[desktop]
+followUpQueueMode = "steer"
+conversationDetailMode = "STEPS_COMMANDS"
+ambient-suggestions-enabled = true
+keepRemoteControlAwakeWhilePluggedIn = true
+
+[marketplaces.openai-primary-runtime]
+source_type = "local"
+source = "/Users/fielding/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
+
+[plugins."documents@openai-primary-runtime"]
+enabled = true
+
+[plugins."pdf@openai-primary-runtime"]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = true
+
+[plugins."presentations@openai-primary-runtime"]
+enabled = true
+
+[plugins."template-creator@openai-primary-runtime"]
+enabled = true
+
+[projects."/Users/fielding/Documents/Codex/2026-09-16/i-ha"]
+trust_level = "trusted"
+
+[projects."/Users/fielding/Documents/Codex/2026-09-16/i-have-the-first-2-layers"]
+trust_level = "trusted"
+
+[projects."/Users/fielding/Documents/Codex/2026-09-17/do"]
+trust_level = "trusted"
+
+[projects."/Users/fielding/Documents/Codex/2026-09-18/realtime-voice-chat"]
+trust_level = "trusted"
+
+[projects."/Users/fielding/src/hack/ripguard"]
+trust_level = "trusted"
+
+[projects."/Users/fielding/src/hack/human-in-the-loop"]
+trust_level = "trusted"
+
+[projects."/Users/fielding/Documents/Codex/2026-09-29/realtime-voice-chat"]
+trust_level = "trusted"
+
+[projects."/Users/fielding/Documents/Codex/2026-09-29/does-github-use-git-diff-range"]
+trust_level = "trusted"
