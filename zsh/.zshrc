@@ -70,6 +70,23 @@ setopt sharehistory
 
 bindkey -v
 
+# vi-mode <-> macOS clipboard, mirroring vim's clipboard=unnamed: y/d/c/x
+# write the pasteboard and p/P read it. Defined before zsh-syntax-highlighting
+# is sourced so it wraps these widgets too.
+if command -v pbcopy >/dev/null 2>&1; then
+  _clip_cut() { zle ".$WIDGET" -- "$@"; printf '%s' "$CUTBUFFER" | pbcopy; }
+  _clip_put() { CUTBUFFER="$(pbpaste)"; zle ".$WIDGET" -- "$@"; }
+  for _w in vi-yank vi-yank-eol vi-yank-whole-line \
+            vi-delete vi-delete-char vi-kill-eol \
+            vi-change vi-change-eol vi-change-whole-line vi-substitute; do
+    zle -N "$_w" _clip_cut
+  done
+  for _w in vi-put-after vi-put-before; do
+    zle -N "$_w" _clip_put
+  done
+  unset _w
+fi
+
 [ -r "$BREW_PATH/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ] \
   && . "$BREW_PATH/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
