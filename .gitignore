@@ -46,3 +46,15 @@ karabiner/.config/karabiner/automatic_backups/
 
 # Python bytecode caches (tests, py_compile)
 __pycache__/
+
+# ~/.claude and ~/.codex are stow-folded into this repo, so Claude Code and
+# Codex write their runtime state (sessions, caches, credentials, logs) next
+# to the config. Track only the config files.
+claude/.claude/*
+!claude/.claude/settings.json
+!claude/.claude/themes/
+!claude/.claude/hooks/
+codex/.codex/*
+!codex/.codex/config.toml
+!codex/.codex/hooks.json
+!codex/.codex/herdr-agent-state.sh
