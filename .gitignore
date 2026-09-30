@@ -62,3 +62,6 @@ codex/.codex/*
 # herdr keeps logs, sockets and session state beside its config.toml
 herdr/.config/herdr/*
 !herdr/.config/herdr/config.toml
+
+# Superpowers plugin writes brainstorm/design specs here; not part of the dotfiles
+docs/superpowers/
