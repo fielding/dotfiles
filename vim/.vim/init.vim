@@ -1,6 +1,34 @@
 " init.vim — neovim primary config
 " author: fielding johnston
 
+" clipboard over ssh {{{1
+" clipboard=unnamed (common.vim) disables neovim's built-in OSC 52 fallback,
+" so a remote session would have no clipboard at all. Opt in explicitly:
+" yanks are pushed to the local terminal's clipboard via OSC 52 (ghostty and
+" herdr both forward it); pastes return the last yank from a local cache
+" instead of querying the terminal, which would hit ghostty's clipboard-read
+" prompt on every p. Both * and + target the system clipboard ('c'); the
+" primary selection ('p') maps to ghostty's private pasteboard on macOS.
+" Must run before anything touches the * register.
+if !empty($SSH_TTY)
+lua << EOF
+  local send = require('vim.ui.clipboard.osc52').copy('+')
+  local cache = { { '' }, 'v' }
+  local function copy(lines, regtype)
+    cache = { lines, regtype }
+    pcall(send, lines)
+  end
+  local function paste()
+    return cache
+  end
+  vim.g.clipboard = {
+    name = 'OSC 52 (yank only)',
+    copy = { ['+'] = copy, ['*'] = copy },
+    paste = { ['+'] = paste, ['*'] = paste },
+  }
+EOF
+endif
+
 " common {{{1
 runtime common.vim
 
