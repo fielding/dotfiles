@@ -71,7 +71,7 @@
           {
             "type": "command",
             "command": "lavish-axi",
-            "timeout": 10
+            "timeout": 6
           }
         ]
       },
@@ -102,10 +102,6 @@
           {
             "type": "command",
             "command": "/Users/fielding/src/hack/glean/.venv/bin/python3 /Users/fielding/src/hack/glean/hooks/claude_dailylog_hook.py"
-          },
-          {
-            "type": "command",
-            "command": "printf '\\a' > /dev/tty"
           }
         ]
       }
