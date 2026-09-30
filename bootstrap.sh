@@ -39,7 +39,7 @@ BREWFILE="$REPO_ROOT/homebrew/.Brewfile"
 TIMEZONE="America/Chicago"
 # Active stow packages (mirror of README's "Active packages" table).
 STOW_PACKAGES=(bin borders claude codex fastfetch fonts gate ghostty git homebrew \
-               karabiner shell sketchybar skhd terminfo tmux vim yabai zsh)
+               karabiner neovim shell sketchybar skhd terminfo tmux vim yabai zsh)
 # LaunchAgents installed by default. ollama + pilot are opt-in (--agents):
 # local models live on the M4, and pilot is the disabled screenpipe rig.
 DEFAULT_AGENTS=(cadence glean weather sync-tix-to-vault)
@@ -317,10 +317,11 @@ phase_shell() {
     runsh "zsh -i -c 'zplug install' >/dev/null 2>&1" || warn "zplug install will retry on next shell start"
   fi
 
-  # vim-plug plugins — best effort, non-fatal.
-  if command -v vim >/dev/null 2>&1 && [[ -f "$HOME/.vim/autoload/plug.vim" ]]; then
-    info "Installing vim plugins..."
-    run vim +PlugInstall +qall >/dev/null 2>&1 || warn "vim PlugInstall had issues"
+  # vim-plug plugins — best effort, non-fatal. Must be nvim: init.vim holds the
+  # Plug list, and a bare `vim` here is /usr/bin/vim (no plug, no plugins).
+  if command -v nvim >/dev/null 2>&1 && [[ -f "$HOME/.vim/autoload/plug.vim" ]]; then
+    info "Installing neovim plugins..."
+    run nvim --headless +PlugInstall +qall >/dev/null 2>&1 || warn "nvim PlugInstall had issues"
   fi
   ok "Shell configured"
 }
