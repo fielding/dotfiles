@@ -3,3 +3,8 @@ font-family = "JetBrainsMono Nerd Font Mono"
 window-decoration = false
 #custom-shader = /Users/fielding/src/hack/ghostty-shader-adventures/shaders/splatter.glsl
 custom-shader-animation = true
+
+# mouse selection goes to the system clipboard (cmd-v), not only ghostty's
+# private selection pasteboard (cmd-shift-v). Matters for shift-drag in nvim,
+# where mouse=a captures plain drags.
+copy-on-select = clipboard
