@@ -175,6 +175,9 @@ sunmap e
 sunmap ge
 
 " yankstack
+" leave s/S alone: yankstack's visual-mode S otherwise shadows vim-surround's
+" S (surround the selection)
+let g:yankstack_yank_keys = ['c', 'C', 'd', 'D', 'x', 'X', 'y', 'Y']
 nmap <leader>p <Plug>yankstack_substitute_older_paste
 nmap <leader>P <Plug>yankstack_substitute_newer_paste
 
