@@ -28,6 +28,7 @@ is a stow package; running `stow <name>` symlinks its contents into `~`.
 | `tmux`       | true-color tmux with bell alerts and per-session colors            |
 | `vim`        | vim config and plugin set                                          |
 | `yabai`      | tiling window manager                                              |
+| `zed`        | Zed editor settings + Human++ theme                                |
 | `zsh`        | zsh config with zplug, purer prompt, Human++ theme                 |
 
 ## Legacy
@@ -83,7 +84,7 @@ brew install stow
 
 # Symlink the active set:
 stow bin borders claude codex fastfetch fonts ghostty git homebrew \
-     karabiner neovim shell sketchybar skhd terminfo tmux vim yabai zsh
+     karabiner neovim shell sketchybar skhd terminfo tmux vim yabai zed zsh
 
 # Compile terminfo entries (italic support in tmux):
 tic ~/.terminfo/74/tmux.terminfo

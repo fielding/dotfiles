@@ -39,7 +39,7 @@ BREWFILE="$REPO_ROOT/homebrew/.Brewfile"
 TIMEZONE="America/Chicago"
 # Active stow packages (mirror of README's "Active packages" table).
 STOW_PACKAGES=(bin borders claude codex fastfetch fonts gate ghostty git homebrew \
-               karabiner neovim shell sketchybar skhd terminfo tmux vim yabai zsh)
+               karabiner neovim shell sketchybar skhd terminfo tmux vim yabai zed zsh)
 # LaunchAgents installed by default. ollama + pilot are opt-in (--agents):
 # local models live on the M4, and pilot is the disabled screenpipe rig.
 DEFAULT_AGENTS=(cadence glean weather sync-tix-to-vault)

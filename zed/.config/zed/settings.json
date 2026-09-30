@@ -1,0 +1,6 @@
+// Zed settings — tracked in ~/etc/zed (stow package).
+// The Human++ theme is a copy of packages/zed-extension/themes/human-plus-plus.json
+// from ~/src/hack/human-plus-plus; rebuild there and re-copy to update.
+{
+  "theme": "Human++"
+}
