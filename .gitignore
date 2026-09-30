@@ -58,3 +58,7 @@ codex/.codex/*
 !codex/.codex/config.toml
 !codex/.codex/hooks.json
 !codex/.codex/herdr-agent-state.sh
+
+# herdr keeps logs, sockets and session state beside its config.toml
+herdr/.config/herdr/*
+!herdr/.config/herdr/config.toml

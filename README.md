@@ -18,6 +18,7 @@ is a stow package; running `stow <name>` symlinks its contents into `~`.
 | `gate`       | operator config for the gate/retro/handoff skills (vault, routing) |
 | `ghostty`    | Ghostty terminal config                                            |
 | `git`        | gitconfig, commit template, global gitignore                       |
+| `herdr`      | herdr terminal workspace manager config                            |
 | `homebrew`   | Brewfile — brew, cask, cargo, and npm package manifest             |
 | `karabiner`  | keyboard remapping                                                 |
 | `neovim`     | `~/.config/nvim` -> the `vim` package (neovim only reads XDG paths) |
@@ -83,7 +84,7 @@ there; reboot and `./bootstrap.sh --only yabai` afterward.
 brew install stow
 
 # Symlink the active set:
-stow bin borders claude codex fastfetch fonts ghostty git homebrew \
+stow bin borders claude codex fastfetch fonts ghostty git herdr homebrew \
      karabiner neovim shell sketchybar skhd terminfo tmux vim yabai zed zsh
 
 # Compile terminfo entries (italic support in tmux):

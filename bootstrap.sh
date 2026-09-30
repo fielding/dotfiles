@@ -38,7 +38,7 @@ BREWFILE="$REPO_ROOT/homebrew/.Brewfile"
 # --- config -----------------------------------------------------------------
 TIMEZONE="America/Chicago"
 # Active stow packages (mirror of README's "Active packages" table).
-STOW_PACKAGES=(bin borders claude codex fastfetch fonts gate ghostty git homebrew \
+STOW_PACKAGES=(bin borders claude codex fastfetch fonts gate ghostty git herdr homebrew \
                karabiner neovim shell sketchybar skhd terminfo tmux vim yabai zed zsh)
 # LaunchAgents installed by default. ollama + pilot are opt-in (--agents):
 # local models live on the M4, and pilot is the disabled screenpipe rig.
@@ -271,6 +271,10 @@ phase_stow() {
   for pkg in "${STOW_PACKAGES[@]}"; do
     if [[ -d "$REPO_ROOT/$pkg" ]]; then present+=("$pkg"); else warn "package '$pkg' missing, skipping"; fi
   done
+  # herdr keeps logs, sockets and session state beside its config.toml. Make
+  # sure the directory exists so stow links the file rather than folding the
+  # whole directory into the repo.
+  run mkdir -p "$HOME/.config/herdr"
   run stow --dir="$REPO_ROOT" --target="$HOME" --restow "${present[@]}"
   ok "Stowed: ${present[*]}"
 }
