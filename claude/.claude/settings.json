@@ -30,9 +30,9 @@
       "Bash(git stash push:*)",
       "Bash(git stash:*)"
     ],
-    "defaultMode": "dontAsk"
+    "defaultMode": "auto"
   },
-  "model": "claude-fable-5-1[1m]",
+  "model": "fable",
   "skillOverrides": {
     "adapt": "name-only",
     "animate": "name-only",
