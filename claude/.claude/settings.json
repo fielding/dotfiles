@@ -30,7 +30,11 @@
       "Bash(git stash push:*)",
       "Bash(git stash:*)"
     ],
-    "defaultMode": "auto"
+    "defaultMode": "auto",
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.*)"
+    ]
   },
   "model": "fable",
   "skillOverrides": {
